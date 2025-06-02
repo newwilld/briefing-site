@@ -1,0 +1,185 @@
+/* Reset Básico/Normalização */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+/* Corpo do Documento */
+body {
+    background-color: #f4f7f6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Contêiner Principal */
+#dashboard-container {
+    max-width: 1200px;
+    width: 100%;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Seções */
+section {
+    background-color: #e9ecef; /* Cor de fundo para destacar as seções */
+    margin-bottom: 20px; /* Adiciona espaço entre as seções */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Cartões/Blocos de Métricas */
+section > div > div, /* Para métricas principais, clientes, investimento */
+#vendas-diarias-container > div { /* Para blocos de vendas diárias */
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+/* Cards individuais dentro das seções de métricas, clientes, investimento */
+#metricas-principais .card,
+#clientes .card,
+#investimento-detalhado .card {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+/* Títulos das Seções */
+h1 {
+    font-size: 2.5em;
+    color: #333;
+}
+
+h2 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    color: #495057;
+}
+
+/* Parágrafos dentro dos cartões */
+section > div > div p {
+    margin-bottom: 8px;
+    font-size: 0.95em;
+    color: #555;
+}
+
+
+/* Valores das Métricas */
+span[id$="-display"] {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+    display: inline-block; /* Para garantir que o padding/margin funcione bem */
+    margin-left: 5px;
+}
+
+/* Botões */
+button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Botões "Editar" dentro dos cards */
+.card button {
+    margin-top: 10px; /* Aumenta um pouco o espaço acima do botão editar */
+    background-color: #6c757d;
+}
+
+.card button:hover {
+    background-color: #545b62;
+}
+
+/* Botão Adicionar Venda do Dia */
+#add-venda-dia-btn {
+    background-color: #17a2b8; /* Cor diferente para destaque */
+    margin-bottom: 15px; /* Espaço antes do container de vendas diárias */
+}
+
+#add-venda-dia-btn:hover {
+    background-color: #117a8b;
+}
+
+/* Botões de Ação Global */
+#acoes-globais button {
+    margin-right: 10px;
+    margin-bottom: 10px; /* Adiciona margem inferior para caso quebrem a linha */
+    background-color: #28a745;
+}
+
+#acoes-globais button:hover {
+    background-color: #1e7e34;
+}
+
+#acoes-globais input[type="file"] {
+    display: none; /* Mantém oculto como solicitado */
+}
+
+/* Contêiner de Vendas Diárias */
+#vendas-diarias-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 10px 0; /* Adiciona um pouco de padding vertical */
+    /* background-color: transparent;  Já definido no reset da section praticamente */
+    /* box-shadow: none; */
+}
+
+/* Estilo para os blocos individuais de vendas diárias (bloco-venda-dia) */
+.bloco-venda-dia { /* Classe definida no JS */
+    flex-basis: calc(50% - 10px); /* Exemplo: 2 colunas, ajustando pelo gap */
+    min-width: 200px; /* Largura mínima para cada bloco */
+    padding: 10px;
+    border-radius: 4px;
+    color: #fff;
+    text-align: center;
+    /* As cores de fundo são aplicadas via JS */
+}
+
+/* Responsividade simples */
+@media (max-width: 768px) {
+    #dashboard-container {
+        grid-template-columns: 1fr; /* Uma coluna em telas menores */
+    }
+
+    .bloco-venda-dia {
+        flex-basis: calc(100% - 10px); /* Blocos de vendas ocupam toda a largura menos o gap */
+        min-width: unset; /* Remove min-width para total flexibilidade */
+    }
+}
+
+/* Ajuste para os parágrafos dentro dos cards para melhor espaçamento */
+.card p {
+    margin-bottom: 10px; /* Aumenta um pouco o espaço entre os parágrafos nos cards */
+    line-height: 1.6; /* Melhora a legibilidade */
+}
+
+/* Ajuste para o último elemento dentro de um card não ter margem inferior */
+.card > *:last-child {
+    margin-bottom: 0;
+}

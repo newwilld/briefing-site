@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Vendas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Dashboard de Vendas</h1>
+    </header>
+
+    <div id="dashboard-container">
+        <section id="metricas-principais">
+            <h2>Métricas Principais</h2>
+            <div class="card">
+                <p>Valor de Vendas Total: <span id="valor-vendas-total-display">R$ 0,00</span></p>
+                <button id="valor-vendas-total-edit-btn">Editar</button>
+            </div>
+            <div class="card">
+                <p>Vendas Ontem: <span id="vendas-ontem-display">R$ 0,00</span></p>
+                <button id="vendas-ontem-edit-btn">Editar</button>
+            </div>
+            <div class="card">
+                <p>Vendas Hoje: <span id="vendas-hoje-display">R$ 0,00</span></p>
+                <button id="vendas-hoje-edit-btn">Editar</button>
+            </div>
+            <div class="card">
+                <p>Quantidade Total de Leads: <span id="qtd-total-leads-display">0</span></p>
+                <button id="qtd-total-leads-edit-btn">Editar</button>
+            </div>
+            <div class="card">
+                <p>Valor Investido em Anúncios: <span id="valor-investido-anuncios-display">R$ 0,00</span></p>
+                <button id="valor-investido-anuncios-edit-btn">Editar</button>
+            </div>
+            <div class="card">
+                <p>% Despesas: <span id="percentual-despesas-display">0%</span></p>
+                <button id="percentual-despesas-edit-btn">Editar</button>
+            </div>
+            <div class="card">
+                <p>% Impostos: <span id="percentual-impostos-display">0%</span></p>
+                <button id="percentual-impostos-edit-btn">Editar</button>
+            </div>
+        </section>
+
+        <section id="clientes">
+            <h2>Clientes</h2>
+            <div class="card">
+                <p>Quantidade de Clientes: <span id="qtd-clientes-display">0</span></p>
+                <button id="qtd-clientes-edit-btn">Editar</button>
+            </div>
+            <div class="card">
+                <p>Novos Clientes por Dia: <span id="novos-clientes-dia-display">0</span></p>
+                <button id="novos-clientes-dia-edit-btn">Editar</button>
+            </div>
+            <div class="card">
+                <p>Novos Clientes por Mês: <span id="novos-clientes-mes-display">0</span></p>
+                <button id="novos-clientes-mes-edit-btn">Editar</button>
+            </div>
+        </section>
+
+        <section id="investimento-detalhado">
+            <h2>Investimento Detalhado</h2>
+            <div class="card">
+                <p>Valor Investido por Dia: <span id="valor-investido-dia-display">R$ 0,00</span></p>
+                <button id="valor-investido-dia-edit-btn">Editar</button>
+            </div>
+            <div class="card">
+                <p>Valor Investido por Mês: <span id="valor-investido-mes-display">R$ 0,00</span></p>
+                <button id="valor-investido-mes-edit-btn">Editar</button>
+            </div>
+            <div class="card">
+                <p>Valor Investido por Ano: <span id="valor-investido-ano-display">R$ 0,00</span></p>
+                <button id="valor-investido-ano-edit-btn">Editar</button>
+            </div>
+        </section>
+
+        <section id="vendas-diarias">
+            <h2>Vendas Realizadas por Dia</h2>
+            <button id="add-venda-dia-btn">Adicionar Venda do Dia</button>
+            <div id="vendas-diarias-container">
+                <!-- Blocos de vendas diárias serão inseridos aqui pelo JavaScript -->
+            </div>
+        </section>
+
+        <section id="acoes-globais">
+            <h2>Ações Globais</h2>
+            <button id="exportar-dados-btn">Exportar Dados</button>
+            <button id="importar-dados-btn">Importar Dados</button>
+            <input type="file" id="importar-dados-input" style="display: none;" accept=".json">
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
