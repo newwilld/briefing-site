@@ -125,11 +125,173 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Theme Toggle Button Styles */
+        .theme-toggle-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 50;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .theme-toggle-btn:active {
+            transform: scale(0.95);
+        }
+
+        .theme-toggle-btn .icon-container {
+            position: relative;
+            width: 28px;
+            height: 28px;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .theme-toggle-btn.dark .icon-container {
+            transform: rotate(360deg);
+        }
+
+        .theme-toggle-btn .icon-container i {
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 28px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #ffd700;
+        }
+
+        .theme-toggle-btn .fa-moon {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+        }
+
+        .theme-toggle-btn .fa-sun {
+            opacity: 0;
+            transform: scale(0) rotate(180deg);
+        }
+
+        .theme-toggle-btn.dark .fa-moon {
+            opacity: 0;
+            transform: scale(0) rotate(-180deg);
+        }
+
+        .theme-toggle-btn.dark .fa-sun {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+            color: #ffd700;
+            filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.8));
+        }
+
+        /* Ripple effect */
+        .theme-toggle-btn .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Modern Dark Mode Enhancements */
+        .dark {
+            color-scheme: dark;
+        }
+
+        .dark body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+        }
+
+        .dark .bg-gray-800 {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .dark .bg-gray-700 {
+            background: rgba(51, 65, 85, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .dark .border-gray-700 {
+            border-color: rgba(148, 163, 184, 0.2);
+        }
+
+        .dark .text-gray-300 {
+            color: #e2e8f0;
+        }
+
+        .dark .text-gray-400 {
+            color: #cbd5e1;
+        }
+
+        .dark .hover\:bg-gray-700:hover {
+            background: rgba(51, 65, 85, 0.8);
+        }
+
+        .dark input::placeholder {
+            color: #94a3b8;
+        }
+
+        .dark select {
+            color-scheme: dark;
+        }
+
+        /* Smooth theme transition */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Enhanced card shadows in dark mode */
+        .dark .glass-effect {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark .hover-scale:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Glowing effects for dark mode */
+        .dark .gradient-border::before {
+            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-notification"></div>
+
+    <!-- Theme Toggle Button -->
+    <button id="themeToggleBtn" class="theme-toggle-btn dark" onclick="toggleTheme()" title="Alternar tema">
+        <div class="icon-container">
+            <i class="fas fa-moon"></i>
+            <i class="fas fa-sun"></i>
+        </div>
+    </button>
 
     <!-- Login Screen -->
     <div id="loginScreen" class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-4">
@@ -229,11 +391,6 @@
 
     <!-- Main Dashboard (Hidden initially) -->
     <div id="dashboardScreen" class="hidden">
-        <!-- Theme Toggle -->
-        <button onclick="toggleTheme()" class="fixed bottom-6 right-6 z-50 p-4 rounded-full bg-white dark:bg-gray-800 shadow-2xl hover-scale gradient-border">
-            <i class="fas fa-moon text-gray-700 dark:text-yellow-400 text-xl" id="themeIcon"></i>
-        </button>
-
         <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
             <!-- Header Premium -->
             <header class="glass-effect sticky top-0 z-40 border-b border-gray-200 dark:border-gray-700">
@@ -603,6 +760,7 @@
                 init() {
                     this.setupAuthListener();
                     this.setupEventListeners();
+                    this.initializeTheme();
                 }
 
                 setupAuthListener() {
@@ -697,6 +855,19 @@
                         this.currentPage = 1;
                         this.renderClientsTable();
                     });
+                }
+
+                initializeTheme() {
+                    const savedTheme = localStorage.getItem('theme') || 'dark';
+                    const themeToggleBtn = document.getElementById('themeToggleBtn');
+                    
+                    if (savedTheme === 'light') {
+                        document.documentElement.classList.remove('dark');
+                        themeToggleBtn.classList.remove('dark');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        themeToggleBtn.classList.add('dark');
+                    }
                 }
 
                 async handleLogin() {
@@ -1190,22 +1361,34 @@
                     dashboardUI.showToast('❌ Erro ao fazer logout', 'error');
                 }
             };
+            
+            // Enhanced toggleTheme function with animation
             window.toggleTheme = () => {
                 const html = document.documentElement;
-                const icon = document.getElementById('themeIcon');
+                const themeToggleBtn = document.getElementById('themeToggleBtn');
+                const isDark = html.classList.contains('dark');
                 
-                if (html.classList.contains('dark')) {
+                // Add ripple effect
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                themeToggleBtn.appendChild(ripple);
+                
+                // Remove ripple after animation
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+                
+                if (isDark) {
                     html.classList.remove('dark');
-                    icon.classList.remove('fa-sun');
-                    icon.classList.add('fa-moon');
+                    themeToggleBtn.classList.remove('dark');
                     localStorage.setItem('theme', 'light');
                 } else {
                     html.classList.add('dark');
-                    icon.classList.remove('fa-moon');
-                    icon.classList.add('fa-sun');
+                    themeToggleBtn.classList.add('dark');
                     localStorage.setItem('theme', 'dark');
                 }
             };
+            
             window.showRegister = () => {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('registerScreen').classList.remove('hidden');
@@ -1214,13 +1397,6 @@
                 document.getElementById('registerScreen').classList.add('hidden');
                 document.getElementById('loginScreen').classList.remove('hidden');
             };
-
-            // Theme initialization
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.getElementById('themeIcon')?.classList.add('fa-sun');
-            }
 
             // Request notification permission
             if (Notification.permission === 'default') {
