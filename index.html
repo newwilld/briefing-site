@@ -9,20 +9,57 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         
+        :root {
+            /* Light Theme Colors */
+            --light-bg-primary: #f0f4ff;
+            --light-bg-secondary: #ffffff;
+            --light-bg-tertiary: #f8fafc;
+            --light-text-primary: #1e293b;
+            --light-text-secondary: #64748b;
+            --light-border: #e2e8f0;
+            --light-card-bg: rgba(255, 255, 255, 0.8);
+            --light-glass-bg: rgba(255, 255, 255, 0.7);
+            --light-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --light-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.1);
+            
+            /* Dark Theme Colors */
+            --dark-bg-primary: #0a0e27;
+            --dark-bg-secondary: #131837;
+            --dark-bg-tertiary: #1a1f3a;
+            --dark-text-primary: #e8ecf4;
+            --dark-text-secondary: #94a3b8;
+            --dark-border: rgba(99, 102, 241, 0.2);
+            --dark-card-bg: rgba(19, 24, 55, 0.8);
+            --dark-glass-bg: rgba(19, 24, 55, 0.7);
+            --dark-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --dark-shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
         * {
             font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 50%, #f5f3ff 100%);
+        }
+        
+        .dark body {
+            background: linear-gradient(135deg, #0a0e27 0%, #131837 50%, #0f1333 100%);
         }
         
         .glass-effect {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--light-glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            box-shadow: var(--light-shadow);
         }
         
         .dark .glass-effect {
-            background: rgba(17, 24, 39, 0.7);
+            background: var(--dark-glass-bg);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            box-shadow: var(--dark-shadow);
         }
         
         .gradient-border {
@@ -34,11 +71,15 @@
             position: absolute;
             inset: 0;
             border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
+        }
+        
+        .dark .gradient-border::before {
+            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #e879f9 100%);
         }
         
         .pulse-animation {
@@ -51,35 +92,43 @@
         }
         
         .slide-in {
-            animation: slideIn 0.3s ease-out;
+            animation: slideIn 0.4s ease-out;
         }
         
         @keyframes slideIn {
-            from { transform: translateY(-10px); opacity: 0; }
+            from { transform: translateY(-20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
         
         .hover-scale {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .hover-scale:hover {
-            transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transform: translateY(-4px);
+            box-shadow: var(--light-shadow-hover);
+        }
+        
+        .dark .hover-scale:hover {
+            box-shadow: var(--dark-shadow-hover);
         }
         
         .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
         
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 4px;
         }
         
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 3px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 4px;
+        }
+        
+        .dark .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(99, 102, 241, 0.05);
         }
         
         .status-dot {
@@ -99,7 +148,7 @@
         }
 
         @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
+            from { transform: translateX(120%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
 
@@ -112,224 +161,225 @@
             50% { transform: translateY(-5px); }
         }
 
-        .loading-spinner {
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top: 3px solid #6366f1;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Theme Toggle Button Styles */
+        /* Modern Theme Toggle Button */
         .theme-toggle-btn {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
             z-index: 50;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
-            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
             overflow: hidden;
         }
 
         .theme-toggle-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.6);
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(99, 102, 241, 0.6);
         }
 
         .theme-toggle-btn:active {
             transform: scale(0.95);
         }
 
-        .theme-toggle-btn .icon-container {
+        .theme-toggle-btn .icon-wrapper {
             position: relative;
-            width: 28px;
-            height: 28px;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 24px;
+            height: 24px;
         }
 
-        .theme-toggle-btn.dark .icon-container {
-            transform: rotate(360deg);
-        }
-
-        .theme-toggle-btn .icon-container i {
+        .theme-toggle-btn i {
             position: absolute;
             top: 0;
             left: 0;
-            font-size: 28px;
+            font-size: 24px;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             color: #ffd700;
+            filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.5));
         }
 
         .theme-toggle-btn .fa-moon {
             opacity: 1;
-            transform: scale(1) rotate(0deg);
-            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+            transform: rotate(0deg) scale(1);
         }
 
         .theme-toggle-btn .fa-sun {
             opacity: 0;
-            transform: scale(0) rotate(180deg);
+            transform: rotate(-180deg) scale(0.5);
         }
 
-        .theme-toggle-btn.dark .fa-moon {
+        .theme-toggle-btn.light .fa-moon {
             opacity: 0;
-            transform: scale(0) rotate(-180deg);
+            transform: rotate(180deg) scale(0.5);
         }
 
-        .theme-toggle-btn.dark .fa-sun {
+        .theme-toggle-btn.light .fa-sun {
             opacity: 1;
-            transform: scale(1) rotate(0deg);
-            color: #ffd700;
-            filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.8));
+            transform: rotate(0deg) scale(1);
         }
 
         /* Ripple effect */
-        .theme-toggle-btn .ripple {
+        .ripple {
             position: absolute;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
             transform: scale(0);
-            animation: ripple 0.6s ease-out;
+            animation: rippleEffect 0.6s ease-out;
             pointer-events: none;
         }
 
-        @keyframes ripple {
+        @keyframes rippleEffect {
             to {
                 transform: scale(4);
                 opacity: 0;
             }
         }
 
-        /* Modern Dark Mode Enhancements */
-        .dark {
-            color-scheme: dark;
+        /* Light theme specific styles */
+        .light-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
         }
 
-        .dark body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+        .light-input {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
         }
 
-        .dark .bg-gray-800 {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
+        .light-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        .dark .bg-gray-700 {
-            background: rgba(51, 65, 85, 0.6);
-            backdrop-filter: blur(10px);
+        /* Dark theme specific styles */
+        .dark .dark-card {
+            background: linear-gradient(135deg, #1a1f3a 0%, #131837 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
         }
 
-        .dark .border-gray-700 {
-            border-color: rgba(148, 163, 184, 0.2);
+        .dark .dark-input {
+            background: #131837;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #e8ecf4;
         }
 
-        .dark .text-gray-300 {
-            color: #e2e8f0;
+        .dark .dark-input:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
         }
 
-        .dark .text-gray-400 {
-            color: #cbd5e1;
+        /* Table styles */
+        .table-row {
+            transition: all 0.2s ease;
         }
 
-        .dark .hover\:bg-gray-700:hover {
-            background: rgba(51, 65, 85, 0.8);
+        .table-row:hover {
+            background: rgba(99, 102, 241, 0.05);
         }
 
-        .dark input::placeholder {
-            color: #94a3b8;
+        .dark .table-row:hover {
+            background: rgba(99, 102, 241, 0.1);
         }
 
-        .dark select {
-            color-scheme: dark;
+        /* Badge styles */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
-        /* Smooth theme transition */
-        * {
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        /* Stats card styles */
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
         }
 
-        /* Enhanced card shadows in dark mode */
-        .dark .glass-effect {
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        .stat-card:hover {
+            border-color: #6366f1;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
         }
 
-        .dark .hover-scale:hover {
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        .dark .stat-card {
+            background: #1a1f3a;
+            border: 1px solid rgba(99, 102, 241, 0.2);
         }
 
-        /* Glowing effects for dark mode */
-        .dark .gradient-border::before {
-            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        .dark .stat-card:hover {
+            border-color: #818cf8;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+<body class="min-h-screen">
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-notification"></div>
 
-    <!-- Theme Toggle Button -->
+    <!-- Modern Theme Toggle Button -->
     <button id="themeToggleBtn" class="theme-toggle-btn dark" onclick="toggleTheme()" title="Alternar tema">
-        <div class="icon-container">
+        <div class="icon-wrapper">
             <i class="fas fa-moon"></i>
             <i class="fas fa-sun"></i>
         </div>
     </button>
 
     <!-- Login Screen -->
-    <div id="loginScreen" class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-4">
-        <div class="w-full max-w-md">
-            <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20">
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+        <!-- Background decoration -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
+        </div>
+        
+        <div class="w-full max-w-md relative z-10">
+            <div class="glass-effect rounded-3xl p-8 shadow-2xl">
                 <div class="text-center mb-8">
-                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/25">
                         <i class="fas fa-paint-brush text-white text-3xl"></i>
                     </div>
-                    <h1 class="text-3xl font-bold text-white mb-2">WebDesigner Pro</h1>
-                    <p class="text-gray-400">Faça login para continuar</p>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">WebDesigner Pro</h1>
+                    <p class="text-gray-600 dark:text-gray-400">Faça login para continuar</p>
                 </div>
 
                 <form id="loginForm" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-300 mb-2">Email</label>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email</label>
                         <input type="email" id="loginEmail" required 
-                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400"
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400"
                             placeholder="admin@webdesigner.com">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-300 mb-2">Senha</label>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Senha</label>
                         <input type="password" id="loginPassword" required 
-                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400"
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400"
                             placeholder="••••••••">
                     </div>
-                    <div id="loginError" class="text-red-400 text-sm hidden"></div>
+                    <div id="loginError" class="text-red-500 text-sm hidden"></div>
                     <button type="submit" 
-                        class="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2">
+                        class="w-full py-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 flex items-center justify-center space-x-2">
                         <i class="fas fa-sign-in-alt"></i>
                         <span>Entrar</span>
                     </button>
                 </form>
 
                 <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-400">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
                         Não tem conta? 
-                        <button onclick="showRegister()" class="text-purple-400 hover:text-purple-300 font-semibold">
+                        <button onclick="showRegister()" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold">
                             Criar conta admin
                         </button>
                     </p>
@@ -339,48 +389,53 @@
     </div>
 
     <!-- Register Screen -->
-    <div id="registerScreen" class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-4 hidden">
-        <div class="w-full max-w-md">
-            <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20">
+    <div id="registerScreen" class="min-h-screen flex items-center justify-center p-4 hidden relative overflow-hidden">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
+        </div>
+        
+        <div class="w-full max-w-md relative z-10">
+            <div class="glass-effect rounded-3xl p-8 shadow-2xl">
                 <div class="text-center mb-8">
-                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/25">
                         <i class="fas fa-user-plus text-white text-3xl"></i>
                     </div>
-                    <h1 class="text-3xl font-bold text-white mb-2">Criar Conta Admin</h1>
-                    <p class="text-gray-400">Registre-se como administrador</p>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Criar Conta Admin</h1>
+                    <p class="text-gray-600 dark:text-gray-400">Registre-se como administrador</p>
                 </div>
 
                 <form id="registerForm" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-300 mb-2">Nome</label>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nome</label>
                         <input type="text" id="registerName" required 
-                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400"
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400"
                             placeholder="Seu nome">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-300 mb-2">Email</label>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email</label>
                         <input type="email" id="registerEmail" required 
-                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400"
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400"
                             placeholder="admin@webdesigner.com">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-300 mb-2">Senha</label>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Senha</label>
                         <input type="password" id="registerPassword" required 
-                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400"
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400"
                             placeholder="Mínimo 6 caracteres">
                     </div>
-                    <div id="registerError" class="text-red-400 text-sm hidden"></div>
+                    <div id="registerError" class="text-red-500 text-sm hidden"></div>
                     <button type="submit" 
-                        class="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2">
+                        class="w-full py-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 flex items-center justify-center space-x-2">
                         <i class="fas fa-user-plus"></i>
                         <span>Criar Conta</span>
                     </button>
                 </form>
 
                 <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-400">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
                         Já tem conta? 
-                        <button onclick="showLogin()" class="text-purple-400 hover:text-purple-300 font-semibold">
+                        <button onclick="showLogin()" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold">
                             Fazer login
                         </button>
                     </p>
@@ -389,19 +444,19 @@
         </div>
     </div>
 
-    <!-- Main Dashboard (Hidden initially) -->
+    <!-- Main Dashboard -->
     <div id="dashboardScreen" class="hidden">
-        <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-            <!-- Header Premium -->
+        <div class="min-h-screen">
+            <!-- Header -->
             <header class="glass-effect sticky top-0 z-40 border-b border-gray-200 dark:border-gray-700">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex items-center justify-between h-16">
                         <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
                                 <i class="fas fa-paint-brush text-white text-lg"></i>
                             </div>
                             <div>
-                                <h1 class="text-xl font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent dark:from-primary-400 dark:to-purple-400">
+                                <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                                     WebDesigner Pro
                                 </h1>
                                 <p class="text-xs text-gray-500 dark:text-gray-400" id="userDisplayName"></p>
@@ -416,12 +471,12 @@
                                 </span>
                             </button>
                             
-                            <div class="hidden sm:flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700">
-                                <div class="w-2 h-2 bg-green-400 rounded-full pulse-animation"></div>
-                                <span class="text-sm text-gray-600 dark:text-gray-300">Online</span>
+                            <div class="hidden sm:flex items-center space-x-2 px-4 py-2 rounded-full bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700">
+                                <div class="w-2 h-2 bg-green-500 rounded-full pulse-animation"></div>
+                                <span class="text-sm text-green-700 dark:text-green-400">Online</span>
                             </div>
                             
-                            <button onclick="logout()" class="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors flex items-center space-x-2">
+                            <button onclick="logout()" class="px-4 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors flex items-center space-x-2 border border-red-200 dark:border-red-700">
                                 <i class="fas fa-sign-out-alt"></i>
                                 <span class="hidden sm:inline">Sair</span>
                             </button>
@@ -442,7 +497,7 @@
                                 Gerencie seus clientes e acompanhe os vencimentos
                             </p>
                         </div>
-                        <button onclick="checkVencimentosNow()" class="px-4 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition-colors flex items-center space-x-2">
+                        <button onclick="checkVencimentosNow()" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl hover:shadow-lg hover:shadow-orange-500/25 transition-all flex items-center space-x-2 font-semibold">
                             <i class="fas fa-sync-alt"></i>
                             <span>Verificar Agora</span>
                         </button>
@@ -452,58 +507,58 @@
                 <!-- Alertas de Vencimento -->
                 <div id="alertasVencimento" class="mb-8 hidden"></div>
 
-                <!-- Stats Cards Premium -->
+                <!-- Stats Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="glass-effect rounded-2xl p-6 hover-scale cursor-pointer gradient-border">
+                    <div class="stat-card gradient-border">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                                <i class="fas fa-users text-2xl text-blue-400"></i>
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+                                <i class="fas fa-users text-white text-xl"></i>
                             </div>
                         </div>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-1">Total Clientes</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-1 font-medium">Total Clientes</p>
                         <p class="text-3xl font-bold text-gray-900 dark:text-white" id="totalClients">0</p>
                     </div>
                     
-                    <div class="glass-effect rounded-2xl p-6 hover-scale cursor-pointer gradient-border">
+                    <div class="stat-card gradient-border">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
-                                <i class="fas fa-clock text-2xl text-red-400"></i>
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center shadow-lg shadow-red-500/25">
+                                <i class="fas fa-clock text-white text-xl"></i>
                             </div>
                         </div>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-1">Vencendo Hoje</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-1 font-medium">Vencendo Hoje</p>
                         <p class="text-3xl font-bold text-red-500" id="dueToday">0</p>
                     </div>
                     
-                    <div class="glass-effect rounded-2xl p-6 hover-scale cursor-pointer gradient-border">
+                    <div class="stat-card gradient-border">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
-                                <i class="fas fa-chart-line text-2xl text-green-400"></i>
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                                <i class="fas fa-chart-line text-white text-xl"></i>
                             </div>
                         </div>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-1">Receita Mensal</p>
-                        <p class="text-3xl font-bold text-green-500" id="monthlyRevenue">R$ 0</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-1 font-medium">Receita Mensal</p>
+                        <p class="text-3xl font-bold text-emerald-500" id="monthlyRevenue">R$ 0</p>
                     </div>
                     
-                    <div class="glass-effect rounded-2xl p-6 hover-scale cursor-pointer gradient-border">
+                    <div class="stat-card gradient-border">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                                <i class="fas fa-star text-2xl text-purple-400"></i>
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
+                                <i class="fas fa-star text-white text-xl"></i>
                             </div>
                         </div>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-1">Clientes Ativos</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-1 font-medium">Clientes Ativos</p>
                         <p class="text-3xl font-bold text-purple-500" id="activeClients">0</p>
                     </div>
                 </div>
 
-                <!-- Actions Bar Premium -->
+                <!-- Actions Bar -->
                 <div class="glass-effect rounded-2xl p-6 mb-8">
                     <div class="flex flex-col sm:flex-row gap-4">
                         <div class="flex-1 relative">
                             <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                             <input type="text" id="searchInput" placeholder="Buscar por nome, site ou telefone..." 
-                                class="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white transition-all">
+                                class="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all">
                         </div>
-                        <select id="statusFilter" class="px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white">
+                        <select id="statusFilter" class="px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white">
                             <option value="all">📊 Todos os status</option>
                             <option value="active">✅ Ativos</option>
                             <option value="expired">⚠️ Vencidos</option>
@@ -511,14 +566,14 @@
                             <option value="dueToday">🔴 Vence Hoje</option>
                             <option value="dueSoon">🟡 Vence em Breve</option>
                         </select>
-                        <button onclick="openAddModal()" class="px-6 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all flex items-center justify-center space-x-2">
+                        <button onclick="openAddModal()" class="px-6 py-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/25 transition-all flex items-center justify-center space-x-2 font-semibold">
                             <i class="fas fa-plus-circle"></i>
                             <span>Novo Cliente</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Clients Table Premium -->
+                <!-- Clients Table -->
                 <div class="glass-effect rounded-2xl overflow-hidden">
                     <div class="overflow-x-auto custom-scrollbar">
                         <table class="w-full">
@@ -545,10 +600,10 @@
                                 <span class="font-semibold text-gray-900 dark:text-white" id="totalItems">0</span> resultados
                             </p>
                             <div class="flex space-x-2">
-                                <button onclick="changePage(-1)" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                <button onclick="changePage(-1)" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium">
                                     <i class="fas fa-chevron-left mr-2"></i>Anterior
                                 </button>
-                                <button onclick="changePage(1)" class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
+                                <button onclick="changePage(1)" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-all font-medium">
                                     Próximo<i class="fas fa-chevron-right ml-2"></i>
                                 </button>
                             </div>
@@ -560,9 +615,9 @@
     </div>
 
     <!-- Client Modal -->
-    <div id="clientModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+    <div id="clientModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg shadow-2xl slide-in">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg shadow-2xl slide-in border border-gray-200 dark:border-gray-700">
                 <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
                     <div>
                         <h3 class="text-xl font-bold text-gray-900 dark:text-white" id="modalTitle">Novo Cliente</h3>
@@ -581,13 +636,13 @@
                                 Nome do Cliente <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="clientName" required 
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white transition-all"
+                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all"
                                 placeholder="Ex: João Silva">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Telefone</label>
                             <input type="tel" id="clientPhone" 
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white transition-all"
+                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all"
                                 placeholder="(11) 99999-9999">
                         </div>
                     </div>
@@ -595,7 +650,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nome do Site</label>
                         <input type="text" id="siteName" 
-                            class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white transition-all"
+                            class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all"
                             placeholder="Ex: www.meusite.com.br">
                     </div>
                     
@@ -607,24 +662,24 @@
                             <div class="relative">
                                 <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">R$</span>
                                 <input type="number" id="monthlyValue" step="0.01" min="0" 
-                                    class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white transition-all"
+                                    class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all"
                                     placeholder="0,00">
                             </div>
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Data de Ativação</label>
                             <input type="date" id="activationDate" 
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white transition-all">
+                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all">
                         </div>
                     </div>
                     
-                    <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 border border-yellow-200 dark:border-yellow-700">
-                        <label class="block text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">
+                    <div class="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-700">
+                        <label class="block text-sm font-semibold text-amber-800 dark:text-amber-400 mb-2">
                             📅 Data de Vencimento <span class="text-red-500">*</span>
                         </label>
                         <input type="date" id="dueDate" required
-                            class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-yellow-300 dark:border-yellow-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white transition-all">
-                        <p class="text-xs text-yellow-600 dark:text-yellow-400 mt-2">
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-amber-300 dark:border-amber-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-gray-900 dark:text-white transition-all">
+                        <p class="text-xs text-amber-600 dark:text-amber-400 mt-2">
                             <i class="fas fa-info-circle"></i> Esta é a data em que o plano do cliente irá vencer
                         </p>
                     </div>
@@ -633,7 +688,7 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tipo de Plano</label>
                             <select id="planType" 
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white transition-all">
+                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all">
                                 <option value="monthly">📅 Mensal</option>
                                 <option value="3x">📦 Trimestral (3x)</option>
                                 <option value="5x">🎯 Quinquenal (5x)</option>
@@ -642,13 +697,13 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Meses Pagos</label>
                             <input type="number" id="monthsPaid" min="0" value="1" 
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white transition-all">
+                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all">
                         </div>
                     </div>
                     
-                    <div class="flex items-center space-x-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-700">
+                    <div class="flex items-center space-x-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-700">
                         <input type="checkbox" id="notifyEnabled" checked
-                            class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                            class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
                         <label for="notifyEnabled" class="text-sm font-semibold text-blue-800 dark:text-blue-400">
                             🔔 Receber notificações de vencimento
                         </label>
@@ -656,11 +711,11 @@
                     
                     <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                         <button type="button" onclick="closeModal()" 
-                            class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
                             Cancelar
                         </button>
                         <button type="submit" 
-                            class="px-6 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all">
+                            class="px-6 py-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/25 transition-all font-medium">
                             💾 Salvar Cliente
                         </button>
                     </div>
@@ -670,12 +725,12 @@
     </div>
 
     <!-- Delete Modal -->
-    <div id="deleteModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm shadow-2xl slide-in">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm shadow-2xl slide-in border border-gray-200 dark:border-gray-700">
                 <div class="p-6 text-center">
-                    <div class="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-red-500/25">
+                        <i class="fas fa-exclamation-triangle text-white text-2xl"></i>
                     </div>
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Confirmar Exclusão</h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
@@ -683,11 +738,11 @@
                     </p>
                     <div class="flex justify-center space-x-3">
                         <button onclick="closeDeleteModal()" 
-                            class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
                             Cancelar
                         </button>
                         <button onclick="deleteClient()" 
-                            class="px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors">
+                            class="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:shadow-lg hover:shadow-red-500/25 transition-colors font-medium">
                             Excluir
                         </button>
                     </div>
@@ -702,7 +757,6 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, push, set, update, remove, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDDX8AbbPe_NyEaSdk7U8rUkOf6cPnXWzU",
             authDomain: "jules-a661e.firebaseapp.com",
@@ -714,12 +768,10 @@
             measurementId: "G-MDNFQLLZ9H"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // Make Firebase instances globally available
         window.auth = auth;
         window.database = database;
         window.ref = ref;
@@ -736,14 +788,11 @@
         window.signOut = signOut;
         window.onAuthStateChanged = onAuthStateChanged;
 
-        // Initialize the application
         window.dispatchEvent(new Event('firebaseReady'));
     </script>
 
     <script>
-        // Wait for Firebase to be ready
         window.addEventListener('firebaseReady', () => {
-            // Dashboard UI Class
             class DashboardUI {
                 constructor() {
                     this.clients = [];
@@ -763,6 +812,21 @@
                     this.initializeTheme();
                 }
 
+                initializeTheme() {
+                    const savedTheme = localStorage.getItem('theme') || 'dark';
+                    const themeToggleBtn = document.getElementById('themeToggleBtn');
+                    
+                    if (savedTheme === 'light') {
+                        document.documentElement.classList.remove('dark');
+                        themeToggleBtn.classList.add('light');
+                        themeToggleBtn.classList.remove('dark');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        themeToggleBtn.classList.add('dark');
+                        themeToggleBtn.classList.remove('light');
+                    }
+                }
+
                 setupAuthListener() {
                     onAuthStateChanged(auth, (user) => {
                         if (user) {
@@ -776,7 +840,6 @@
                             this.setupRealtimeListeners();
                             this.checkVencimentos();
                             
-                            // Verificar vencimentos periodicamente
                             setInterval(() => {
                                 this.checkVencimentos();
                                 this.updateNotificationBadge();
@@ -824,50 +887,32 @@
                 }
 
                 setupEventListeners() {
-                    // Login
                     document.getElementById('loginForm').addEventListener('submit', (e) => {
                         e.preventDefault();
                         this.handleLogin();
                     });
 
-                    // Register
                     document.getElementById('registerForm').addEventListener('submit', (e) => {
                         e.preventDefault();
                         this.handleRegister();
                     });
 
-                    // Client form
                     document.getElementById('clientForm').addEventListener('submit', (e) => {
                         e.preventDefault();
                         this.handleClientFormSubmit();
                     });
 
-                    // Search
                     document.getElementById('searchInput').addEventListener('input', (e) => {
                         this.searchTerm = e.target.value.toLowerCase();
                         this.currentPage = 1;
                         this.renderClientsTable();
                     });
 
-                    // Filter
                     document.getElementById('statusFilter').addEventListener('change', (e) => {
                         this.currentFilter = e.target.value;
                         this.currentPage = 1;
                         this.renderClientsTable();
                     });
-                }
-
-                initializeTheme() {
-                    const savedTheme = localStorage.getItem('theme') || 'dark';
-                    const themeToggleBtn = document.getElementById('themeToggleBtn');
-                    
-                    if (savedTheme === 'light') {
-                        document.documentElement.classList.remove('dark');
-                        themeToggleBtn.classList.remove('dark');
-                    } else {
-                        document.documentElement.classList.add('dark');
-                        themeToggleBtn.classList.add('dark');
-                    }
                 }
 
                 async handleLogin() {
@@ -900,7 +945,6 @@
                     try {
                         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                         
-                        // Save user data
                         await set(ref(database, `users/${userCredential.user.uid}/profile`), {
                             name: name,
                             email: email,
@@ -933,11 +977,9 @@
 
                     try {
                         if (clientId) {
-                            // Update existing client
                             await update(ref(database, `users/${this.currentUser.uid}/clients/${clientId}`), clientData);
                             this.showToast('✅ Cliente atualizado com sucesso!', 'success');
                         } else {
-                            // Add new client
                             clientData.createdAt = new Date().toISOString();
                             const newClientRef = push(ref(database, `users/${this.currentUser.uid}/clients`));
                             await set(newClientRef, clientData);
@@ -1032,7 +1074,6 @@
                     
                     tbody.innerHTML = paginatedClients.map(client => {
                         const dueDate = new Date(client.dueDate);
-                        const activationDate = new Date(client.activationDate);
                         const isExpired = dueDate < today;
                         const isDueToday = dueDate.toDateString() === today.toDateString();
                         const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
@@ -1043,25 +1084,25 @@
                         let rowBg = '';
                         
                         if (isExpired) {
-                            statusHTML = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"><span class="status-dot bg-red-500"></span>Vencido há ${Math.abs(daysUntilDue)} dias</span>`;
+                            statusHTML = `<span class="badge bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"><span class="status-dot bg-red-500"></span>Vencido há ${Math.abs(daysUntilDue)} dias</span>`;
                             nameColor = 'text-red-600 dark:text-red-400 font-bold';
                             rowBg = 'bg-red-50 dark:bg-red-900/10';
                         } else if (isDueToday) {
-                            statusHTML = '<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"><span class="status-dot bg-red-500 pulse-animation"></span>Vence Hoje</span>';
+                            statusHTML = '<span class="badge bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"><span class="status-dot bg-red-500 pulse-animation"></span>Vence Hoje</span>';
                             nameColor = 'text-red-600 dark:text-red-400 font-bold';
                             rowBg = 'bg-red-50 dark:bg-red-900/10';
                         } else if (isDueSoon) {
-                            statusHTML = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"><span class="status-dot bg-yellow-500"></span>Vence em ${daysUntilDue} dias</span>`;
+                            statusHTML = `<span class="badge bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"><span class="status-dot bg-yellow-500"></span>Vence em ${daysUntilDue} dias</span>`;
                             rowBg = 'bg-yellow-50 dark:bg-yellow-900/10';
                         } else {
-                            statusHTML = '<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"><span class="status-dot bg-green-500"></span>Em dia</span>';
+                            statusHTML = '<span class="badge bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"><span class="status-dot bg-green-500"></span>Em dia</span>';
                         }
                         
                         return `
-                            <tr class="${rowBg} hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                            <tr class="table-row ${rowBg}">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-400 to-purple-500 flex items-center justify-center text-white font-semibold shadow-md">
+                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold shadow-md">
                                             ${client.name?.split(' ').map(n => n[0]).join('').substring(0, 2) || '??'}
                                         </div>
                                         <div>
@@ -1092,11 +1133,11 @@
                                 <td class="px-6 py-4">
                                     <div class="flex space-x-2">
                                         <button onclick="dashboardUI.editClient('${client.id}')" 
-                                            class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+                                            class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button onclick="dashboardUI.confirmDelete('${client.id}')" 
-                                            class="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors">
+                                            class="p-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -1146,7 +1187,6 @@
                     
                     this.showVencimentoAlertas(dueToday, expiringSoon);
                     
-                    // Send notifications
                     dueToday.forEach(client => {
                         if (client.notifyEnabled) {
                             this.showNotification(`🔴 ${client.name} - Plano vence HOJE!`);
@@ -1175,9 +1215,9 @@
                     
                     if (dueToday.length > 0) {
                         alertHTML += `
-                            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl p-4 mb-4">
+                            <div class="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-700 rounded-xl p-4 mb-4">
                                 <div class="flex items-start space-x-3">
-                                    <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-red-500/25">
                                         <i class="fas fa-exclamation-circle text-white"></i>
                                     </div>
                                     <div class="flex-1">
@@ -1195,9 +1235,9 @@
                     
                     if (expiringSoon.length > 0) {
                         alertHTML += `
-                            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl p-4">
+                            <div class="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl p-4">
                                 <div class="flex items-start space-x-3">
-                                    <div class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center flex-shrink-0">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-yellow-500/25">
                                         <i class="fas fa-clock text-white"></i>
                                     </div>
                                     <div class="flex-1">
@@ -1270,9 +1310,9 @@
                 showToast(message, type = 'info') {
                     const toastContainer = document.getElementById('toastContainer');
                     const colors = {
-                        success: 'bg-green-500',
-                        error: 'bg-red-500',
-                        info: 'bg-blue-500'
+                        success: 'bg-gradient-to-r from-emerald-500 to-green-500',
+                        error: 'bg-gradient-to-r from-red-500 to-pink-500',
+                        info: 'bg-gradient-to-r from-blue-500 to-indigo-500'
                     };
                     
                     const toast = document.createElement('div');
@@ -1335,10 +1375,8 @@
                 }
             }
 
-            // Initialize dashboard
             window.dashboardUI = new DashboardUI();
 
-            // Global functions
             window.openAddModal = () => dashboardUI.openAddModal();
             window.closeModal = () => dashboardUI.closeModal();
             window.closeDeleteModal = () => dashboardUI.closeDeleteModal();
@@ -1350,7 +1388,6 @@
                 dashboardUI.showToast('🔍 Verificação de vencimentos realizada!', 'info');
             };
             window.showNotifications = () => {
-                // Implement notification modal if needed
                 dashboardUI.showToast('📬 Sistema de notificações ativo!', 'info');
             };
             window.logout = async () => {
@@ -1362,29 +1399,28 @@
                 }
             };
             
-            // Enhanced toggleTheme function with animation
             window.toggleTheme = () => {
                 const html = document.documentElement;
                 const themeToggleBtn = document.getElementById('themeToggleBtn');
                 const isDark = html.classList.contains('dark');
                 
-                // Add ripple effect
                 const ripple = document.createElement('span');
                 ripple.className = 'ripple';
                 themeToggleBtn.appendChild(ripple);
                 
-                // Remove ripple after animation
                 setTimeout(() => {
                     ripple.remove();
                 }, 600);
                 
                 if (isDark) {
                     html.classList.remove('dark');
+                    themeToggleBtn.classList.add('light');
                     themeToggleBtn.classList.remove('dark');
                     localStorage.setItem('theme', 'light');
                 } else {
                     html.classList.add('dark');
                     themeToggleBtn.classList.add('dark');
+                    themeToggleBtn.classList.remove('light');
                     localStorage.setItem('theme', 'dark');
                 }
             };
@@ -1398,7 +1434,6 @@
                 document.getElementById('loginScreen').classList.remove('hidden');
             };
 
-            // Request notification permission
             if (Notification.permission === 'default') {
                 Notification.requestPermission();
             }
