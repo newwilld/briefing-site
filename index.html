@@ -1,752 +1,1333 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebDesigner Pro - Dashboard Firebase</title>
+    <title>ClientFlow - Gestão de Clientes Recorrentes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
         :root {
-            /* Light Theme Colors */
-            --light-bg-primary: #f0f4ff;
-            --light-bg-secondary: #ffffff;
-            --light-bg-tertiary: #f8fafc;
-            --light-text-primary: #1e293b;
-            --light-text-secondary: #64748b;
-            --light-border: #e2e8f0;
-            --light-card-bg: rgba(255, 255, 255, 0.8);
-            --light-glass-bg: rgba(255, 255, 255, 0.7);
-            --light-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-            --light-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.1);
-            
-            /* Dark Theme Colors */
-            --dark-bg-primary: #0a0e27;
-            --dark-bg-secondary: #131837;
-            --dark-bg-tertiary: #1a1f3a;
-            --dark-text-primary: #e8ecf4;
-            --dark-text-secondary: #94a3b8;
-            --dark-border: rgba(99, 102, 241, 0.2);
-            --dark-card-bg: rgba(19, 24, 55, 0.8);
-            --dark-glass-bg: rgba(19, 24, 55, 0.7);
-            --dark-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            --dark-shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --success: #10b981;
+            --success-light: #f0fdf4;
+            --info: #6366f1;
+            --info-light: #eef2ff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
         }
-        
+
         * {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 50%, #f5f3ff 100%);
+            background: #f1f5f9;
+            color: #0f172a;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        
-        .dark body {
-            background: linear-gradient(135deg, #0a0e27 0%, #131837 50%, #0f1333 100%);
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
         }
-        
-        .glass-effect {
-            background: var(--light-glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(99, 102, 241, 0.1);
-            box-shadow: var(--light-shadow);
+
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 40;
+            transition: transform 0.3s ease;
         }
-        
-        .dark .glass-effect {
-            background: var(--dark-glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(99, 102, 241, 0.15);
-            box-shadow: var(--dark-shadow);
+
+        .sidebar-logo {
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        
-        .gradient-border {
-            position: relative;
+
+        .sidebar-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
         }
-        
-        .gradient-border::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 2px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
+
+        .sidebar-logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            color: #0f172a;
         }
-        
-        .dark .gradient-border::before {
-            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #e879f9 100%);
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
-        
-        .pulse-animation {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #475569;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
         }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+        .sidebar-nav-item:hover {
+            background: #f1f5f9;
+            color: #0f172a;
         }
-        
-        .slide-in {
-            animation: slideIn 0.4s ease-out;
+
+        .sidebar-nav-item.active {
+            background: #eef2ff;
+            color: #3b82f6;
+            font-weight: 600;
         }
-        
-        @keyframes slideIn {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+
+        .sidebar-nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
         }
-        
-        .hover-scale {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
         }
-        
-        .hover-scale:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--light-shadow-hover);
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
         }
-        
-        .dark .hover-scale:hover {
-            box-shadow: var(--dark-shadow-hover);
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 30;
         }
-        
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
+
+        .header-search {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 8px 16px;
+            width: 360px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
         }
-        
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(99, 102, 241, 0.1);
-            border-radius: 4px;
+
+        .header-search:focus-within {
+            background: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-        
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            border-radius: 4px;
+
+        .header-search input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 14px;
+            color: #0f172a;
+            width: 100%;
         }
-        
-        .dark .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(99, 102, 241, 0.05);
+
+        .header-search input::placeholder {
+            color: #94a3b8;
         }
-        
-        .status-dot {
-            width: 8px;
-            height: 8px;
+
+        .header-search i {
+            color: #94a3b8;
+            font-size: 16px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-danger {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #fee2e2;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #64748b;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .btn-ghost:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .content-area {
+            padding: 32px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stat-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-card-icon.blue { background: #eef2ff; color: #3b82f6; }
+        .stat-card-icon.red { background: #fef2f2; color: #ef4444; }
+        .stat-card-icon.green { background: #f0fdf4; color: #10b981; }
+        .stat-card-icon.purple { background: #faf5ff; color: #8b5cf6; }
+        .stat-card-icon.amber { background: #fffbeb; color: #f59e0b; }
+
+        .stat-card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .stat-card-label {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .alert-banner {
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .alert-banner.danger {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-banner.warning {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        .alert-banner.success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #065f46;
+        }
+
+        .alert-banner i {
+            font-size: 18px;
+        }
+
+        .filter-bar {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #475569;
+            white-space: nowrap;
+        }
+
+        .filter-pill:hover {
+            background: #f8fafc;
+        }
+
+        .filter-pill.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .filter-pill.danger.active {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .table-container {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px 20px;
+            font-size: 14px;
+            color: #0f172a;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        tbody tr.row-danger {
+            background: #fef2f2;
+        }
+
+        tbody tr.row-warning {
+            background: #fffbeb;
+        }
+
+        tbody tr.row-danger:hover {
+            background: #fee2e2;
+        }
+
+        tbody tr.row-warning:hover {
+            background: #fef3c7;
+        }
+
+        .client-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .client-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .client-name {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .client-detail {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-success {
+            background: #f0fdf4;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .badge-info {
+            background: #eef2ff;
+            color: #3730a3;
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             display: inline-block;
-            margin-right: 6px;
         }
 
-        .toast-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            animation: slideInRight 0.5s ease-out;
+        .badge-dot.green { background: #10b981; }
+        .badge-dot.yellow { background: #f59e0b; }
+        .badge-dot.red { background: #ef4444; animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
         }
 
-        @keyframes slideInRight {
-            from { transform: translateX(120%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        .amount {
+            font-weight: 600;
+            color: #0f172a;
         }
 
-        .alert-badge {
-            animation: bounce 1s infinite;
+        .date-highlight {
+            font-weight: 600;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        .date-highlight.danger { color: #ef4444; }
+        .date-highlight.warning { color: #f59e0b; }
+
+        .actions-cell {
+            display: flex;
+            gap: 6px;
         }
 
-        /* Modern Theme Toggle Button */
-        .theme-toggle-btn {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 50;
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-            overflow: hidden;
+            font-size: 13px;
+            transition: all 0.15s;
+            background: #f1f5f9;
+            color: #64748b;
         }
 
-        .theme-toggle-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 35px rgba(99, 102, 241, 0.6);
+        .action-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
         }
 
-        .theme-toggle-btn:active {
-            transform: scale(0.95);
+        .action-btn.edit:hover {
+            background: #eef2ff;
+            color: #3b82f6;
         }
 
-        .theme-toggle-btn .icon-wrapper {
-            position: relative;
-            width: 24px;
-            height: 24px;
+        .action-btn.delete:hover {
+            background: #fef2f2;
+            color: #ef4444;
         }
 
-        .theme-toggle-btn i {
-            position: absolute;
-            top: 0;
-            left: 0;
-            font-size: 24px;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            color: #ffd700;
-            filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.5));
+        .action-btn.info:hover {
+            background: #f0fdf4;
+            color: #10b981;
         }
 
-        .theme-toggle-btn .fa-moon {
-            opacity: 1;
-            transform: rotate(0deg) scale(1);
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-top: 1px solid #e2e8f0;
         }
 
-        .theme-toggle-btn .fa-sun {
-            opacity: 0;
-            transform: rotate(-180deg) scale(0.5);
+        .pagination-info {
+            font-size: 13px;
+            color: #64748b;
         }
 
-        .theme-toggle-btn.light .fa-moon {
-            opacity: 0;
-            transform: rotate(180deg) scale(0.5);
+        .pagination-buttons {
+            display: flex;
+            gap: 8px;
         }
 
-        .theme-toggle-btn.light .fa-sun {
-            opacity: 1;
-            transform: rotate(0deg) scale(1);
-        }
-
-        /* Ripple effect */
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            transform: scale(0);
-            animation: rippleEffect 0.6s ease-out;
-            pointer-events: none;
-        }
-
-        @keyframes rippleEffect {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-
-        /* Light theme specific styles */
-        .light-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        .pagination-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
             border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
         }
 
-        .light-input {
+        .pagination-btn:hover {
+            background: #f8fafc;
+        }
+
+        .pagination-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .modal {
+            background: #ffffff;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 640px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            animation: modalIn 0.2s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            background: #ffffff;
+            z-index: 1;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding: 20px 24px;
+            border-top: 1px solid #e2e8f0;
+            position: sticky;
+            bottom: 0;
+            background: #ffffff;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .form-label .required {
+            color: #ef4444;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #0f172a;
+            background: #ffffff;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            color: #1e293b;
-        }
-
-        .light-input:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        /* Dark theme specific styles */
-        .dark .dark-card {
-            background: linear-gradient(135deg, #1a1f3a 0%, #131837 100%);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-        }
-
-        .dark .dark-input {
-            background: #131837;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            color: #e8ecf4;
-        }
-
-        .dark .dark-input:focus {
-            border-color: #818cf8;
-            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
-        }
-
-        /* Table styles */
-        .table-row {
-            transition: all 0.2s ease;
-        }
-
-        .table-row:hover {
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .dark .table-row:hover {
-            background: rgba(99, 102, 241, 0.1);
-        }
-
-        /* Badge styles */
-        .badge {
-            display: inline-flex;
+            border-radius: 12px;
+            padding: 14px 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
             align-items: center;
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-size: 0.75rem;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            animation: toastIn 0.3s ease;
+            min-width: 300px;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .toast.success { border-left: 4px solid #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; }
+        .toast.info { border-left: 4px solid #3b82f6; }
+
+        .toast.success i { color: #10b981; }
+        .toast.error i { color: #ef4444; }
+        .toast.info i { color: #3b82f6; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #cbd5e1;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e2e8f0;
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #3b82f6;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+
+        /* Auth Screen */
+        .auth-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+            font-size: 24px;
+        }
+
+        .auth-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .auth-error {
+            color: #ef4444;
+            font-size: 13px;
+            display: none;
+        }
+
+        .auth-link {
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 20px;
+        }
+
+        .auth-link button {
+            color: #3b82f6;
+            background: none;
+            border: none;
+            cursor: pointer;
             font-weight: 600;
         }
 
-        /* Stats card styles */
-        .stat-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 24px;
-            transition: all 0.3s ease;
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .header-search {
+                width: 240px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .stat-card:hover {
-            border-color: #6366f1;
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
-        }
-
-        .dark .stat-card {
-            background: #1a1f3a;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-        }
-
-        .dark .stat-card:hover {
-            border-color: #818cf8;
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        @media (max-width: 640px) {
+            .content-area {
+                padding: 16px;
+            }
+            .header {
+                padding: 12px 16px;
+            }
+            .header-search {
+                width: 160px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .modal {
+                border-radius: 12px;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body>
     <!-- Toast Container -->
-    <div id="toastContainer" class="toast-notification"></div>
+    <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Modern Theme Toggle Button -->
-    <button id="themeToggleBtn" class="theme-toggle-btn dark" onclick="toggleTheme()" title="Alternar tema">
-        <div class="icon-wrapper">
-            <i class="fas fa-moon"></i>
-            <i class="fas fa-sun"></i>
-        </div>
-    </button>
-
-    <!-- Login Screen -->
-    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-        <!-- Background decoration -->
-        <div class="absolute inset-0 overflow-hidden">
-            <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
-        </div>
-        
-        <div class="w-full max-w-md relative z-10">
-            <div class="glass-effect rounded-3xl p-8 shadow-2xl">
-                <div class="text-center mb-8">
-                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/25">
-                        <i class="fas fa-paint-brush text-white text-3xl"></i>
-                    </div>
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">WebDesigner Pro</h1>
-                    <p class="text-gray-600 dark:text-gray-400">Faça login para continuar</p>
+    <!-- Auth Screens (hidden by default, shown when logged out) -->
+    <div id="authScreen" class="auth-screen" style="display: none;">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="auth-logo-icon">
+                    <i class="fas fa-layer-group"></i>
                 </div>
-
-                <form id="loginForm" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email</label>
-                        <input type="email" id="loginEmail" required 
-                            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400"
-                            placeholder="admin@webdesigner.com">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Senha</label>
-                        <input type="password" id="loginPassword" required 
-                            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400"
-                            placeholder="••••••••">
-                    </div>
-                    <div id="loginError" class="text-red-500 text-sm hidden"></div>
-                    <button type="submit" 
-                        class="w-full py-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 flex items-center justify-center space-x-2">
-                        <i class="fas fa-sign-in-alt"></i>
-                        <span>Entrar</span>
-                    </button>
-                </form>
-
-                <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                        Não tem conta? 
-                        <button onclick="showRegister()" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold">
-                            Criar conta admin
-                        </button>
-                    </p>
-                </div>
+                <h1 class="auth-title">ClientFlow</h1>
+                <p class="auth-subtitle" id="authSubtitle">Faça login para acessar o painel</p>
             </div>
+            <form id="authForm" class="auth-form">
+                <div id="nameField" style="display: none;">
+                    <label class="form-label">Nome</label>
+                    <input type="text" id="authName" class="form-input" placeholder="Seu nome">
+                </div>
+                <div>
+                    <label class="form-label">Email</label>
+                    <input type="email" id="authEmail" required class="form-input" placeholder="admin@clientflow.com">
+                </div>
+                <div>
+                    <label class="form-label">Senha</label>
+                    <input type="password" id="authPassword" required class="form-input" placeholder="••••••••">
+                </div>
+                <div id="authError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;" id="authSubmitBtn">
+                    <i class="fas fa-sign-in-alt"></i> <span id="authSubmitText">Entrar</span>
+                </button>
+            </form>
+            <p class="auth-link" id="authToggleText">
+                Não tem conta? 
+                <button id="authToggleBtn" onclick="toggleAuthMode()">Criar conta</button>
+            </p>
         </div>
     </div>
 
-    <!-- Register Screen -->
-    <div id="registerScreen" class="min-h-screen flex items-center justify-center p-4 hidden relative overflow-hidden">
-        <div class="absolute inset-0 overflow-hidden">
-            <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
-        </div>
-        
-        <div class="w-full max-w-md relative z-10">
-            <div class="glass-effect rounded-3xl p-8 shadow-2xl">
-                <div class="text-center mb-8">
-                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/25">
-                        <i class="fas fa-user-plus text-white text-3xl"></i>
-                    </div>
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Criar Conta Admin</h1>
-                    <p class="text-gray-600 dark:text-gray-400">Registre-se como administrador</p>
+    <!-- Main App (hidden by default, shown when logged in) -->
+    <div id="appScreen" class="app-container" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <i class="fas fa-layer-group"></i>
                 </div>
-
-                <form id="registerForm" class="space-y-4">
+                <span class="sidebar-logo-text">ClientFlow</span>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="sidebar-nav-item active" data-view="dashboard">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </button>
+                <button class="sidebar-nav-item" data-view="clients">
+                    <i class="fas fa-users"></i> Clientes
+                </button>
+                <button class="sidebar-nav-item" data-view="expiring">
+                    <i class="fas fa-clock"></i> Vencimentos
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 36px; height: 36px; background: #eef2ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-weight: 600; font-size: 14px;" id="sidebarUserInitials">AD</div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nome</label>
-                        <input type="text" id="registerName" required 
-                            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400"
-                            placeholder="Seu nome">
+                        <div style="font-size: 13px; font-weight: 600; color: #0f172a;" id="sidebarUserEmail">admin@email.com</div>
+                        <button onclick="handleLogout()" style="font-size: 12px; color: #ef4444; background: none; border: none; cursor: pointer; padding: 0;">Sair</button>
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email</label>
-                        <input type="email" id="registerEmail" required 
-                            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400"
-                            placeholder="admin@webdesigner.com">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Senha</label>
-                        <input type="password" id="registerPassword" required 
-                            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400"
-                            placeholder="Mínimo 6 caracteres">
-                    </div>
-                    <div id="registerError" class="text-red-500 text-sm hidden"></div>
-                    <button type="submit" 
-                        class="w-full py-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 flex items-center justify-center space-x-2">
-                        <i class="fas fa-user-plus"></i>
-                        <span>Criar Conta</span>
-                    </button>
-                </form>
-
-                <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                        Já tem conta? 
-                        <button onclick="showLogin()" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold">
-                            Fazer login
-                        </button>
-                    </p>
                 </div>
             </div>
-        </div>
-    </div>
+        </aside>
 
-    <!-- Main Dashboard -->
-    <div id="dashboardScreen" class="hidden">
-        <div class="min-h-screen">
-            <!-- Header -->
-            <header class="glass-effect sticky top-0 z-40 border-b border-gray-200 dark:border-gray-700">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex items-center justify-between h-16">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-                                <i class="fas fa-paint-brush text-white text-lg"></i>
-                            </div>
-                            <div>
-                                <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                                    WebDesigner Pro
-                                </h1>
-                                <p class="text-xs text-gray-500 dark:text-gray-400" id="userDisplayName"></p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center space-x-4">
-                            <button onclick="showNotifications()" class="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-                                <i class="fas fa-bell text-xl"></i>
-                                <span id="notificationBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center hidden alert-badge">
-                                    0
-                                </span>
-                            </button>
-                            
-                            <div class="hidden sm:flex items-center space-x-2 px-4 py-2 rounded-full bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700">
-                                <div class="w-2 h-2 bg-green-500 rounded-full pulse-animation"></div>
-                                <span class="text-sm text-green-700 dark:text-green-400">Online</span>
-                            </div>
-                            
-                            <button onclick="logout()" class="px-4 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors flex items-center space-x-2 border border-red-200 dark:border-red-700">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span class="hidden sm:inline">Sair</span>
-                            </button>
-                        </div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button class="btn-ghost btn-icon" onclick="toggleSidebar()" id="menuToggleBtn" style="display: none;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="header-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="globalSearch" placeholder="Buscar clientes por nome, site, email..." oninput="handleSearch()">
                     </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-ghost btn-icon" onclick="checkVencimentosNow()" style="position: relative;">
+                        <i class="fas fa-bell"></i>
+                        <span id="notificationBadge" style="position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; display: none;"></span>
+                    </button>
+                    <button class="btn btn-primary" onclick="openAddClientModal()">
+                        <i class="fas fa-plus"></i> Novo Cliente
+                    </button>
                 </div>
             </header>
 
-            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <!-- Welcome Section -->
-                <div class="mb-8 slide-in">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div>
-                            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                                Bem-vindo de volta! 👋
-                            </h2>
-                            <p class="text-gray-600 dark:text-gray-400">
-                                Gerencie seus clientes e acompanhe os vencimentos
-                            </p>
-                        </div>
-                        <button onclick="checkVencimentosNow()" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl hover:shadow-lg hover:shadow-orange-500/25 transition-all flex items-center space-x-2 font-semibold">
-                            <i class="fas fa-sync-alt"></i>
-                            <span>Verificar Agora</span>
-                        </button>
-                    </div>
-                </div>
+            <div class="content-area">
+                <!-- Dashboard View -->
+                <div id="dashboardView">
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Visão geral dos seus clientes e vencimentos</p>
 
-                <!-- Alertas de Vencimento -->
-                <div id="alertasVencimento" class="mb-8 hidden"></div>
+                    <div id="alertsContainer"></div>
 
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="stat-card gradient-border">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
-                                <i class="fas fa-users text-white text-xl"></i>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-header">
+                                <div class="stat-card-icon blue"><i class="fas fa-users"></i></div>
                             </div>
+                            <div class="stat-card-value" id="statTotalClients">0</div>
+                            <div class="stat-card-label">Total de Clientes</div>
                         </div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-1 font-medium">Total Clientes</p>
-                        <p class="text-3xl font-bold text-gray-900 dark:text-white" id="totalClients">0</p>
-                    </div>
-                    
-                    <div class="stat-card gradient-border">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center shadow-lg shadow-red-500/25">
-                                <i class="fas fa-clock text-white text-xl"></i>
+                        <div class="stat-card">
+                            <div class="stat-card-header">
+                                <div class="stat-card-icon green"><i class="fas fa-check-circle"></i></div>
                             </div>
+                            <div class="stat-card-value" id="statActiveClients">0</div>
+                            <div class="stat-card-label">Clientes Ativos</div>
                         </div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-1 font-medium">Vencendo Hoje</p>
-                        <p class="text-3xl font-bold text-red-500" id="dueToday">0</p>
-                    </div>
-                    
-                    <div class="stat-card gradient-border">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
-                                <i class="fas fa-chart-line text-white text-xl"></i>
+                        <div class="stat-card">
+                            <div class="stat-card-header">
+                                <div class="stat-card-icon red"><i class="fas fa-exclamation-triangle"></i></div>
                             </div>
+                            <div class="stat-card-value" id="statDueToday">0</div>
+                            <div class="stat-card-label">Vencendo Hoje</div>
                         </div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-1 font-medium">Receita Mensal</p>
-                        <p class="text-3xl font-bold text-emerald-500" id="monthlyRevenue">R$ 0</p>
-                    </div>
-                    
-                    <div class="stat-card gradient-border">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
-                                <i class="fas fa-star text-white text-xl"></i>
+                        <div class="stat-card">
+                            <div class="stat-card-header">
+                                <div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div>
                             </div>
+                            <div class="stat-card-value" id="statMonthlyRevenue">R$ 0</div>
+                            <div class="stat-card-label">Receita Mensal (LTV)</div>
                         </div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-1 font-medium">Clientes Ativos</p>
-                        <p class="text-3xl font-bold text-purple-500" id="activeClients">0</p>
+                        <div class="stat-card">
+                            <div class="stat-card-header">
+                                <div class="stat-card-icon amber"><i class="fas fa-clock"></i></div>
+                            </div>
+                            <div class="stat-card-value" id="statDueSoon">0</div>
+                            <div class="stat-card-label">Vencem em 7 dias</div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Actions Bar -->
-                <div class="glass-effect rounded-2xl p-6 mb-8">
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <div class="flex-1 relative">
-                            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" id="searchInput" placeholder="Buscar por nome, site ou telefone..." 
-                                class="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all">
-                        </div>
-                        <select id="statusFilter" class="px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white">
-                            <option value="all">📊 Todos os status</option>
-                            <option value="active">✅ Ativos</option>
-                            <option value="expired">⚠️ Vencidos</option>
-                            <option value="paid">💰 Em dia</option>
-                            <option value="dueToday">🔴 Vence Hoje</option>
-                            <option value="dueSoon">🟡 Vence em Breve</option>
-                        </select>
-                        <button onclick="openAddModal()" class="px-6 py-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/25 transition-all flex items-center justify-center space-x-2 font-semibold">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>Novo Cliente</span>
-                        </button>
+                    <div class="filter-bar">
+                        <span style="font-weight: 600; font-size: 13px; color: #64748b;">Filtrar:</span>
+                        <button class="filter-pill active" onclick="setFilter('all', this)">Todos</button>
+                        <button class="filter-pill" onclick="setFilter('active', this)">✅ Ativos</button>
+                        <button class="filter-pill danger" onclick="setFilter('dueToday', this)">🔴 Vence Hoje</button>
+                        <button class="filter-pill" onclick="setFilter('dueSoon', this)">🟡 Vence em Breve</button>
+                        <button class="filter-pill" onclick="setFilter('expired', this)">⚠️ Vencidos</button>
                     </div>
-                </div>
 
-                <!-- Clients Table -->
-                <div class="glass-effect rounded-2xl overflow-hidden">
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-gray-200 dark:border-gray-700">
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cliente</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden sm:table-cell">Site</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell">Plano</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valor</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Vencimento</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="clientsTableBody" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                Mostrando <span class="font-semibold text-gray-900 dark:text-white" id="showingStart">0</span> a 
-                                <span class="font-semibold text-gray-900 dark:text-white" id="showingEnd">0</span> de 
-                                <span class="font-semibold text-gray-900 dark:text-white" id="totalItems">0</span> resultados
-                            </p>
-                            <div class="flex space-x-2">
-                                <button onclick="changePage(-1)" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium">
-                                    <i class="fas fa-chevron-left mr-2"></i>Anterior
-                                </button>
-                                <button onclick="changePage(1)" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-all font-medium">
-                                    Próximo<i class="fas fa-chevron-right ml-2"></i>
-                                </button>
-                            </div>
+                    <div class="table-container">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>Site / Serviço</th>
+                                        <th>Plano</th>
+                                        <th>Valor</th>
+                                        <th>Vencimento</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clientsTableBody">
+                                    <tr>
+                                        <td colspan="7">
+                                            <div class="empty-state">
+                                                <i class="fas fa-inbox"></i>
+                                                <h3>Carregando clientes...</h3>
+                                                <p>Aguarde um momento</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination" id="paginationContainer">
+                            <div class="pagination-info" id="paginationInfo">Carregando...</div>
+                            <div class="pagination-buttons" id="paginationButtons"></div>
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
 
     <!-- Client Modal -->
-    <div id="clientModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg shadow-2xl slide-in border border-gray-200 dark:border-gray-700">
-                <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
-                    <div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white" id="modalTitle">Novo Cliente</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Preencha os dados do cliente</p>
-                    </div>
-                    <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                        <i class="fas fa-times text-gray-500 dark:text-gray-400"></i>
-                    </button>
-                </div>
-                <form id="clientForm" class="p-6 space-y-5">
+    <div class="modal-overlay" id="clientModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Novo Cliente</h2>
+                <button class="btn-ghost btn-icon" onclick="closeClientModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="clientForm" onsubmit="return false;">
                     <input type="hidden" id="clientId">
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Nome do Cliente <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" id="clientName" required 
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all"
-                                placeholder="Ex: João Silva">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Telefone</label>
-                            <input type="tel" id="clientPhone" 
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all"
-                                placeholder="(11) 99999-9999">
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nome do Site</label>
-                        <input type="text" id="siteName" 
-                            class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all"
-                            placeholder="Ex: www.meusite.com.br">
-                    </div>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Valor Mensalidade (R$)
-                            </label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">R$</span>
-                                <input type="number" id="monthlyValue" step="0.01" min="0" 
-                                    class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all"
-                                    placeholder="0,00">
+                    <div class="form-section">
+                        <div class="form-section-title">Informações do Cliente</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Nome do Cliente <span class="required">*</span></label>
+                                <input type="text" class="form-input" id="clientName" required placeholder="Ex: João Silva">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Telefone / WhatsApp</label>
+                                <input type="tel" class="form-input" id="clientPhone" placeholder="(11) 99999-9999">
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Data de Ativação</label>
-                            <input type="date" id="activationDate" 
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Email do Cliente</label>
+                                <input type="email" class="form-input" id="clientEmail" placeholder="cliente@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nome do Site / Serviço</label>
+                                <input type="text" class="form-input" id="siteName" placeholder="www.sitecliente.com.br">
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-700">
-                        <label class="block text-sm font-semibold text-amber-800 dark:text-amber-400 mb-2">
-                            📅 Data de Vencimento <span class="text-red-500">*</span>
-                        </label>
-                        <input type="date" id="dueDate" required
-                            class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-amber-300 dark:border-amber-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-gray-900 dark:text-white transition-all">
-                        <p class="text-xs text-amber-600 dark:text-amber-400 mt-2">
-                            <i class="fas fa-info-circle"></i> Esta é a data em que o plano do cliente irá vencer
-                        </p>
+
+                    <div class="form-section">
+                        <div class="form-section-title">🔐 Credenciais e Observações</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Login / Usuário</label>
+                                <input type="text" class="form-input" id="clientLogin" placeholder="Usuário de acesso">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Senha</label>
+                                <input type="text" class="form-input" id="clientPassword" placeholder="Senha de acesso">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">📝 Observações Gerais</label>
+                            <textarea class="form-textarea" id="clientObs" placeholder="Anotações importantes sobre o cliente, preferências, observações sobre o serviço..."></textarea>
+                        </div>
                     </div>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tipo de Plano</label>
-                            <select id="planType" 
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all">
-                                <option value="monthly">📅 Mensal</option>
-                                <option value="3x">📦 Trimestral (3x)</option>
-                                <option value="5x">🎯 Quinquenal (5x)</option>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Plano e Cobrança</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Valor da Mensalidade (R$) <span class="required">*</span></label>
+                                <input type="number" class="form-input" id="monthlyValue" step="0.01" min="0" required placeholder="0,00">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Plano</label>
+                                <select class="form-select" id="planType">
+                                    <option value="monthly">Mensal</option>
+                                    <option value="quarterly">Trimestral</option>
+                                    <option value="semiannual">Semestral</option>
+                                    <option value="annual">Anual</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Data de Início</label>
+                                <input type="date" class="form-input" id="startDate">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Data de Vencimento <span class="required">*</span></label>
+                                <input type="date" class="form-input" id="dueDate" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status de Pagamento</label>
+                            <select class="form-select" id="paymentStatus">
+                                <option value="paid">💰 Pago</option>
+                                <option value="pending">⏳ Pendente</option>
+                                <option value="overdue">❌ Atrasado</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Meses Pagos</label>
-                            <input type="number" id="monthsPaid" min="0" value="1" 
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white transition-all">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="notifyEnabled" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span style="font-size: 13px; font-weight: 500; color: #475569;">Notificar vencimentos</span>
                         </div>
                     </div>
-                    
-                    <div class="flex items-center space-x-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-700">
-                        <input type="checkbox" id="notifyEnabled" checked
-                            class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
-                        <label for="notifyEnabled" class="text-sm font-semibold text-blue-800 dark:text-blue-400">
-                            🔔 Receber notificações de vencimento
-                        </label>
-                    </div>
-                    
-                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <button type="button" onclick="closeModal()" 
-                            class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
-                            Cancelar
-                        </button>
-                        <button type="submit" 
-                            class="px-6 py-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/25 transition-all font-medium">
-                            💾 Salvar Cliente
-                        </button>
-                    </div>
                 </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeClientModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveClient()">
+                    <i class="fas fa-save"></i> Salvar Cliente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="detailModal" style="display: none;">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Detalhes do Cliente</h2>
+                <button class="btn-ghost btn-icon" onclick="closeDetailModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="detailContent"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDetailModal()">Fechar</button>
             </div>
         </div>
     </div>
 
     <!-- Delete Modal -->
-    <div id="deleteModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm shadow-2xl slide-in border border-gray-200 dark:border-gray-700">
-                <div class="p-6 text-center">
-                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-red-500/25">
-                        <i class="fas fa-exclamation-triangle text-white text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Confirmar Exclusão</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                        Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita.
-                    </p>
-                    <div class="flex justify-center space-x-3">
-                        <button onclick="closeDeleteModal()" 
-                            class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
-                            Cancelar
-                        </button>
-                        <button onclick="deleteClient()" 
-                            class="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:shadow-lg hover:shadow-red-500/25 transition-colors font-medium">
-                            Excluir
-                        </button>
-                    </div>
+    <div class="modal-overlay" id="deleteModal" style="display: none;">
+        <div class="modal" style="max-width: 420px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Confirmar Exclusão</h2>
+                <button class="btn-ghost btn-icon" onclick="closeDeleteModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <div style="width: 56px; height: 56px; background: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                    <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 24px;"></i>
                 </div>
+                <p style="font-size: 15px; color: #475569;">Tem certeza que deseja excluir este cliente?</p>
+                <p style="font-size: 13px; color: #94a3b8; margin-top: 8px;" id="deleteClientName"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancelar</button>
+                <button class="btn btn-danger" onclick="confirmDeleteClient()">
+                    <i class="fas fa-trash"></i> Excluir
+                </button>
             </div>
         </div>
     </div>
@@ -755,7 +1336,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, push, set, update, remove, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDDX8AbbPe_NyEaSdk7U8rUkOf6cPnXWzU",
@@ -772,672 +1353,746 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        window.auth = auth;
-        window.database = database;
-        window.ref = ref;
-        window.push = push;
-        window.set = set;
-        window.update = update;
-        window.remove = remove;
-        window.onValue = onValue;
-        window.query = query;
-        window.orderByChild = orderByChild;
-        window.limitToLast = limitToLast;
-        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-        window.signOut = signOut;
-        window.onAuthStateChanged = onAuthStateChanged;
+        // App State
+        let currentUser = null;
+        let clients = [];
+        let currentFilter = 'all';
+        let searchTerm = '';
+        let currentPage = 1;
+        const itemsPerPage = 15;
+        let clientToDelete = null;
+        let isLoginMode = true;
 
-        window.dispatchEvent(new Event('firebaseReady'));
-    </script>
+        // DOM Elements
+        const authScreen = document.getElementById('authScreen');
+        const appScreen = document.getElementById('appScreen');
+        const authForm = document.getElementById('authForm');
+        const authError = document.getElementById('authError');
+        const authToggleBtn = document.getElementById('authToggleBtn');
+        const authSubmitText = document.getElementById('authSubmitText');
+        const authSubtitle = document.getElementById('authSubtitle');
+        const nameField = document.getElementById('nameField');
+        const authToggleText = document.getElementById('authToggleText');
+        const menuToggleBtn = document.getElementById('menuToggleBtn');
 
-    <script>
-        window.addEventListener('firebaseReady', () => {
-            class DashboardUI {
-                constructor() {
-                    this.clients = [];
-                    this.currentPage = 1;
-                    this.itemsPerPage = 20;
-                    this.currentFilter = 'all';
-                    this.searchTerm = '';
-                    this.clientToDelete = null;
-                    this.currentUser = null;
-                    
-                    this.init();
+        // Initialize
+        function init() {
+            setupResponsiveMenu();
+            
+            onAuthStateChanged(auth, (user) => {
+                console.log('Auth state changed:', user ? 'logged in' : 'logged out');
+                if (user) {
+                    currentUser = user;
+                    showAppScreen();
+                    loadClients();
+                } else {
+                    currentUser = null;
+                    clients = [];
+                    showAuthScreen();
                 }
+            });
 
-                init() {
-                    this.setupAuthListener();
-                    this.setupEventListeners();
-                    this.initializeTheme();
+            // Auth form submit
+            authForm.addEventListener('submit', handleAuthSubmit);
+        }
+
+        function setupResponsiveMenu() {
+            if (window.innerWidth <= 1024) {
+                menuToggleBtn.style.display = 'flex';
+            }
+            window.addEventListener('resize', () => {
+                if (window.innerWidth <= 1024) {
+                    menuToggleBtn.style.display = 'flex';
+                } else {
+                    menuToggleBtn.style.display = 'none';
+                    document.getElementById('sidebar').classList.remove('open');
                 }
+            });
+        }
 
-                initializeTheme() {
-                    const savedTheme = localStorage.getItem('theme') || 'dark';
-                    const themeToggleBtn = document.getElementById('themeToggleBtn');
-                    
-                    if (savedTheme === 'light') {
-                        document.documentElement.classList.remove('dark');
-                        themeToggleBtn.classList.add('light');
-                        themeToggleBtn.classList.remove('dark');
-                    } else {
-                        document.documentElement.classList.add('dark');
-                        themeToggleBtn.classList.add('dark');
-                        themeToggleBtn.classList.remove('light');
-                    }
-                }
+        function showAuthScreen() {
+            authScreen.style.display = 'flex';
+            appScreen.style.display = 'none';
+            resetAuthForm();
+        }
 
-                setupAuthListener() {
-                    onAuthStateChanged(auth, (user) => {
-                        if (user) {
-                            this.currentUser = user;
-                            document.getElementById('loginScreen').classList.add('hidden');
-                            document.getElementById('registerScreen').classList.add('hidden');
-                            document.getElementById('dashboardScreen').classList.remove('hidden');
-                            document.getElementById('userDisplayName').textContent = user.email;
-                            
-                            this.loadClients();
-                            this.setupRealtimeListeners();
-                            this.checkVencimentos();
-                            
-                            setInterval(() => {
-                                this.checkVencimentos();
-                                this.updateNotificationBadge();
-                            }, 1800000);
-                        } else {
-                            this.currentUser = null;
-                            document.getElementById('loginScreen').classList.remove('hidden');
-                            document.getElementById('registerScreen').classList.add('hidden');
-                            document.getElementById('dashboardScreen').classList.add('hidden');
-                        }
-                    });
-                }
+        function showAppScreen() {
+            authScreen.style.display = 'none';
+            appScreen.style.display = 'flex';
+            document.getElementById('sidebarUserEmail').textContent = currentUser.email;
+            document.getElementById('sidebarUserInitials').textContent = currentUser.email.substring(0, 2).toUpperCase();
+        }
 
-                setupRealtimeListeners() {
-                    const clientsRef = ref(database, `users/${this.currentUser.uid}/clients`);
-                    
-                    onValue(clientsRef, (snapshot) => {
-                        const data = snapshot.val();
-                        this.clients = data ? Object.entries(data).map(([id, client]) => ({
-                            id,
-                            ...client
-                        })).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) : [];
-                        
-                        this.updateDashboard();
-                        this.renderClientsTable();
-                        this.updateNotificationBadge();
-                    });
-                }
+        function resetAuthForm() {
+            authForm.reset();
+            authError.style.display = 'none';
+        }
 
-                async loadClients() {
-                    const clientsRef = ref(database, `users/${this.currentUser.uid}/clients`);
-                    
-                    onValue(clientsRef, (snapshot) => {
-                        const data = snapshot.val();
-                        this.clients = data ? Object.entries(data).map(([id, client]) => ({
-                            id,
-                            ...client
-                        })) : [];
-                        
-                        this.updateDashboard();
-                        this.renderClientsTable();
-                    }, {
-                        onlyOnce: false
-                    });
-                }
+        window.toggleAuthMode = () => {
+            isLoginMode = !isLoginMode;
+            resetAuthForm();
+            
+            if (isLoginMode) {
+                authSubmitText.textContent = 'Entrar';
+                authSubtitle.textContent = 'Faça login para acessar o painel';
+                nameField.style.display = 'none';
+                authToggleText.innerHTML = 'Não tem conta? <button onclick="toggleAuthMode()">Criar conta</button>';
+            } else {
+                authSubmitText.textContent = 'Criar Conta';
+                authSubtitle.textContent = 'Registre-se como administrador';
+                nameField.style.display = 'block';
+                authToggleText.innerHTML = 'Já tem conta? <button onclick="toggleAuthMode()">Fazer login</button>';
+            }
+        };
 
-                setupEventListeners() {
-                    document.getElementById('loginForm').addEventListener('submit', (e) => {
-                        e.preventDefault();
-                        this.handleLogin();
-                    });
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            authError.style.display = 'none';
 
-                    document.getElementById('registerForm').addEventListener('submit', (e) => {
-                        e.preventDefault();
-                        this.handleRegister();
-                    });
-
-                    document.getElementById('clientForm').addEventListener('submit', (e) => {
-                        e.preventDefault();
-                        this.handleClientFormSubmit();
-                    });
-
-                    document.getElementById('searchInput').addEventListener('input', (e) => {
-                        this.searchTerm = e.target.value.toLowerCase();
-                        this.currentPage = 1;
-                        this.renderClientsTable();
-                    });
-
-                    document.getElementById('statusFilter').addEventListener('change', (e) => {
-                        this.currentFilter = e.target.value;
-                        this.currentPage = 1;
-                        this.renderClientsTable();
-                    });
-                }
-
-                async handleLogin() {
-                    const email = document.getElementById('loginEmail').value;
-                    const password = document.getElementById('loginPassword').value;
-                    const errorDiv = document.getElementById('loginError');
-
-                    try {
-                        await signInWithEmailAndPassword(auth, email, password);
-                        errorDiv.classList.add('hidden');
-                        this.showToast('✅ Login realizado com sucesso!', 'success');
-                    } catch (error) {
-                        errorDiv.textContent = this.getErrorMessage(error.code);
-                        errorDiv.classList.remove('hidden');
-                    }
-                }
-
-                async handleRegister() {
-                    const name = document.getElementById('registerName').value;
-                    const email = document.getElementById('registerEmail').value;
-                    const password = document.getElementById('registerPassword').value;
-                    const errorDiv = document.getElementById('registerError');
-
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    showToast('Login realizado com sucesso!', 'success');
+                } else {
+                    const name = document.getElementById('authName').value;
                     if (password.length < 6) {
-                        errorDiv.textContent = 'A senha deve ter pelo menos 6 caracteres';
-                        errorDiv.classList.remove('hidden');
+                        authError.textContent = 'A senha deve ter pelo menos 6 caracteres';
+                        authError.style.display = 'block';
                         return;
                     }
-
-                    try {
-                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                        
-                        await set(ref(database, `users/${userCredential.user.uid}/profile`), {
-                            name: name,
-                            email: email,
-                            createdAt: new Date().toISOString()
-                        });
-
-                        errorDiv.classList.add('hidden');
-                        this.showToast('✅ Conta criada com sucesso!', 'success');
-                    } catch (error) {
-                        errorDiv.textContent = this.getErrorMessage(error.code);
-                        errorDiv.classList.remove('hidden');
-                    }
-                }
-
-                async handleClientFormSubmit() {
-                    const clientData = {
-                        name: document.getElementById('clientName').value,
-                        phone: document.getElementById('clientPhone').value,
-                        siteName: document.getElementById('siteName').value,
-                        monthlyValue: document.getElementById('monthlyValue').value,
-                        activationDate: new Date(document.getElementById('activationDate').value).toISOString(),
-                        dueDate: new Date(document.getElementById('dueDate').value).toISOString(),
-                        planType: document.getElementById('planType').value,
-                        monthsPaid: parseInt(document.getElementById('monthsPaid').value),
-                        notifyEnabled: document.getElementById('notifyEnabled').checked,
-                        updatedAt: new Date().toISOString()
-                    };
-
-                    const clientId = document.getElementById('clientId').value;
-
-                    try {
-                        if (clientId) {
-                            await update(ref(database, `users/${this.currentUser.uid}/clients/${clientId}`), clientData);
-                            this.showToast('✅ Cliente atualizado com sucesso!', 'success');
-                        } else {
-                            clientData.createdAt = new Date().toISOString();
-                            const newClientRef = push(ref(database, `users/${this.currentUser.uid}/clients`));
-                            await set(newClientRef, clientData);
-                            this.showToast('✅ Cliente cadastrado com sucesso!', 'success');
-                        }
-
-                        this.closeModal();
-                    } catch (error) {
-                        this.showToast('❌ Erro ao salvar cliente: ' + error.message, 'error');
-                    }
-                }
-
-                async deleteClient() {
-                    if (this.clientToDelete) {
-                        try {
-                            await remove(ref(database, `users/${this.currentUser.uid}/clients/${this.clientToDelete}`));
-                            this.showToast('🗑️ Cliente excluído com sucesso!', 'success');
-                        } catch (error) {
-                            this.showToast('❌ Erro ao excluir cliente', 'error');
-                        }
-                        this.clientToDelete = null;
-                        this.closeDeleteModal();
-                    }
-                }
-
-                updateDashboard() {
-                    const now = new Date();
-                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                    
-                    document.getElementById('totalClients').textContent = this.clients.length;
-                    
-                    const dueToday = this.clients.filter(client => {
-                        const dueDate = new Date(client.dueDate);
-                        return dueDate.toDateString() === today.toDateString();
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    await set(ref(database, `users/${userCredential.user.uid}/profile`), {
+                        name, email, createdAt: new Date().toISOString()
                     });
-                    document.getElementById('dueToday').textContent = dueToday.length;
-                    
-                    const monthlyRevenue = this.clients.reduce((sum, client) => sum + parseFloat(client.monthlyValue || 0), 0);
-                    document.getElementById('monthlyRevenue').textContent = `R$ ${monthlyRevenue.toFixed(2)}`;
-                    
-                    const activeClients = this.clients.filter(client => new Date(client.dueDate) >= today);
-                    document.getElementById('activeClients').textContent = activeClients.length;
+                    showToast('Conta criada com sucesso!', 'success');
                 }
+            } catch (error) {
+                console.error('Auth error:', error);
+                authError.textContent = getErrorMessage(error.code);
+                authError.style.display = 'block';
+            }
+        }
 
-                getFilteredClients() {
-                    let clients = [...this.clients];
-                    const now = new Date();
-                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        window.handleLogout = async () => {
+            try {
+                await signOut(auth);
+                showToast('Logout realizado com sucesso!', 'success');
+            } catch (error) {
+                showToast('Erro ao fazer logout', 'error');
+            }
+        };
+
+        function getErrorMessage(code) {
+            const errors = {
+                'auth/email-already-in-use': 'Este email já está cadastrado',
+                'auth/invalid-email': 'Email inválido',
+                'auth/weak-password': 'Senha muito fraca',
+                'auth/user-not-found': 'Usuário não encontrado',
+                'auth/wrong-password': 'Senha incorreta',
+                'auth/invalid-credential': 'Email ou senha inválidos',
+                'auth/too-many-requests': 'Muitas tentativas. Tente novamente mais tarde.',
+                'auth/network-request-failed': 'Erro de conexão. Verifique sua internet.'
+            };
+            return errors[code] || 'Erro ao realizar operação. Tente novamente.';
+        }
+
+        // Load Clients
+        function loadClients() {
+            if (!currentUser) return;
+            
+            const clientsRef = ref(database, `users/${currentUser.uid}/clients`);
+            console.log('Loading clients from:', `users/${currentUser.uid}/clients`);
+            
+            onValue(clientsRef, (snapshot) => {
+                const data = snapshot.val();
+                console.log('Clients data received:', data);
+                
+                clients = data ? Object.entries(data).map(([id, client]) => ({
+                    id,
+                    ...client
+                })).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)) : [];
+                
+                console.log('Processed clients:', clients.length);
+                updateDashboardStats();
+                renderClientsTable();
+                checkVencimentos();
+            }, (error) => {
+                console.error('Error loading clients:', error);
+                showToast('Erro ao carregar clientes: ' + error.message, 'error');
+            });
+        }
+
+        function updateDashboardStats() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            document.getElementById('statTotalClients').textContent = clients.length;
+            
+            const activeClients = clients.filter(c => new Date(c.dueDate) >= today);
+            document.getElementById('statActiveClients').textContent = activeClients.length;
+            
+            const dueToday = clients.filter(c => {
+                const due = new Date(c.dueDate);
+                due.setHours(0, 0, 0, 0);
+                return due.getTime() === today.getTime();
+            });
+            document.getElementById('statDueToday').textContent = dueToday.length;
+            
+            const monthlyRevenue = clients.reduce((sum, c) => sum + parseFloat(c.monthlyValue || 0), 0);
+            document.getElementById('statMonthlyRevenue').textContent = `R$ ${monthlyRevenue.toFixed(2)}`;
+            
+            const dueSoon = clients.filter(c => {
+                const due = new Date(c.dueDate);
+                const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+                return diffDays > 0 && diffDays <= 7;
+            });
+            document.getElementById('statDueSoon').textContent = dueSoon.length;
+
+            const badge = document.getElementById('notificationBadge');
+            if (dueToday.length > 0) {
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function checkVencimentos() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const dueToday = clients.filter(c => {
+                const due = new Date(c.dueDate);
+                due.setHours(0, 0, 0, 0);
+                return due.getTime() === today.getTime();
+            });
+
+            const dueSoon = clients.filter(c => {
+                const due = new Date(c.dueDate);
+                const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+                return diffDays > 0 && diffDays <= 7;
+            });
+
+            const expired = clients.filter(c => {
+                const due = new Date(c.dueDate);
+                due.setHours(0, 0, 0, 0);
+                return due < today;
+            });
+
+            const alertsContainer = document.getElementById('alertsContainer');
+            let alertsHTML = '';
+
+            if (dueToday.length > 0) {
+                alertsHTML += `
+                    <div class="alert-banner danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div>
+                            <strong>Atenção!</strong> ${dueToday.length} cliente(s) com vencimento <strong>HOJE</strong>: 
+                            ${dueToday.map(c => c.name).join(', ')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (dueSoon.length > 0) {
+                alertsHTML += `
+                    <div class="alert-banner warning">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <strong>Fique atento!</strong> ${dueSoon.length} cliente(s) vencem nos próximos 7 dias
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (clients.length > 0 && dueToday.length === 0 && dueSoon.length === 0 && expired.length === 0) {
+                alertsHTML += `
+                    <div class="alert-banner success">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <strong>Tudo em dia!</strong> Nenhum vencimento próximo.
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (clients.length === 0) {
+                alertsHTML = '';
+            }
+
+            alertsContainer.innerHTML = alertsHTML;
+        }
+
+        function getFilteredClients() {
+            let filtered = [...clients];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            switch (currentFilter) {
+                case 'active':
+                    filtered = filtered.filter(c => new Date(c.dueDate) >= today);
+                    break;
+                case 'dueToday':
+                    filtered = filtered.filter(c => {
+                        const due = new Date(c.dueDate);
+                        due.setHours(0, 0, 0, 0);
+                        return due.getTime() === today.getTime();
+                    });
+                    break;
+                case 'dueSoon':
+                    filtered = filtered.filter(c => {
+                        const due = new Date(c.dueDate);
+                        const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+                        return diffDays > 0 && diffDays <= 7;
+                    });
+                    break;
+                case 'expired':
+                    filtered = filtered.filter(c => new Date(c.dueDate) < today);
+                    break;
+            }
+
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                filtered = filtered.filter(c =>
+                    (c.name || '').toLowerCase().includes(term) ||
+                    (c.siteName || '').toLowerCase().includes(term) ||
+                    (c.email || '').toLowerCase().includes(term) ||
+                    (c.phone || '').includes(term)
+                );
+            }
+
+            return filtered;
+        }
+
+        function getClientStatus(client) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const due = new Date(client.dueDate);
+            due.setHours(0, 0, 0, 0);
+            
+            if (due.getTime() === today.getTime()) return 'dueToday';
+            if (due < today) return 'expired';
+            const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+            if (diffDays > 0 && diffDays <= 7) return 'dueSoon';
+            return 'active';
+        }
+
+        function renderClientsTable() {
+            const filtered = getFilteredClients();
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
+            const start = (currentPage - 1) * itemsPerPage;
+            const paginatedClients = filtered.slice(start, start + itemsPerPage);
+            
+            const tbody = document.getElementById('clientsTableBody');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (paginatedClients.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fas fa-${clients.length === 0 ? 'inbox' : 'search'}"></i>
+                                <h3>${clients.length === 0 ? 'Nenhum cliente cadastrado' : 'Nenhum cliente encontrado'}</h3>
+                                <p>${clients.length === 0 ? 'Clique em "Novo Cliente" para começar' : 'Tente ajustar os filtros de busca'}</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = paginatedClients.map(client => {
+                    const dueDate = new Date(client.dueDate);
+                    const status = getClientStatus(client);
+                    const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
                     
-                    switch(this.currentFilter) {
-                        case 'active':
-                            clients = clients.filter(client => new Date(client.dueDate) >= today);
+                    let rowClass = '';
+                    let statusBadge = '';
+                    let dateClass = '';
+
+                    switch (status) {
+                        case 'dueToday':
+                            rowClass = 'row-danger';
+                            statusBadge = '<span class="badge badge-danger"><span class="badge-dot red"></span>Vence Hoje</span>';
+                            dateClass = 'danger';
                             break;
                         case 'expired':
-                            clients = clients.filter(client => new Date(client.dueDate) < today);
-                            break;
-                        case 'dueToday':
-                            clients = clients.filter(client => {
-                                const dueDate = new Date(client.dueDate);
-                                return dueDate.toDateString() === today.toDateString();
-                            });
+                            rowClass = 'row-danger';
+                            statusBadge = `<span class="badge badge-danger"><span class="badge-dot red"></span>Atrasado (${Math.abs(diffDays)} dias)</span>`;
+                            dateClass = 'danger';
                             break;
                         case 'dueSoon':
-                            clients = clients.filter(client => {
-                                const dueDate = new Date(client.dueDate);
-                                const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-                                return daysUntilDue > 0 && daysUntilDue <= 7;
-                            });
+                            rowClass = 'row-warning';
+                            statusBadge = `<span class="badge badge-warning"><span class="badge-dot yellow"></span>Vence em ${diffDays} dias</span>`;
+                            dateClass = 'warning';
                             break;
+                        default:
+                            statusBadge = '<span class="badge badge-success"><span class="badge-dot green"></span>Em dia</span>';
                     }
-                    
-                    if (this.searchTerm) {
-                        clients = clients.filter(client => 
-                            client.name?.toLowerCase().includes(this.searchTerm) ||
-                            client.siteName?.toLowerCase().includes(this.searchTerm) ||
-                            client.phone?.includes(this.searchTerm)
-                        );
-                    }
-                    
-                    return clients;
-                }
 
-                renderClientsTable() {
-                    const filteredClients = this.getFilteredClients();
-                    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-                    const endIndex = startIndex + this.itemsPerPage;
-                    const paginatedClients = filteredClients.slice(startIndex, endIndex);
-                    
-                    const tbody = document.getElementById('clientsTableBody');
-                    const now = new Date();
-                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                    
-                    tbody.innerHTML = paginatedClients.map(client => {
-                        const dueDate = new Date(client.dueDate);
-                        const isExpired = dueDate < today;
-                        const isDueToday = dueDate.toDateString() === today.toDateString();
-                        const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-                        const isDueSoon = daysUntilDue > 0 && daysUntilDue <= 7;
-                        
-                        let statusHTML = '';
-                        let nameColor = '';
-                        let rowBg = '';
-                        
-                        if (isExpired) {
-                            statusHTML = `<span class="badge bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"><span class="status-dot bg-red-500"></span>Vencido há ${Math.abs(daysUntilDue)} dias</span>`;
-                            nameColor = 'text-red-600 dark:text-red-400 font-bold';
-                            rowBg = 'bg-red-50 dark:bg-red-900/10';
-                        } else if (isDueToday) {
-                            statusHTML = '<span class="badge bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"><span class="status-dot bg-red-500 pulse-animation"></span>Vence Hoje</span>';
-                            nameColor = 'text-red-600 dark:text-red-400 font-bold';
-                            rowBg = 'bg-red-50 dark:bg-red-900/10';
-                        } else if (isDueSoon) {
-                            statusHTML = `<span class="badge bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"><span class="status-dot bg-yellow-500"></span>Vence em ${daysUntilDue} dias</span>`;
-                            rowBg = 'bg-yellow-50 dark:bg-yellow-900/10';
-                        } else {
-                            statusHTML = '<span class="badge bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"><span class="status-dot bg-green-500"></span>Em dia</span>';
-                        }
-                        
-                        return `
-                            <tr class="table-row ${rowBg}">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold shadow-md">
-                                            ${client.name?.split(' ').map(n => n[0]).join('').substring(0, 2) || '??'}
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-semibold ${nameColor}">${client.name || 'N/A'}</div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">${client.phone || ''}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 hidden sm:table-cell">
-                                    <span class="text-sm text-gray-900 dark:text-gray-300">${client.siteName || ''}</span>
-                                </td>
-                                <td class="px-6 py-4 hidden md:table-cell">
-                                    <span class="text-sm text-gray-900 dark:text-gray-300">${client.planType || 'N/A'}</span>
-                                    <span class="text-xs text-gray-500 dark:text-gray-400 block">${client.monthsPaid || 0} meses</span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="text-sm font-semibold text-gray-900 dark:text-white">R$ ${client.monthlyValue || '0'}</span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="text-sm ${isExpired || isDueToday ? 'text-red-600 dark:text-red-400 font-semibold' : isDueSoon ? 'text-yellow-600 dark:text-yellow-400 font-semibold' : 'text-gray-900 dark:text-gray-300'}">
-                                        ${dueDate.toLocaleDateString('pt-BR')}
-                                        ${client.notifyEnabled ? ' 🔔' : ''}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    ${statusHTML}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex space-x-2">
-                                        <button onclick="dashboardUI.editClient('${client.id}')" 
-                                            class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button onclick="dashboardUI.confirmDelete('${client.id}')" 
-                                            class="p-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
-                    
-                    document.getElementById('showingStart').textContent = filteredClients.length > 0 ? startIndex + 1 : 0;
-                    document.getElementById('showingEnd').textContent = Math.min(endIndex, filteredClients.length);
-                    document.getElementById('totalItems').textContent = filteredClients.length;
-                }
+                    const avatarColors = ['#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#ef4444'];
+                    const colorIndex = (client.name || '').length % avatarColors.length;
+                    const avatarColor = avatarColors[colorIndex];
+                    const initials = (client.name || '??').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
-                editClient(id) {
-                    const client = this.clients.find(c => c.id === id);
-                    if (client) {
-                        document.getElementById('modalTitle').textContent = 'Editar Cliente';
-                        document.getElementById('clientId').value = client.id;
-                        document.getElementById('clientName').value = client.name || '';
-                        document.getElementById('clientPhone').value = client.phone || '';
-                        document.getElementById('siteName').value = client.siteName || '';
-                        document.getElementById('monthlyValue').value = client.monthlyValue || '';
-                        document.getElementById('activationDate').value = client.activationDate ? new Date(client.activationDate).toISOString().split('T')[0] : '';
-                        document.getElementById('dueDate').value = client.dueDate ? new Date(client.dueDate).toISOString().split('T')[0] : '';
-                        document.getElementById('planType').value = client.planType || 'monthly';
-                        document.getElementById('monthsPaid').value = client.monthsPaid || 1;
-                        document.getElementById('notifyEnabled').checked = client.notifyEnabled !== false;
-                        
-                        document.getElementById('clientModal').classList.remove('hidden');
-                    }
-                }
-
-                checkVencimentos() {
-                    if (!this.currentUser) return;
-                    
-                    const today = new Date();
-                    const dueToday = this.clients.filter(client => {
-                        const dueDate = new Date(client.dueDate);
-                        return dueDate.toDateString() === today.toDateString();
-                    });
-                    
-                    const expiringSoon = this.clients.filter(client => {
-                        const dueDate = new Date(client.dueDate);
-                        const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-                        return daysUntilDue > 0 && daysUntilDue <= 7;
-                    });
-                    
-                    this.showVencimentoAlertas(dueToday, expiringSoon);
-                    
-                    dueToday.forEach(client => {
-                        if (client.notifyEnabled) {
-                            this.showNotification(`🔴 ${client.name} - Plano vence HOJE!`);
-                        }
-                    });
-                    
-                    expiringSoon.forEach(client => {
-                        if (client.notifyEnabled) {
-                            const daysUntilDue = Math.ceil((new Date(client.dueDate) - today) / (1000 * 60 * 60 * 24));
-                            this.showNotification(`⚠️ ${client.name} - Vence em ${daysUntilDue} dias!`);
-                        }
-                    });
-                }
-
-                showVencimentoAlertas(dueToday, expiringSoon) {
-                    const alertContainer = document.getElementById('alertasVencimento');
-                    
-                    if (dueToday.length === 0 && expiringSoon.length === 0) {
-                        alertContainer.classList.add('hidden');
-                        return;
-                    }
-                    
-                    alertContainer.classList.remove('hidden');
-                    
-                    let alertHTML = '';
-                    
-                    if (dueToday.length > 0) {
-                        alertHTML += `
-                            <div class="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-700 rounded-xl p-4 mb-4">
-                                <div class="flex items-start space-x-3">
-                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-red-500/25">
-                                        <i class="fas fa-exclamation-circle text-white"></i>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h4 class="text-lg font-bold text-red-800 dark:text-red-400">🚨 Vencimentos Hoje!</h4>
-                                        ${dueToday.map(client => `
-                                            <div class="text-xs text-red-700 dark:text-red-400 mt-1">
-                                                • ${client.name} - ${client.siteName}
-                                            </div>
-                                        `).join('')}
+                    return `
+                        <tr class="${rowClass}">
+                            <td>
+                                <div class="client-info">
+                                    <div class="client-avatar" style="background: ${avatarColor};">${initials}</div>
+                                    <div>
+                                        <div class="client-name">${client.name || 'N/A'}</div>
+                                        <div class="client-detail">${client.phone || client.email || ''}</div>
                                     </div>
                                 </div>
-                            </div>
-                        `;
-                    }
-                    
-                    if (expiringSoon.length > 0) {
-                        alertHTML += `
-                            <div class="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl p-4">
-                                <div class="flex items-start space-x-3">
-                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-yellow-500/25">
-                                        <i class="fas fa-clock text-white"></i>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h4 class="text-lg font-bold text-yellow-800 dark:text-yellow-400">⚠️ Vencimentos Próximos</h4>
-                                        ${expiringSoon.map(client => {
-                                            const daysLeft = Math.ceil((new Date(client.dueDate) - new Date()) / (1000 * 60 * 60 * 24));
-                                            return `
-                                                <div class="text-xs text-yellow-700 dark:text-yellow-400 mt-1">
-                                                    • ${client.name} - Faltam ${daysLeft} dias
-                                                </div>
-                                            `;
-                                        }).join('')}
-                                    </div>
+                            </td>
+                            <td>
+                                <span style="color: #3b82f6; font-weight: 500;">${client.siteName || '—'}</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-info">${getPlanLabel(client.planType)}</span>
+                            </td>
+                            <td>
+                                <span class="amount">R$ ${parseFloat(client.monthlyValue || 0).toFixed(2)}</span>
+                            </td>
+                            <td>
+                                <span class="date-highlight ${dateClass}">${dueDate.toLocaleDateString('pt-BR')}</span>
+                                ${client.notifyEnabled !== false ? ' 🔔' : ''}
+                            </td>
+                            <td>${statusBadge}</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="action-btn info" onclick="viewClientDetail('${client.id}')" title="Ver detalhes">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn edit" onclick="editClient('${client.id}')" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn delete" onclick="openDeleteModal('${client.id}')" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
-                            </div>
-                        `;
-                    }
-                    
-                    alertContainer.innerHTML = alertHTML;
-                }
-
-                updateNotificationBadge() {
-                    const today = new Date();
-                    const dueToday = this.clients.filter(client => {
-                        const dueDate = new Date(client.dueDate);
-                        return dueDate.toDateString() === today.toDateString();
-                    });
-                    
-                    const expiringSoon = this.clients.filter(client => {
-                        const dueDate = new Date(client.dueDate);
-                        const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-                        return daysUntilDue > 0 && daysUntilDue <= 7;
-                    });
-                    
-                    const totalAlerts = dueToday.length + expiringSoon.length;
-                    const badge = document.getElementById('notificationBadge');
-                    
-                    if (totalAlerts > 0) {
-                        badge.classList.remove('hidden');
-                        badge.textContent = totalAlerts;
-                    } else {
-                        badge.classList.add('hidden');
-                    }
-                }
-
-                getErrorMessage(errorCode) {
-                    const errors = {
-                        'auth/email-already-in-use': 'Este email já está cadastrado',
-                        'auth/invalid-email': 'Email inválido',
-                        'auth/operation-not-allowed': 'Operação não permitida',
-                        'auth/weak-password': 'Senha muito fraca',
-                        'auth/user-disabled': 'Usuário desativado',
-                        'auth/user-not-found': 'Usuário não encontrado',
-                        'auth/wrong-password': 'Senha incorreta',
-                        'auth/invalid-credential': 'Email ou senha inválidos'
-                    };
-                    return errors[errorCode] || 'Erro ao realizar operação';
-                }
-
-                showNotification(message) {
-                    if (Notification.permission === 'granted') {
-                        new Notification('🔔 WebDesigner Pro', { 
-                            body: message,
-                            icon: '🎨',
-                            requireInteraction: true
-                        });
-                    }
-                }
-
-                showToast(message, type = 'info') {
-                    const toastContainer = document.getElementById('toastContainer');
-                    const colors = {
-                        success: 'bg-gradient-to-r from-emerald-500 to-green-500',
-                        error: 'bg-gradient-to-r from-red-500 to-pink-500',
-                        info: 'bg-gradient-to-r from-blue-500 to-indigo-500'
-                    };
-                    
-                    const toast = document.createElement('div');
-                    toast.className = `${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg mb-3 flex items-center space-x-2 slide-in`;
-                    toast.innerHTML = `
-                        <span>${message}</span>
-                        <button onclick="this.parentElement.remove()" class="ml-4 hover:text-gray-200">
-                            <i class="fas fa-times"></i>
-                        </button>
+                            </td>
+                        </tr>
                     `;
-                    
-                    toastContainer.appendChild(toast);
-                    
-                    setTimeout(() => {
-                        if (toast.parentElement) {
-                            toast.remove();
-                        }
-                    }, 5000);
-                }
-
-                openAddModal() {
-                    document.getElementById('modalTitle').textContent = 'Novo Cliente';
-                    document.getElementById('clientForm').reset();
-                    document.getElementById('clientId').value = '';
-                    document.getElementById('notifyEnabled').checked = true;
-                    
-                    const today = new Date();
-                    document.getElementById('activationDate').value = today.toISOString().split('T')[0];
-                    
-                    const defaultDueDate = new Date(today);
-                    defaultDueDate.setMonth(defaultDueDate.getMonth() + 1);
-                    document.getElementById('dueDate').value = defaultDueDate.toISOString().split('T')[0];
-                    
-                    document.getElementById('clientModal').classList.remove('hidden');
-                }
-
-                closeModal() {
-                    document.getElementById('clientModal').classList.add('hidden');
-                }
-
-                confirmDelete(id) {
-                    this.clientToDelete = id;
-                    document.getElementById('deleteModal').classList.remove('hidden');
-                }
-
-                closeDeleteModal() {
-                    document.getElementById('deleteModal').classList.add('hidden');
-                    this.clientToDelete = null;
-                }
-
-                changePage(delta) {
-                    const filteredClients = this.getFilteredClients();
-                    const totalPages = Math.ceil(filteredClients.length / this.itemsPerPage);
-                    const newPage = this.currentPage + delta;
-                    
-                    if (newPage >= 1 && newPage <= totalPages) {
-                        this.currentPage = newPage;
-                        this.renderClientsTable();
-                    }
-                }
+                }).join('');
             }
 
-            window.dashboardUI = new DashboardUI();
+            document.getElementById('paginationInfo').textContent = 
+                filtered.length > 0 
+                    ? `Mostrando ${start + 1} a ${Math.min(start + itemsPerPage, filtered.length)} de ${filtered.length} clientes`
+                    : 'Nenhum cliente encontrado';
 
-            window.openAddModal = () => dashboardUI.openAddModal();
-            window.closeModal = () => dashboardUI.closeModal();
-            window.closeDeleteModal = () => dashboardUI.closeDeleteModal();
-            window.deleteClient = () => dashboardUI.deleteClient();
-            window.changePage = (delta) => dashboardUI.changePage(delta);
-            window.checkVencimentosNow = () => {
-                dashboardUI.checkVencimentos();
-                dashboardUI.updateNotificationBadge();
-                dashboardUI.showToast('🔍 Verificação de vencimentos realizada!', 'info');
-            };
-            window.showNotifications = () => {
-                dashboardUI.showToast('📬 Sistema de notificações ativo!', 'info');
-            };
-            window.logout = async () => {
-                try {
-                    await signOut(auth);
-                    dashboardUI.showToast('👋 Logout realizado com sucesso!', 'success');
-                } catch (error) {
-                    dashboardUI.showToast('❌ Erro ao fazer logout', 'error');
+            let paginationHTML = '';
+            if (totalPages > 1) {
+                paginationHTML += `<button class="pagination-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>`;
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                        paginationHTML += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+                    } else if (i === currentPage - 2 || i === currentPage + 2) {
+                        paginationHTML += `<span style="padding: 0 4px; color: #94a3b8;">...</span>`;
+                    }
                 }
+                paginationHTML += `<button class="pagination-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>`;
+            }
+            document.getElementById('paginationButtons').innerHTML = paginationHTML;
+        }
+
+        function getPlanLabel(type) {
+            const labels = {
+                'monthly': 'Mensal',
+                'quarterly': 'Trimestral',
+                'semiannual': 'Semestral',
+                'annual': 'Anual',
+                '3x': 'Trimestral',
+                '5x': 'Quinquenal'
             };
+            return labels[type] || type || 'Mensal';
+        }
+
+        // Client CRUD Functions
+        window.openAddClientModal = () => {
+            document.getElementById('modalTitle').textContent = 'Novo Cliente';
+            document.getElementById('clientForm').reset();
+            document.getElementById('clientId').value = '';
+            document.getElementById('notifyEnabled').checked = true;
             
-            window.toggleTheme = () => {
-                const html = document.documentElement;
-                const themeToggleBtn = document.getElementById('themeToggleBtn');
-                const isDark = html.classList.contains('dark');
-                
-                const ripple = document.createElement('span');
-                ripple.className = 'ripple';
-                themeToggleBtn.appendChild(ripple);
-                
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
-                
-                if (isDark) {
-                    html.classList.remove('dark');
-                    themeToggleBtn.classList.add('light');
-                    themeToggleBtn.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
+            const today = new Date();
+            document.getElementById('startDate').value = today.toISOString().split('T')[0];
+            const nextMonth = new Date(today);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            document.getElementById('dueDate').value = nextMonth.toISOString().split('T')[0];
+            
+            document.getElementById('clientModal').style.display = 'flex';
+        };
+
+        window.editClient = (id) => {
+            const client = clients.find(c => c.id === id);
+            if (!client) return;
+
+            document.getElementById('modalTitle').textContent = 'Editar Cliente';
+            document.getElementById('clientId').value = client.id;
+            document.getElementById('clientName').value = client.name || '';
+            document.getElementById('clientPhone').value = client.phone || '';
+            document.getElementById('clientEmail').value = client.email || '';
+            document.getElementById('siteName').value = client.siteName || '';
+            document.getElementById('clientLogin').value = client.login || '';
+            document.getElementById('clientPassword').value = client.password || '';
+            document.getElementById('clientObs').value = client.obs || '';
+            document.getElementById('monthlyValue').value = client.monthlyValue || '';
+            document.getElementById('planType').value = client.planType || 'monthly';
+            document.getElementById('startDate').value = client.startDate ? new Date(client.startDate).toISOString().split('T')[0] : '';
+            document.getElementById('dueDate').value = client.dueDate ? new Date(client.dueDate).toISOString().split('T')[0] : '';
+            document.getElementById('paymentStatus').value = client.paymentStatus || 'pending';
+            document.getElementById('notifyEnabled').checked = client.notifyEnabled !== false;
+            
+            document.getElementById('clientModal').style.display = 'flex';
+        };
+
+        window.closeClientModal = () => {
+            document.getElementById('clientModal').style.display = 'none';
+        };
+
+        window.saveClient = async () => {
+            const clientId = document.getElementById('clientId').value;
+            const clientData = {
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value,
+                email: document.getElementById('clientEmail').value,
+                siteName: document.getElementById('siteName').value,
+                login: document.getElementById('clientLogin').value,
+                password: document.getElementById('clientPassword').value,
+                obs: document.getElementById('clientObs').value,
+                monthlyValue: document.getElementById('monthlyValue').value,
+                planType: document.getElementById('planType').value,
+                startDate: document.getElementById('startDate').value ? new Date(document.getElementById('startDate').value).toISOString() : null,
+                dueDate: new Date(document.getElementById('dueDate').value).toISOString(),
+                paymentStatus: document.getElementById('paymentStatus').value,
+                notifyEnabled: document.getElementById('notifyEnabled').checked,
+                updatedAt: new Date().toISOString()
+            };
+
+            if (!clientData.name || !clientData.dueDate) {
+                showToast('Preencha os campos obrigatórios (Nome e Vencimento)', 'error');
+                return;
+            }
+
+            try {
+                if (clientId) {
+                    await update(ref(database, `users/${currentUser.uid}/clients/${clientId}`), clientData);
+                    showToast('Cliente atualizado com sucesso!', 'success');
                 } else {
-                    html.classList.add('dark');
-                    themeToggleBtn.classList.add('dark');
-                    themeToggleBtn.classList.remove('light');
-                    localStorage.setItem('theme', 'dark');
+                    clientData.createdAt = new Date().toISOString();
+                    const newRef = push(ref(database, `users/${currentUser.uid}/clients`));
+                    await set(newRef, clientData);
+                    showToast('Cliente cadastrado com sucesso!', 'success');
                 }
-            };
-            
-            window.showRegister = () => {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('registerScreen').classList.remove('hidden');
-            };
-            window.showLogin = () => {
-                document.getElementById('registerScreen').classList.add('hidden');
-                document.getElementById('loginScreen').classList.remove('hidden');
-            };
+                closeClientModal();
+            } catch (error) {
+                console.error('Error saving client:', error);
+                showToast('Erro ao salvar cliente: ' + error.message, 'error');
+            }
+        };
 
-            if (Notification.permission === 'default') {
-                Notification.requestPermission();
+        window.viewClientDetail = (id) => {
+            const client = clients.find(c => c.id === id);
+            if (!client) return;
+
+            const dueDate = new Date(client.dueDate);
+            const status = getClientStatus(client);
+            
+            let statusText = 'Em dia';
+            let statusColor = '#10b981';
+            if (status === 'dueToday') { statusText = 'Vence Hoje'; statusColor = '#ef4444'; }
+            else if (status === 'expired') { statusText = 'Atrasado'; statusColor = '#ef4444'; }
+            else if (status === 'dueSoon') { statusText = 'Vence em breve'; statusColor = '#f59e0b'; }
+
+            document.getElementById('detailContent').innerHTML = `
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                    <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 20px;">
+                        ${(client.name || '??').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 700; color: #0f172a;">${client.name || 'N/A'}</h3>
+                        <span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: ${statusColor}15; color: ${statusColor}; margin-top: 4px;">${statusText}</span>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                    <div>
+                        <label style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Telefone</label>
+                        <p style="font-size: 14px; color: #0f172a; font-weight: 500;">${client.phone || '—'}</p>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Email</label>
+                        <p style="font-size: 14px; color: #0f172a; font-weight: 500;">${client.email || '—'}</p>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Site</label>
+                        <p style="font-size: 14px; color: #3b82f6; font-weight: 500;">${client.siteName || '—'}</p>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Valor</label>
+                        <p style="font-size: 14px; color: #0f172a; font-weight: 600;">R$ ${parseFloat(client.monthlyValue || 0).toFixed(2)}</p>
+                    </div>
+                </div>
+
+                ${(client.login || client.password) ? `
+                <div style="background: #f8fafc; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                    <h4 style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 12px;">🔐 Credenciais de Acesso</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label style="font-size: 11px; color: #94a3b8; font-weight: 600;">Login</label>
+                            <p style="font-size: 14px; color: #0f172a; font-weight: 500; word-break: break-all;">${client.login || '—'}</p>
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; color: #94a3b8; font-weight: 600;">Senha</label>
+                            <p style="font-size: 14px; color: #0f172a; font-weight: 500; word-break: break-all;">${client.password || '—'}</p>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+
+                ${client.obs ? `
+                <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                    <h4 style="font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 8px;">📝 Observações</h4>
+                    <p style="font-size: 14px; color: #78350f; white-space: pre-wrap;">${client.obs}</p>
+                </div>
+                ` : ''}
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div>
+                        <label style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Vencimento</label>
+                        <p style="font-size: 14px; color: #0f172a; font-weight: 600;">${dueDate.toLocaleDateString('pt-BR')}</p>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Plano</label>
+                        <p style="font-size: 14px; color: #0f172a; font-weight: 500;">${getPlanLabel(client.planType)}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('detailModal').style.display = 'flex';
+        };
+
+        window.closeDetailModal = () => {
+            document.getElementById('detailModal').style.display = 'none';
+        };
+
+        window.openDeleteModal = (id) => {
+            const client = clients.find(c => c.id === id);
+            clientToDelete = id;
+            document.getElementById('deleteClientName').textContent = client ? `Cliente: ${client.name}` : '';
+            document.getElementById('deleteModal').style.display = 'flex';
+        };
+
+        window.closeDeleteModal = () => {
+            clientToDelete = null;
+            document.getElementById('deleteModal').style.display = 'none';
+        };
+
+        window.confirmDeleteClient = async () => {
+            if (!clientToDelete) return;
+            try {
+                await remove(ref(database, `users/${currentUser.uid}/clients/${clientToDelete}`));
+                showToast('Cliente excluído com sucesso!', 'success');
+                clientToDelete = null;
+                closeDeleteModal();
+            } catch (error) {
+                console.error('Error deleting client:', error);
+                showToast('Erro ao excluir cliente', 'error');
+            }
+        };
+
+        // Filters, Search, Pagination
+        window.setFilter = (filter, btnElement) => {
+            currentFilter = filter;
+            currentPage = 1;
+            document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+            if (btnElement) btnElement.classList.add('active');
+            renderClientsTable();
+        };
+
+        window.handleSearch = () => {
+            searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+            currentPage = 1;
+            renderClientsTable();
+        };
+
+        window.changePage = (page) => {
+            const filtered = getFilteredClients();
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderClientsTable();
+            }
+        };
+
+        window.checkVencimentosNow = () => {
+            checkVencimentos();
+            updateDashboardStats();
+            showToast('Verificação de vencimentos atualizada!', 'info');
+        };
+
+        window.toggleSidebar = () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        };
+
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                const view = this.dataset.view;
+                if (view === 'expiring') {
+                    setFilter('dueToday', document.querySelector('.filter-pill.danger'));
+                } else if (view === 'clients') {
+                    setFilter('all', document.querySelector('.filter-pill:not(.danger)'));
+                }
+            });
+        });
+
+        // Toast
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas ${icons[type] || icons.info}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        window.showToast = showToast;
+
+        // Close modals on overlay click
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.style.display = 'none';
             }
         });
+
+        // ESC to close modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+                clientToDelete = null;
+            }
+        });
+
+        // Initialize app
+        init();
+        console.log('ClientFlow inicializado com sucesso!');
     </script>
 </body>
 </html>
