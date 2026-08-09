@@ -2,8 +2,17 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClientFlow - Gestão e Assessoria de Clientes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>ClientFlow - Gestão de Clientes</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -12,21 +21,15 @@
         :root {
             --bg-primary: #f8fafc;
             --bg-secondary: #ffffff;
-            --bg-tertiary: #f1f5f9;
             --text-primary: #0f172a;
             --text-secondary: #475569;
             --text-muted: #94a3b8;
             --border-color: #e2e8f0;
             --accent: #3b82f6;
-            --accent-hover: #2563eb;
             --danger: #ef4444;
-            --danger-light: #fef2f2;
             --warning: #f59e0b;
-            --warning-light: #fffbeb;
             --success: #10b981;
-            --success-light: #f0fdf4;
-            --info: #6366f1;
-            --info-light: #eef2ff;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         * {
@@ -34,6 +37,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -41,925 +45,910 @@
             color: #0f172a;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
         }
 
-        /* Layout Principal */
-        .app-container { display: flex; min-height: 100vh; }
+        /* Scrollbar fina para mobile */
+        ::-webkit-scrollbar { width: 3px; height: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* Layout Mobile-First */
+        .app-container { 
+            display: flex; 
+            min-height: 100vh; 
+            min-height: -webkit-fill-available;
+            position: relative;
+        }
+
+        /* Sidebar Mobile */
         .sidebar {
-            width: 260px;
+            width: 280px;
+            max-width: 85vw;
             background: #ffffff;
             border-right: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
             position: fixed;
             top: 0; left: 0; bottom: 0;
-            z-index: 40;
-            transition: transform 0.3s ease;
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+            padding-bottom: var(--safe-bottom);
         }
-        .sidebar-logo { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px; }
-        .sidebar-logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; }
-        .sidebar-logo-text { font-weight: 700; font-size: 18px; color: #0f172a; }
-        .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+        .sidebar.open { transform: translateX(0); }
+
+        /* Overlay para sidebar mobile */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar-logo { 
+            padding: 20px 16px; 
+            border-bottom: 1px solid #e2e8f0; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .sidebar-logo-icon { 
+            width: 36px; height: 36px; 
+            background: linear-gradient(135deg, #3b82f6, #6366f1); 
+            border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; 
+            color: white; font-size: 16px; 
+        }
+        .sidebar-logo-text { font-weight: 700; font-size: 17px; color: #0f172a; }
+        .sidebar-nav { 
+            flex: 1; 
+            padding: 12px 8px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 2px; 
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
         .sidebar-nav-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px;
-            color: #475569; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 10px; 
+            padding: 12px 14px; border-radius: 10px;
+            color: #475569; font-weight: 500; font-size: 14px; 
+            cursor: pointer; transition: all 0.15s;
             border: none; background: none; width: 100%; text-align: left;
+            min-height: 44px;
         }
-        .sidebar-nav-item:hover { background: #f1f5f9; color: #0f172a; }
+        .sidebar-nav-item:active { background: #f1f5f9; }
         .sidebar-nav-item.active { background: #eef2ff; color: #3b82f6; font-weight: 600; }
-        .sidebar-nav-item i { width: 20px; text-align: center; font-size: 16px; }
-        .sidebar-footer { padding: 16px; border-top: 1px solid #e2e8f0; }
+        .sidebar-nav-item i { width: 20px; text-align: center; font-size: 15px; }
+        .sidebar-footer { 
+            padding: 12px 16px; 
+            border-top: 1px solid #e2e8f0; 
+            flex-shrink: 0;
+        }
 
-        .main-content { flex: 1; margin-left: 260px; min-height: 100vh; display: flex; flex-direction: column; }
-        .header { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 30; }
-        .header-search { display: flex; align-items: center; gap: 12px; background: #f1f5f9; border-radius: 10px; padding: 8px 16px; width: 360px; transition: all 0.2s; border: 1px solid transparent; }
-        .header-search:focus-within { background: #ffffff; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        .header-search input { border: none; background: none; outline: none; font-size: 14px; width: 100%; color: #0f172a; }
-        .header-search i { color: #94a3b8; font-size: 16px; }
-        .header-actions { display: flex; align-items: center; gap: 12px; }
+        /* Main Content */
+        .main-content { 
+            flex: 1; 
+            margin-left: 0;
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column;
+            width: 100%;
+        }
 
-        /* Botões */
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; border: none; white-space: nowrap; }
+        /* Header Mobile */
+        .header { 
+            background: #ffffff; 
+            border-bottom: 1px solid #e2e8f0; 
+            padding: 12px 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            position: sticky; 
+            top: 0; 
+            z-index: 40;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+        .header-search { 
+            display: flex; align-items: center; gap: 8px; 
+            background: #f1f5f9; border-radius: 10px; 
+            padding: 8px 12px; 
+            width: 100%;
+            max-width: 300px;
+            transition: all 0.2s; 
+            border: 1px solid transparent; 
+        }
+        .header-search:focus-within { 
+            background: #ffffff; 
+            border-color: #3b82f6; 
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
+        }
+        .header-search input { 
+            border: none; background: none; outline: none; 
+            font-size: 14px; width: 100%; color: #0f172a; 
+            min-width: 0;
+        }
+        .header-search i { color: #94a3b8; font-size: 14px; flex-shrink: 0; }
+
+        /* Botões otimizados para touch */
+        .btn { 
+            display: inline-flex; align-items: center; justify-content: center; 
+            gap: 6px; padding: 10px 16px; border-radius: 10px; 
+            font-weight: 600; font-size: 13px; cursor: pointer; 
+            transition: all 0.15s; border: none; white-space: nowrap;
+            min-height: 42px;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .btn:active { transform: scale(0.97); }
         .btn-primary { background: #3b82f6; color: white; }
-        .btn-primary:hover { background: #2563eb; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .btn-primary:active { background: #2563eb; }
         .btn-secondary { background: #f1f5f9; color: #475569; }
-        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-secondary:active { background: #e2e8f0; }
         .btn-danger { background: #fef2f2; color: #ef4444; }
-        .btn-danger:hover { background: #fee2e2; }
+        .btn-danger:active { background: #fee2e2; }
         .btn-success { background: #10b981; color: white; }
-        .btn-success:hover { background: #059669; }
         .btn-ghost { background: transparent; color: #64748b; padding: 8px; border-radius: 8px; }
-        .btn-ghost:hover { background: #f1f5f9; color: #0f172a; }
-        .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; }
-        .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+        .btn-icon { width: 40px; height: 40px; min-height: 40px; padding: 0; border-radius: 10px; }
+        .btn-sm { padding: 6px 10px; font-size: 11px; border-radius: 8px; min-height: 32px; }
+        .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
+        .btn-loading::after {
+            content: ''; position: absolute;
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white; border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .content-area { padding: 32px; flex: 1; }
-        .page-title { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
-        .page-subtitle { font-size: 14px; color: #64748b; margin-bottom: 24px; }
+        /* Content Area */
+        .content-area { 
+            padding: 16px; 
+            flex: 1;
+            padding-bottom: calc(16px + var(--safe-bottom));
+        }
+        .page-title { font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .page-subtitle { font-size: 13px; color: #64748b; margin-bottom: 16px; }
         
-        .view-section { display: none; animation: fadeIn 0.3s ease; }
+        .view-section { display: none; animation: fadeIn 0.25s ease; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Dashboard & Stats */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; transition: all 0.2s; }
-        .stat-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border-color: #cbd5e1; }
-        .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-        .stat-card-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        /* Stats Cards - Mobile Grid */
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 10px; 
+            margin-bottom: 16px; 
+        }
+        .stat-card { 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 14px; 
+            padding: 14px; 
+            transition: all 0.15s; 
+        }
+        .stat-card:active { background: #f8fafc; }
+        .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .stat-card-icon { 
+            width: 36px; height: 36px; border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; font-size: 16px; 
+        }
         .stat-card-icon.blue { background: #eef2ff; color: #3b82f6; }
         .stat-card-icon.red { background: #fef2f2; color: #ef4444; }
         .stat-card-icon.green { background: #f0fdf4; color: #10b981; }
         .stat-card-icon.purple { background: #faf5ff; color: #8b5cf6; }
         .stat-card-icon.amber { background: #fffbeb; color: #f59e0b; }
-        .stat-card-value { font-size: 28px; font-weight: 700; color: #0f172a; }
-        .stat-card-label { font-size: 13px; color: #64748b; font-weight: 500; }
+        .stat-card-value { font-size: 22px; font-weight: 700; color: #0f172a; line-height: 1.2; }
+        .stat-card-label { font-size: 11px; color: #64748b; font-weight: 500; }
 
-        /* Alerts & Badges */
-        .alert-banner { border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; }
+        /* Alert Banners */
+        .alert-banner { 
+            border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; 
+            display: flex; align-items: flex-start; gap: 10px; 
+            font-size: 13px; font-weight: 500; 
+        }
         .alert-banner.danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
         .alert-banner.warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
         .alert-banner.success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #065f46; }
         .alert-banner.info { background: #eef2ff; border: 1px solid #bfdbfe; color: #1e40af; }
-        .alert-banner i { font-size: 18px; }
+        .alert-banner i { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 
-        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+        /* Badges */
+        .badge { 
+            display: inline-flex; align-items: center; gap: 4px; 
+            padding: 3px 10px; border-radius: 20px; 
+            font-size: 11px; font-weight: 600; white-space: nowrap; 
+        }
         .badge-success { background: #f0fdf4; color: #065f46; }
         .badge-warning { background: #fffbeb; color: #92400e; }
         .badge-danger { background: #fef2f2; color: #991b1b; }
         .badge-info { background: #eef2ff; color: #3730a3; }
-        .badge-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+        .badge-dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
         .badge-dot.green { background: #10b981; }
         .badge-dot.yellow { background: #f59e0b; }
-        .badge-dot.blue { background: #3b82f6; }
         .badge-dot.red { background: #ef4444; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        /* Tables */
-        .filter-bar { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .filter-pill { padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: 1px solid #e2e8f0; background: #ffffff; color: #475569; }
-        .filter-pill:hover { background: #f8fafc; }
+        /* Filter Bar Mobile */
+        .filter-bar { 
+            background: #ffffff; border: 1px solid #e2e8f0; 
+            border-radius: 14px; padding: 10px; margin-bottom: 12px; 
+            display: flex; align-items: center; gap: 6px; 
+            flex-wrap: nowrap; overflow-x: auto; 
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .filter-bar::-webkit-scrollbar { display: none; }
+        .filter-pill { 
+            padding: 6px 12px; border-radius: 20px; 
+            font-size: 11px; font-weight: 500; 
+            cursor: pointer; transition: all 0.15s; 
+            border: 1px solid #e2e8f0; background: #ffffff; 
+            color: #475569; white-space: nowrap; flex-shrink: 0;
+            min-height: 32px;
+        }
+        .filter-pill:active { background: #f8fafc; }
         .filter-pill.active { background: #3b82f6; color: white; border-color: #3b82f6; }
-        .table-container { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; }
-        .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
+
+        /* Table Mobile */
+        .table-container { 
+            background: #ffffff; border: 1px solid #e2e8f0; 
+            border-radius: 14px; overflow: hidden; 
+        }
+        .table-wrapper { 
+            overflow-x: auto; 
+            -webkit-overflow-scrolling: touch;
+            -ms-overflow-style: -ms-autohiding-scrollbar;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 650px; }
         thead { background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
-        th { padding: 14px 20px; text-align: left; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
-        td { padding: 16px 20px; font-size: 14px; color: #0f172a; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        tbody tr { transition: background 0.15s; }
-        tbody tr:hover { background: #f8fafc; }
-        .client-avatar { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: white; flex-shrink: 0; }
-        .client-info { display: flex; align-items: center; gap: 12px; }
-        .client-name { font-weight: 600; color: #0f172a; }
-        .client-detail { font-size: 12px; color: #94a3b8; }
-        .actions-cell { display: flex; gap: 6px; }
-        .action-btn { width: 32px; height: 32px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s; background: #f1f5f9; color: #64748b; }
-        .action-btn:hover { background: #e2e8f0; color: #0f172a; }
+        th { 
+            padding: 10px 12px; text-align: left; 
+            font-size: 10px; font-weight: 600; color: #64748b; 
+            text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; 
+        }
+        td { 
+            padding: 12px; font-size: 13px; color: #0f172a; 
+            border-bottom: 1px solid #f1f5f9; vertical-align: middle; 
+        }
+        tbody tr:active { background: #f8fafc; }
+        .client-avatar { 
+            width: 32px; height: 32px; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: 700; font-size: 12px; color: white; flex-shrink: 0; 
+        }
+        .client-info { display: flex; align-items: center; gap: 8px; }
+        .client-name { font-weight: 600; color: #0f172a; font-size: 13px; }
+        .client-detail { font-size: 11px; color: #94a3b8; }
+        .actions-cell { display: flex; gap: 4px; }
+        .action-btn { 
+            width: 30px; height: 30px; border-radius: 6px; 
+            border: none; cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 12px; transition: all 0.15s; 
+            background: #f1f5f9; color: #64748b; 
+        }
+        .action-btn:active { background: #e2e8f0; }
+
+        /* Modais Mobile */
+        .modal-overlay { 
+            position: fixed; inset: 0; 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 200; 
+            display: flex; 
+            align-items: flex-end;
+            justify-content: center; 
+            padding: 0;
+        }
+        .modal { 
+            background: #ffffff; border-radius: 20px 20px 0 0; 
+            width: 100%; max-height: 90vh; 
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.15); 
+            animation: modalUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding-bottom: var(--safe-bottom);
+        }
+        @keyframes modalUp { 
+            from { transform: translateY(100%); } 
+            to { transform: translateY(0); } 
+        }
+        .modal-header { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 16px 18px; border-bottom: 1px solid #e2e8f0; 
+            position: sticky; top: 0; background: #ffffff; z-index: 1; 
+            border-radius: 20px 20px 0 0; 
+        }
+        .modal-title { font-size: 16px; font-weight: 700; color: #0f172a; }
+        .modal-body { padding: 16px; }
+        .modal-footer { 
+            display: flex; gap: 8px; justify-content: flex-end; 
+            padding: 14px 16px; border-top: 1px solid #e2e8f0; 
+            position: sticky; bottom: 0; background: #ffffff; 
+        }
         
-        /* Formulários e Modais */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 24px; }
-        .modal { background: #ffffff; border-radius: 20px; width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); animation: modalIn 0.2s ease; }
-        @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; background: #ffffff; z-index: 1; border-radius: 20px 20px 0 0; }
-        .modal-title { font-size: 18px; font-weight: 700; color: #0f172a; }
-        .modal-body { padding: 24px; }
-        .modal-footer { display: flex; gap: 12px; justify-content: flex-end; padding: 20px 24px; border-top: 1px solid #e2e8f0; position: sticky; bottom: 0; background: #ffffff; border-radius: 0 0 20px 20px; }
-        
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
-        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; color: #0f172a; background: #ffffff; transition: all 0.2s; }
-        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        .form-textarea { resize: vertical; min-height: 100px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .form-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
-        
-        /* Auth Screen */
-        .auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f1f5f9; padding: 20px; }
-        .auth-card { background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 25px 50px rgba(0,0,0,0.1); }
-        .auth-tabs { display: flex; background: #f1f5f9; border-radius: 12px; padding: 4px; margin-bottom: 24px; }
-        .auth-tab { flex: 1; text-align: center; padding: 10px; font-size: 14px; font-weight: 600; color: #64748b; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-        .auth-tab.active { background: #ffffff; color: #3b82f6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .auth-logo { text-align: center; margin-bottom: 24px; }
-        .auth-logo-icon { width: 56px; height: 56px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: white; font-size: 24px; }
-        .auth-title { font-size: 22px; font-weight: 700; color: #0f172a; }
-        .auth-form { display: flex; flex-direction: column; gap: 16px; }
-        
-        /* Briefing Screen Custom Styles */
-        .briefing-card { background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 680px; box-shadow: 0 25px 50px rgba(0,0,0,0.1); margin: 40px auto; }
-        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
-        .custom-checkbox { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #475569; cursor: pointer; }
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 4px; }
+        .form-input, .form-select, .form-textarea { 
+            width: 100%; padding: 10px 14px; 
+            border: 1px solid #e2e8f0; border-radius: 10px; 
+            font-size: 14px; color: #0f172a; background: #ffffff; 
+            transition: all 0.15s; 
+            -webkit-appearance: none;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { 
+            outline: none; border-color: #3b82f6; 
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
+        }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .form-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .form-section { 
+            background: #f8fafc; border: 1px solid #e2e8f0; 
+            border-radius: 12px; padding: 12px; margin-bottom: 14px; 
+        }
+
+        /* Auth Screens Mobile */
+        .auth-screen { 
+            min-height: 100vh; 
+            min-height: -webkit-fill-available;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #f1f5f9; 
+            padding: 16px; 
+        }
+        .auth-card { 
+            background: white; border-radius: 20px; 
+            padding: 28px 20px; 
+            width: 100%; max-width: 400px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08); 
+        }
+        .briefing-card { 
+            background: white; border-radius: 20px; 
+            padding: 24px 16px; 
+            width: 100%; max-width: 600px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08); 
+            margin: 0;
+        }
+        .auth-logo { text-align: center; margin-bottom: 20px; }
+        .auth-logo-icon { 
+            width: 50px; height: 50px; 
+            background: linear-gradient(135deg, #3b82f6, #6366f1); 
+            border-radius: 14px; display: flex; align-items: center; 
+            justify-content: center; margin: 0 auto 12px; 
+            color: white; font-size: 22px; 
+        }
+        .auth-title { font-size: 20px; font-weight: 700; color: #0f172a; }
+        .auth-subtitle { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .auth-form { display: flex; flex-direction: column; gap: 12px; }
+
+        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+        .custom-checkbox { 
+            display: flex; align-items: center; gap: 6px; 
+            font-size: 13px; color: #475569; cursor: pointer; 
+            min-height: 32px;
+        }
         .custom-checkbox input { width: 16px; height: 16px; cursor: pointer; }
-        .success-screen-content { text-align: center; max-width: 500px; padding: 40px 20px; background: white; border-radius: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.1); }
-        .success-text { font-size: 16px; color: #334155; line-height: 1.6; margin-bottom: 24px; text-align: left; }
 
-        /* Request Message Baloon */
-        .req-msg { background: #f1f5f9; padding: 12px; border-radius: 12px; font-size: 14px; color: #334155; border-left: 3px solid #cbd5e1; }
-
-        /* Toasts */
-        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
-        .toast { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; animation: toastIn 0.3s ease; min-width: 300px; }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
-        .toast.success { border-left: 4px solid #10b981; } .toast.success i { color: #10b981; }
-        .toast.error { border-left: 4px solid #ef4444; } .toast.error i { color: #ef4444; }
-        .toast.info { border-left: 4px solid #3b82f6; } .toast.info i { color: #3b82f6; }
-
-        /* Status indicators for client rows */
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+        .success-screen-content { 
+            text-align: center; max-width: 500px; 
+            padding: 32px 20px; background: white; 
+            border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); 
         }
-        .reminder-icon {
-            font-size: 14px;
+        .success-text { font-size: 14px; color: #334155; line-height: 1.6; margin-bottom: 20px; text-align: left; }
+        .req-msg { 
+            background: #f1f5f9; padding: 10px; border-radius: 10px; 
+            font-size: 13px; color: #334155; border-left: 3px solid #cbd5e1; 
+            word-break: break-word;
         }
+
+        /* Toasts Mobile */
+        .toast-container { 
+            position: fixed; top: 12px; right: 12px; left: 12px;
+            z-index: 300; display: flex; flex-direction: column; gap: 6px; 
+            pointer-events: none;
+        }
+        .toast { 
+            background: #ffffff; border: 1px solid #e2e8f0; 
+            border-radius: 12px; padding: 12px 16px; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); 
+            display: flex; align-items: center; gap: 8px; 
+            font-size: 13px; font-weight: 500; 
+            animation: toastIn 0.3s ease; 
+            pointer-events: auto;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .toast.success { border-left: 4px solid #10b981; } 
+        .toast.success i { color: #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; } 
+        .toast.error i { color: #ef4444; }
+        .toast.info { border-left: 4px solid #3b82f6; } 
+        .toast.info i { color: #3b82f6; }
+
+        .reminder-icon { font-size: 12px; }
         .reminder-icon.red { color: #ef4444; }
         .reminder-icon.yellow { color: #f59e0b; }
 
-        @media (max-width: 1024px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; }
+        /* Loading */
+        .loading-overlay {
+            position: fixed; inset: 0;
+            background: rgba(255,255,255,0.8);
+            z-index: 400;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        /* Tablet e Desktop */
+        @media (min-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+            .stat-card { padding: 18px; }
+            .stat-card-value { font-size: 26px; }
+            .content-area { padding: 24px; }
+            .page-title { font-size: 22px; }
+            .form-row { grid-template-columns: 1fr 1fr; }
+            .modal { 
+                border-radius: 20px; 
+                max-width: 600px; 
+                margin: auto;
+                max-height: 90vh;
+            }
+            .modal-overlay { 
+                align-items: center; 
+                padding: 20px;
+            }
+            @keyframes modalUp { 
+                from { transform: scale(0.95) translateY(10px); opacity: 0; } 
+                to { transform: scale(1) translateY(0); opacity: 1; } 
+            }
+            .auth-card { padding: 36px 32px; }
+            .briefing-card { padding: 32px 28px; margin: 20px auto; }
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                transform: translateX(0);
+                position: fixed;
+                width: 250px;
+                box-shadow: none;
+                max-width: 250px;
+            }
+            .sidebar-overlay { display: none !important; }
+            .main-content { margin-left: 250px; }
+            .menu-toggle-desktop { display: none; }
+            .header { padding: 14px 24px; }
+            .content-area { padding: 28px; }
+        }
+
+        @media (min-width: 1280px) {
+            .sidebar { width: 270px; max-width: 270px; }
+            .main-content { margin-left: 270px; }
+            .content-area { padding: 32px; }
         }
     </style>
 </head>
 <body>
 
     <div class="toast-container" id="toastContainer"></div>
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;"><div class="loading-spinner"></div></div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-    <!-- Tela de Briefing de Marca (Inicial) -->
+    <!-- ==================== BRIEFING SCREEN ==================== -->
     <div id="briefingScreen" class="auth-screen">
         <div class="briefing-card">
-            <div class="auth-logo" style="margin-bottom: 32px;">
+            <div class="auth-logo" style="margin-bottom: 24px;">
                 <div class="auth-logo-icon"><i class="fas fa-rocket"></i></div>
                 <h1 class="auth-title">Briefing de Marca</h1>
-                <p class="auth-subtitle" style="font-weight: 500; color: #3b82f6; margin-top: 8px;">
-                    Ajude-nos a entender a sua visão para criarmos <span onclick="showAdminAuthScreen()" title="Acesso Administrativo" style="cursor: pointer; text-decoration: underline; text-decoration-style: dotted;">algo incrível.</span>
+                <p class="auth-subtitle" style="font-weight:500; color:#3b82f6; margin-top:6px;">
+                    Conte sua visão para criarmos <span onclick="showAdminAuthScreen()" title="Admin" style="cursor:pointer; text-decoration:underline; text-decoration-style:dotted;">algo incrível.</span>
                 </p>
             </div>
-
-            <form id="formBriefing" class="auth-form view-section active">
+            <form id="formBriefing" class="auth-form">
                 <div class="form-row">
-                    <div>
-                        <label class="form-label">Nome <span style="color:red">*</span></label>
-                        <input type="text" id="bfName" required class="form-input" placeholder="Seu nome completo">
-                    </div>
-                    <div>
-                        <label class="form-label">Email para Receber Arquivos <span style="color:red">*</span></label>
-                        <input type="email" id="bfEmail" required class="form-input" placeholder="seuemail@exemplo.com">
-                    </div>
+                    <div class="form-group"><label class="form-label">Nome <span style="color:red">*</span></label><input type="text" id="bfName" required class="form-input" placeholder="Seu nome completo"></div>
+                    <div class="form-group"><label class="form-label">Email <span style="color:red">*</span></label><input type="email" id="bfEmail" required class="form-input" placeholder="seuemail@exemplo.com"></div>
                 </div>
-
                 <div class="form-row">
-                    <div>
-                        <label class="form-label">Segmento / Área de Atuação <span style="color:red">*</span></label>
-                        <input type="text" id="bfSegment" required class="form-input" placeholder="Ex: Advocacia, E-commerce, Clínica...">
-                    </div>
-                    <div>
-                        <label class="form-label">Cores de Preferência</label>
-                        <input type="text" id="bfColors" class="form-input" placeholder="Ex: Azul escuro e Dourado">
-                    </div>
+                    <div class="form-group"><label class="form-label">Segmento <span style="color:red">*</span></label><input type="text" id="bfSegment" required class="form-input" placeholder="Ex: Advocacia, E-commerce..."></div>
+                    <div class="form-group"><label class="form-label">Cores de Preferência</label><input type="text" id="bfColors" class="form-input" placeholder="Azul escuro, Dourado..."></div>
                 </div>
-
-                <div class="form-section" style="margin-bottom: 0;">
-                    <label class="form-label">Preferências do Site (Marque o que deseja)</label>
+                <div class="form-section">
+                    <label class="form-label">Preferências do Site</label>
                     <div class="checkbox-grid">
                         <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Formulário de Contato"> Formulário de Contato</label>
-                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão do WhatsApp"> Botão do WhatsApp</label>
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão do WhatsApp"> Botão WhatsApp</label>
                         <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão Instagram"> Botão Instagram</label>
                         <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão YouTube"> Botão YouTube</label>
                     </div>
                 </div>
-
-                <div class="form-section" style="margin-bottom: 0;">
-                    <label class="form-label">Qual o principal propósito do site?</label>
+                <div class="form-section">
+                    <label class="form-label">Propósito do Site</label>
                     <div class="checkbox-grid">
                         <label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Vender mais" required> Vender mais</label>
-                        <label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais credibilidade"> Mais credibilidade</label>
-                        <label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais profissionalismo"> Mais profissionalismo</label>
-                        <label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Divulgar minha marca"> Divulgar minha marca</label>
+                        <label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais credibilidade"> Credibilidade</label>
+                        <label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais profissionalismo"> Profissionalismo</label>
+                        <label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Divulgar minha marca"> Divulgar marca</label>
                     </div>
                 </div>
-
-                <div>
-                    <label class="form-label">Informações Adicionais</label>
-                    <textarea id="bfExtraInfo" class="form-textarea" placeholder="Preencha com mais detalhes sobre a sua ideia, referências, etc..."></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 8px;" id="btnSubmitBriefing">
-                    <i class="fas fa-paper-plane"></i> Enviar Informações e Acessar Painel
-                </button>
-
-                <button type="button" class="btn" onclick="showClientAuthScreen()" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 10px; background: #1d4ed8; color: white;">
-                    <i class="fas fa-user-circle"></i> Área do Cliente
-                </button>
+                <div class="form-group"><label class="form-label">Informações Adicionais</label><textarea id="bfExtraInfo" class="form-textarea" placeholder="Conte mais sobre sua ideia..."></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width:100%;" id="btnSubmitBriefing"><i class="fas fa-paper-plane"></i> Enviar e Acessar Painel</button>
+                <button type="button" class="btn" onclick="showClientAuthScreen()" style="width:100%; background:#1d4ed8; color:white;"><i class="fas fa-user-circle"></i> Área do Cliente</button>
             </form>
         </div>
     </div>
 
-    <!-- Tela de Sucesso Pós-Briefing -->
-    <div id="successBriefingScreen" class="auth-screen" style="display: none;">
+    <!-- ==================== SUCCESS BRIEFING ==================== -->
+    <div id="successBriefingScreen" class="auth-screen" style="display:none;">
         <div class="success-screen-content">
-            <h2 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 24px; text-align: center;">Entendido! 🚀🎯</h2>
-            
-            <div class="success-text" id="successMessageText">
-                <!-- Preenchido via JS -->
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 32px;">
-                <button class="btn btn-primary" onclick="goToClientPanel()" style="width: 100%; padding: 14px; justify-content: center; font-size: 15px;">
-                    <i class="fas fa-arrow-right"></i> Ir para o Painel / Voltar ao Início
-                </button>
-                <a href="https://api.whatsapp.com/send?phone=5579988645865&text=Oi" target="_blank" class="btn btn-success" style="width: 100%; padding: 14px; justify-content: center; font-size: 15px; text-decoration: none;">
-                    <i class="fab fa-whatsapp" style="font-size: 18px;"></i> Falar no WhatsApp
-                </a>
+            <h2 style="font-size:22px; font-weight:800; color:#0f172a; margin-bottom:20px;">Entendido! 🚀🎯</h2>
+            <div class="success-text" id="successMessageText"></div>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:28px;">
+                <button class="btn btn-primary" onclick="goToClientPanel()" style="width:100%; justify-content:center;"><i class="fas fa-arrow-right"></i> Ir para o Painel</button>
+                <a href="https://api.whatsapp.com/send?phone=5579988645865&text=Oi" target="_blank" class="btn btn-success" style="width:100%; justify-content:center; text-decoration:none;"><i class="fab fa-whatsapp" style="font-size:16px;"></i> Falar no WhatsApp</a>
             </div>
         </div>
     </div>
 
-    <!-- Tela de Autenticação do ADMIN (acesso via link secreto) -->
-    <div id="adminAuthScreen" class="auth-screen" style="display: none;">
+    <!-- ==================== ADMIN AUTH ==================== -->
+    <div id="adminAuthScreen" class="auth-screen" style="display:none;">
         <div class="auth-card">
-            <button onclick="showBriefingScreen()" style="background:none; border:none; color: #64748b; font-size: 12px; cursor: pointer; margin-bottom: 16px;"><i class="fas fa-arrow-left"></i> Voltar ao site</button>
-            
+            <button onclick="showBriefingScreen()" style="background:none; border:none; color:#64748b; font-size:12px; cursor:pointer; margin-bottom:12px;"><i class="fas fa-arrow-left"></i> Voltar</button>
             <div class="auth-logo">
-                <div class="auth-logo-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fas fa-shield-alt"></i></div>
-                <h1 class="auth-title">Área do Administrador</h1>
-                <p class="auth-subtitle" style="color: #ef4444; font-weight: 600;">Acesso restrito à equipe</p>
+                <div class="auth-logo-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626);"><i class="fas fa-shield-alt"></i></div>
+                <h1 class="auth-title">Área Administrativa</h1>
+                <p class="auth-subtitle" style="color:#ef4444; font-weight:600;">Acesso restrito à equipe</p>
             </div>
-
-            <div class="alert-banner info" style="margin-bottom: 20px;">
-                <i class="fas fa-info-circle"></i>
-                <div><strong>Atenção:</strong> Esta área é exclusiva para administradores. Clientes não podem acessar por aqui.</div>
-            </div>
-
+            <div class="alert-banner info" style="margin-bottom:16px;"><i class="fas fa-info-circle"></i><div><strong>Atenção:</strong> Exclusivo para administradores.</div></div>
             <form id="formAdminAuth" class="auth-form">
-                <div id="nameFieldAdmin" style="display: none;">
-                    <label class="form-label">Nome</label>
-                    <input type="text" id="authNameAdmin" class="form-input" placeholder="Seu nome">
-                </div>
-                <div>
-                    <label class="form-label">Email do Administrador</label>
-                    <input type="email" id="authEmailAdmin" class="form-input" placeholder="admin@clientflow.com" required>
-                </div>
-                <div>
-                    <label class="form-label">Senha</label>
-                    <input type="password" id="authPasswordAdmin" class="form-input" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; background: #ef4444;">
-                    <i class="fas fa-sign-in-alt"></i> <span id="authSubmitTextAdmin">Entrar como Admin</span>
-                </button>
-                <div style="text-align: center; margin-top: 8px; font-size: 13px; color: #64748b;" id="authToggleTextAdmin">
-                    Não tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Criar conta</button>
-                </div>
+                <div class="form-group"><label class="form-label">Email</label><input type="email" id="authEmailAdmin" class="form-input" placeholder="admin@clientflow.com" required></div>
+                <div class="form-group"><label class="form-label">Senha</label><input type="password" id="authPasswordAdmin" class="form-input" placeholder="••••••••" required></div>
+                <button type="submit" class="btn btn-primary" style="width:100%; background:#ef4444;" id="btnAdminLogin"><i class="fas fa-sign-in-alt"></i> Entrar</button>
             </form>
         </div>
     </div>
 
-    <!-- Tela de Autenticação do CLIENTE -->
-    <div id="clientAuthScreen" class="auth-screen" style="display: none;">
+    <!-- ==================== CLIENT AUTH ==================== -->
+    <div id="clientAuthScreen" class="auth-screen" style="display:none;">
         <div class="auth-card">
-            <button onclick="showBriefingScreen()" style="background:none; border:none; color: #64748b; font-size: 12px; cursor: pointer; margin-bottom: 16px;"><i class="fas fa-arrow-left"></i> Voltar ao site</button>
-            
+            <button onclick="showBriefingScreen()" style="background:none; border:none; color:#64748b; font-size:12px; cursor:pointer; margin-bottom:12px;"><i class="fas fa-arrow-left"></i> Voltar</button>
             <div class="auth-logo">
                 <div class="auth-logo-icon"><i class="fas fa-user-circle"></i></div>
                 <h1 class="auth-title">Área do Cliente</h1>
                 <p class="auth-subtitle">Acesse o portal da sua assessoria</p>
             </div>
-
-            <div class="alert-banner info" style="margin-bottom: 20px;">
-                <i class="fas fa-info-circle"></i>
-                <div><strong>Atenção:</strong> Esta área é exclusiva para clientes. Se você é administrador, acesse pelo link secreto no site.</div>
-            </div>
-
+            <div class="alert-banner info" style="margin-bottom:16px;"><i class="fas fa-info-circle"></i><div><strong>Atenção:</strong> Exclusivo para clientes.</div></div>
             <form id="formClientAuth" class="auth-form">
-                <div>
-                    <label class="form-label">Email de Acesso</label>
-                    <input type="email" id="authLoginClient" required class="form-input" placeholder="seuemail@exemplo.com">
-                </div>
-                <div>
-                    <label class="form-label">Senha</label>
-                    <input type="password" id="authPasswordClient" required class="form-input" placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fas fa-user"></i> Entrar no Painel</button>
+                <div class="form-group"><label class="form-label">Email</label><input type="email" id="authLoginClient" required class="form-input" placeholder="seuemail@exemplo.com"></div>
+                <div class="form-group"><label class="form-label">Senha</label><input type="password" id="authPasswordClient" required class="form-input" placeholder="••••••••"></div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="btnClientLogin"><i class="fas fa-user"></i> Entrar</button>
             </form>
         </div>
     </div>
 
-    <!-- Aplicativo Principal -->
-    <div id="appScreen" class="app-container" style="display: none;">
+    <!-- ==================== APP PRINCIPAL ==================== -->
+    <div id="appScreen" class="app-container" style="display:none;">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-logo">
                 <div class="sidebar-logo-icon"><i class="fas fa-layer-group"></i></div>
                 <span class="sidebar-logo-text">ClientFlow</span>
             </div>
-            
-            <!-- Menu Admin -->
             <nav class="sidebar-nav" id="menuAdmin" style="display:none;">
-                <button class="sidebar-nav-item active" data-view="adminDashboard">
-                    <i class="fas fa-th-large"></i> Dashboard
-                </button>
-                <button class="sidebar-nav-item" data-view="adminClients">
-                    <i class="fas fa-users"></i> Clientes
-                </button>
-                <button class="sidebar-nav-item" data-view="adminAssessoria">
-                    <i class="fas fa-tools"></i> Solicitações <span id="badgeAdminRequests" class="badge-dot red" style="display:none; margin-left: auto;"></span>
-                </button>
+                <button class="sidebar-nav-item active" data-view="adminDashboard" onclick="switchView('adminDashboard'); closeSidebar();"><i class="fas fa-th-large"></i> Dashboard</button>
+                <button class="sidebar-nav-item" data-view="adminClients" onclick="switchView('adminClients'); closeSidebar();"><i class="fas fa-users"></i> Clientes</button>
+                <button class="sidebar-nav-item" data-view="adminAssessoria" onclick="switchView('adminAssessoria'); closeSidebar();"><i class="fas fa-tools"></i> Solicitações <span id="badgeAdminRequests" class="badge-dot red" style="display:none; margin-left:auto;"></span></button>
             </nav>
-
-            <!-- Menu Cliente -->
             <nav class="sidebar-nav" id="menuClient" style="display:none;">
-                <button class="sidebar-nav-item active" data-view="clientDashboard">
-                    <i class="fas fa-home"></i> Início / Plano
-                </button>
-                <button class="sidebar-nav-item" data-view="clientAssessoria">
-                    <i class="fas fa-headset"></i> Assessoria (Atualizações)
-                </button>
+                <button class="sidebar-nav-item active" data-view="clientDashboard" onclick="switchView('clientDashboard'); closeSidebar();"><i class="fas fa-home"></i> Meu Plano</button>
+                <button class="sidebar-nav-item" data-view="clientAssessoria" onclick="switchView('clientAssessoria'); closeSidebar();"><i class="fas fa-headset"></i> Assessoria</button>
             </nav>
-
             <div class="sidebar-footer">
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="width: 36px; height: 36px; background: #eef2ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-weight: 600; font-size: 14px;" id="sidebarUserInitials">--</div>
-                        <div style="overflow: hidden;">
-                            <div style="font-size: 13px; font-weight: 600; color: #0f172a; text-overflow: ellipsis; white-space: nowrap;" id="sidebarUserName">Usuário</div>
-                            <div style="font-size: 11px; color: #64748b; text-overflow: ellipsis; white-space: nowrap;" id="sidebarUserEmailDisplay">email@exemplo.com</div>
-                            <div style="font-size: 11px; color: #94a3b8;" id="sidebarUserPassDisplay" style="display:none;">Senha: <span>123456</span></div>
-                        </div>
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                    <div style="width:32px; height:32px; background:#eef2ff; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#3b82f6; font-weight:600; font-size:12px;" id="sidebarUserInitials">--</div>
+                    <div style="overflow:hidden; flex:1; min-width:0;">
+                        <div style="font-size:12px; font-weight:600; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="sidebarUserName">Usuário</div>
+                        <div style="font-size:10px; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="sidebarUserEmailDisplay">email</div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 8px; font-size: 12px;">
-                        <button onclick="openChangePasswordModal()" style="color: #3b82f6; background: none; border: none; cursor: pointer; font-weight: 600; padding: 0;" id="btnChangePassword">Alterar senha</button>
-                        <button onclick="handleLogout()" style="color: #ef4444; background: none; border: none; cursor: pointer; padding: 0;">Sair</button>
-                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-top:1px solid #f1f5f9; padding-top:8px; font-size:11px;">
+                    <button onclick="openChangePasswordModal(); closeSidebar();" style="color:#3b82f6; background:none; border:none; cursor:pointer; font-weight:600;" id="btnChangePassword">Alterar senha</button>
+                    <button onclick="handleLogout()" style="color:#ef4444; background:none; border:none; cursor:pointer;">Sair</button>
                 </div>
             </div>
         </aside>
 
-        <!-- Conteúdo Principal -->
+        <!-- Main Content -->
         <main class="main-content">
             <header class="header">
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <button class="btn-ghost btn-icon" onclick="document.getElementById('sidebar').classList.toggle('open')" id="menuToggleBtn" style="display: none;">
+                <div class="header-left">
+                    <button class="btn-ghost btn-icon menu-toggle-desktop" onclick="toggleSidebar()" style="flex-shrink:0;">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="header-search" id="adminSearchBox" style="display:none;">
                         <i class="fas fa-search"></i>
                         <input type="text" id="globalSearch" placeholder="Buscar clientes..." oninput="handleSearch()">
                     </div>
-                    <div id="clientWelcomeText" style="display:none; font-weight: 600; color: #475569;">
-                        Bem-vindo ao seu painel!
+                    <div id="clientWelcomeText" style="display:none; font-weight:600; color:#475569; font-size:14px;">
+                        Bem-vindo(a)!
                     </div>
                 </div>
-                <div class="header-actions">
-                    <button class="btn btn-primary" id="btnNewClient" onclick="openAddClientModal()" style="display:none;">
-                        <i class="fas fa-plus"></i> Novo Cliente
+                <div class="header-actions" style="flex-shrink:0;">
+                    <button class="btn btn-primary btn-sm" id="btnNewClient" onclick="openAddClientModal()" style="display:none;">
+                        <i class="fas fa-plus"></i> <span class="hide-mobile">Novo</span>
                     </button>
                 </div>
             </header>
 
             <div class="content-area">
-                <!-- ================= VIEWS ADMIN ================= -->
-                
                 <!-- Admin Dashboard -->
                 <div id="adminDashboard" class="view-section active">
                     <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Visão geral dos seus clientes e faturamento</p>
+                    <p class="page-subtitle">Visão geral dos seus clientes</p>
                     <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-card-header"><div class="stat-card-icon blue"><i class="fas fa-users"></i></div></div>
-                            <div class="stat-card-value" id="statTotalClients">0</div>
-                            <div class="stat-card-label">Total de Clientes</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-card-header"><div class="stat-card-icon green"><i class="fas fa-check-circle"></i></div></div>
-                            <div class="stat-card-value" id="statActiveClients">0</div>
-                            <div class="stat-card-label">Clientes Ativos</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-card-header"><div class="stat-card-icon red"><i class="fas fa-exclamation-triangle"></i></div></div>
-                            <div class="stat-card-value" id="statDueToday">0</div>
-                            <div class="stat-card-label">Vencendo Hoje</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-card-header"><div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div></div>
-                            <div class="stat-card-value" id="statMonthlyRevenue">R$ 0</div>
-                            <div class="stat-card-label">Receita Estimada</div>
-                        </div>
+                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon blue"><i class="fas fa-users"></i></div></div><div class="stat-card-value" id="statTotalClients">0</div><div class="stat-card-label">Total Clientes</div></div>
+                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon green"><i class="fas fa-check-circle"></i></div></div><div class="stat-card-value" id="statActiveClients">0</div><div class="stat-card-label">Ativos</div></div>
+                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon red"><i class="fas fa-exclamation-triangle"></i></div></div><div class="stat-card-value" id="statDueToday">0</div><div class="stat-card-label">Vence Hoje</div></div>
+                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div></div><div class="stat-card-value" id="statMonthlyRevenue">R$0</div><div class="stat-card-label">Receita</div></div>
                     </div>
-                    
-                    <!-- Alertas de vencimento -->
                     <div id="adminAlertsContainer"></div>
                 </div>
 
                 <!-- Admin Clientes -->
                 <div id="adminClients" class="view-section">
-                    <h1 class="page-title">Gestão de Clientes</h1>
-                    <p class="page-subtitle">Gerencie assinaturas, acessos e faturamentos</p>
+                    <h1 class="page-title">Clientes</h1>
+                    <p class="page-subtitle">Gerencie assinaturas e acessos</p>
                     <div class="filter-bar">
-                        <span style="font-weight: 600; font-size: 13px; color: #64748b;">Filtrar:</span>
                         <button class="filter-pill active" onclick="setFilter('all', this)">Todos</button>
                         <button class="filter-pill" onclick="setFilter('active', this)">✅ Ativos</button>
-                        <button class="filter-pill danger" onclick="setFilter('dueToday', this)">🔴 Vence Hoje</button>
-                        <button class="filter-pill" onclick="setFilter('dueSoon', this)">🟡 Vence em Breve</button>
+                        <button class="filter-pill" onclick="setFilter('dueToday', this)">🔴 Hoje</button>
+                        <button class="filter-pill" onclick="setFilter('dueSoon', this)">🟡 Breve</button>
                         <button class="filter-pill" onclick="setFilter('expired', this)">⚠️ Vencidos</button>
                     </div>
-                    <div class="table-container">
-                        <div class="table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Cliente</th><th>Site / Serviço</th><th>Plano</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="clientsTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <div class="table-container"><div class="table-wrapper"><table><thead><tr><th>Cliente</th><th>Site</th><th>Plano</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="clientsTableBody"></tbody></table></div></div>
                 </div>
 
-                <!-- Admin Assessoria (Solicitações) -->
+                <!-- Admin Assessoria -->
                 <div id="adminAssessoria" class="view-section">
-                    <h1 class="page-title">Solicitações de Atualização</h1>
-                    <p class="page-subtitle">Gerencie os pedidos enviados pelos clientes (Prazo padrão: 5 a 7 dias)</p>
-                    <div class="table-container">
-                        <div class="table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Data</th><th>Cliente</th><th>Solicitação</th><th>Status</th><th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="adminRequestsTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <h1 class="page-title">Solicitações</h1>
+                    <p class="page-subtitle">Pedidos dos clientes</p>
+                    <div class="table-container"><div class="table-wrapper"><table><thead><tr><th>Data</th><th>Cliente</th><th>Solicitação</th><th>Status</th><th>Ações</th></tr></thead><tbody id="adminRequestsTableBody"></tbody></table></div></div>
                 </div>
 
-                <!-- ================= VIEWS CLIENTE ================= -->
-                
                 <!-- Client Dashboard -->
                 <div id="clientDashboard" class="view-section">
                     <h1 class="page-title">Meu Plano</h1>
-                    <p class="page-subtitle">Resumo da sua assinatura atual</p>
+                    <p class="page-subtitle">Resumo da assinatura</p>
                     <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-card-header"><div class="stat-card-icon blue"><i class="fas fa-globe"></i></div></div>
-                            <div class="stat-card-value" id="clientViewSiteName">---</div>
-                            <div class="stat-card-label">Seu Site/Serviço</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-card-header"><div class="stat-card-icon green"><i class="fas fa-calendar-check"></i></div></div>
-                            <div class="stat-card-value" id="clientViewPlanType">---</div>
-                            <div class="stat-card-label">Ciclo de Pagamento</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-card-header"><div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div></div>
-                            <div class="stat-card-value" id="clientViewValue">R$ 0,00</div>
-                            <div class="stat-card-label">Valor Mensalidade</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-card-header"><div class="stat-card-icon amber"><i class="fas fa-clock"></i></div></div>
-                            <div class="stat-card-value" id="clientViewDueDate">---</div>
-                            <div class="stat-card-label">Próximo Vencimento</div>
-                        </div>
+                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon blue"><i class="fas fa-globe"></i></div></div><div class="stat-card-value" id="clientViewSiteName">---</div><div class="stat-card-label">Site</div></div>
+                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon green"><i class="fas fa-calendar-check"></i></div></div><div class="stat-card-value" id="clientViewPlanType">---</div><div class="stat-card-label">Ciclo</div></div>
+                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div></div><div class="stat-card-value" id="clientViewValue">R$0</div><div class="stat-card-label">Valor</div></div>
+                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon amber"><i class="fas fa-clock"></i></div></div><div class="stat-card-value" id="clientViewDueDate">---</div><div class="stat-card-label">Vencimento</div></div>
                     </div>
-                    
-                    <!-- Alerta de status do plano -->
                     <div id="clientPlanAlert"></div>
                 </div>
 
                 <!-- Client Assessoria -->
                 <div id="clientAssessoria" class="view-section">
-                    <h1 class="page-title">Painel de Assessoria</h1>
-                    <p class="page-subtitle">Envie mensagens para a equipe solicitando atualizações no site</p>
-                    
-                    <div class="alert-banner info">
-                        <i class="fas fa-info-circle"></i>
-                        <div><strong>Aviso Importante:</strong> Toda solicitação de atualização possui um prazo de execução de <strong>5 a 7 dias úteis</strong> após a análise.</div>
-                    </div>
-
+                    <h1 class="page-title">Assessoria</h1>
+                    <p class="page-subtitle">Solicite atualizações</p>
+                    <div class="alert-banner info"><i class="fas fa-info-circle"></i><div><strong>Prazo:</strong> 5 a 7 dias úteis</div></div>
                     <div class="form-section">
-                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #0f172a;">Nova Solicitação</h3>
-                        <textarea id="newRequestText" class="form-textarea" placeholder="Descreva detalhadamente a atualização desejada no site (ex: Trocar banner principal, atualizar telefones, adicionar produto X)..."></textarea>
-                        <button class="btn btn-primary" style="margin-top: 12px;" onclick="submitClientRequest()">
-                            <i class="fas fa-paper-plane"></i> Enviar para Equipe
-                        </button>
+                        <textarea id="newRequestText" class="form-textarea" placeholder="Descreva a atualização desejada..."></textarea>
+                        <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="submitClientRequest()"><i class="fas fa-paper-plane"></i> Enviar</button>
                     </div>
-
-                    <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 32px 0 16px 0;">Histórico de Solicitações</h3>
-                    <div class="table-container">
-                        <div class="table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th style="width: 120px;">Data</th>
-                                        <th>Mensagem</th>
-                                        <th style="width: 150px;">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="clientRequestsTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <h3 style="font-size:15px; font-weight:700; margin:20px 0 10px;">Histórico</h3>
+                    <div class="table-container"><div class="table-wrapper"><table><thead><tr><th>Data</th><th>Mensagem</th><th>Status</th></tr></thead><tbody id="clientRequestsTableBody"></tbody></table></div></div>
                 </div>
-
             </div>
         </main>
     </div>
 
-    <!-- Modal Cliente (Admin) -->
-    <div class="modal-overlay" id="clientModal" style="display: none;">
+    <!-- ==================== MODAIS ==================== -->
+    <div class="modal-overlay" id="clientModal" style="display:none;">
         <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">Novo Cliente</h2>
-                <button class="btn-ghost btn-icon" onclick="closeClientModal()"><i class="fas fa-times"></i></button>
-            </div>
+            <div class="modal-header"><h2 class="modal-title" id="modalTitle">Novo Cliente</h2><button class="btn-ghost btn-icon" onclick="closeClientModal()"><i class="fas fa-times"></i></button></div>
             <div class="modal-body">
                 <form id="clientForm" onsubmit="return false;">
                     <input type="hidden" id="clientId">
-                    
                     <div class="form-section">
-                        <div class="form-label" style="text-transform: uppercase;">Dados Cadastrais</div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Nome do Cliente *</label>
-                                <input type="text" class="form-input" id="clientName" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-input" id="clientEmail">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Site / Serviço</label>
-                            <input type="text" class="form-input" id="siteName" placeholder="www.dominio.com.br">
-                        </div>
+                        <div class="form-label" style="text-transform:uppercase; font-size:10px; letter-spacing:0.5px;">Dados Cadastrais</div>
+                        <div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" class="form-input" id="clientName" required></div><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="clientEmail"></div></div>
+                        <div class="form-group"><label class="form-label">Site / Serviço</label><input type="text" class="form-input" id="siteName"></div>
                     </div>
-
                     <div class="form-section">
-                        <div class="form-label" style="text-transform: uppercase;">🔐 Acesso do Cliente ao Painel</div>
-                        <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">Preencha para que o cliente possa logar e pedir alterações no painel de Assessoria.</p>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Email de Login</label>
-                                <input type="email" class="form-input" id="clientLoginEmail" placeholder="cliente@exemplo.com">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Senha</label>
-                                <input type="text" class="form-input" id="clientPassword" placeholder="Senha de acesso">
-                            </div>
-                        </div>
+                        <div class="form-label" style="text-transform:uppercase; font-size:10px; letter-spacing:0.5px;">🔐 Acesso</div>
+                        <div class="form-row"><div class="form-group"><label class="form-label">Email Login</label><input type="email" class="form-input" id="clientLoginEmail"></div><div class="form-group"><label class="form-label">Senha (mín. 6)</label><input type="text" class="form-input" id="clientPassword"></div></div>
                     </div>
-
                     <div class="form-section">
-                        <div class="form-label" style="text-transform: uppercase;">Plano e Cobrança</div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Valor (R$) *</label>
-                                <input type="number" class="form-input" id="monthlyValue" step="0.01" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Plano</label>
-                                <select class="form-select" id="planType">
-                                    <option value="monthly">Mensal</option>
-                                    <option value="quarterly">Trimestral</option>
-                                    <option value="semiannual">Semestral</option>
-                                    <option value="annual">Anual</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Vencimento *</label>
-                                <input type="date" class="form-input" id="dueDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Data de Ativação</label>
-                                <input type="text" class="form-input" id="activationDate" readonly style="background-color: #f1f5f9; color: #64748b; cursor: not-allowed; font-weight: 500;" placeholder="Gerada ao salvar">
-                            </div>
-                        </div>
+                        <div class="form-label" style="text-transform:uppercase; font-size:10px; letter-spacing:0.5px;">Plano</div>
+                        <div class="form-row"><div class="form-group"><label class="form-label">Valor R$ *</label><input type="number" class="form-input" id="monthlyValue" step="0.01" required></div><div class="form-group"><label class="form-label">Plano</label><select class="form-select" id="planType"><option value="monthly">Mensal</option><option value="quarterly">Trimestral</option><option value="semiannual">Semestral</option><option value="annual">Anual</option></select></div></div>
+                        <div class="form-row"><div class="form-group"><label class="form-label">Vencimento *</label><input type="date" class="form-input" id="dueDate" required></div><div class="form-group"><label class="form-label">Ativação</label><input type="text" class="form-input" id="activationDate" readonly style="background:#f1f5f9; color:#64748b;"></div></div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeClientModal()">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveClient()"><i class="fas fa-save"></i> Salvar</button>
-            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeClientModal()">Cancelar</button><button class="btn btn-primary" onclick="saveClient()" id="btnSaveClient"><i class="fas fa-save"></i> Salvar</button></div>
         </div>
     </div>
 
-    <!-- Modal Update Status Request (Admin) -->
-    <div class="modal-overlay" id="updateRequestModal" style="display: none;">
-        <div class="modal" style="max-width: 500px;">
-            <div class="modal-header">
-                <h2 class="modal-title">Detalhes da Solicitação</h2>
-                <button class="btn-ghost btn-icon" onclick="document.getElementById('updateRequestModal').style.display='none'"><i class="fas fa-times"></i></button>
-            </div>
+    <div class="modal-overlay" id="updateRequestModal" style="display:none;">
+        <div class="modal" style="max-width:500px;">
+            <div class="modal-header"><h2 class="modal-title">Solicitação</h2><button class="btn-ghost btn-icon" onclick="document.getElementById('updateRequestModal').style.display='none'"><i class="fas fa-times"></i></button></div>
             <div class="modal-body">
                 <input type="hidden" id="editReqId">
-                
-                <div style="margin-bottom: 16px;">
-                    <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Cliente</div>
-                    <div style="font-size: 15px; font-weight: 600; color: #0f172a;" id="viewReqClientName">---</div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="viewReqDate">---</div>
-                </div>
-
-                <div style="margin-bottom: 20px;">
-                    <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 6px;">Mensagem da Solicitação</div>
-                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; font-size: 14px; color: #334155; white-space: pre-wrap; max-height: 200px; overflow-y: auto;" id="viewReqMessage">
-                        ---
-                    </div>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label">Atualizar Status</label>
-                    <select id="newReqStatus" class="form-select">
-                        <option value="pending">🟡 Pendente (Prazo 5-7 dias)</option>
-                        <option value="in_progress">🔵 Realizando (Em Andamento)</option>
-                        <option value="completed">🟢 Feita (Concluída)</option>
-                    </select>
-                </div>
+                <div style="margin-bottom:12px;"><div style="font-size:11px; color:#64748b; font-weight:600;">CLIENTE</div><div style="font-size:14px; font-weight:600;" id="viewReqClientName">---</div><div style="font-size:11px; color:#64748b;" id="viewReqDate">---</div></div>
+                <div style="margin-bottom:16px;"><div style="font-size:11px; color:#64748b; font-weight:600; margin-bottom:4px;">MENSAGEM</div><div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px; font-size:13px; white-space:pre-wrap; max-height:180px; overflow-y:auto;" id="viewReqMessage">---</div></div>
+                <div class="form-group"><label class="form-label">Status</label><select id="newReqStatus" class="form-select"><option value="pending">🟡 Pendente</option><option value="in_progress">🔵 Em Andamento</option><option value="completed">🟢 Concluída</option></select></div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="document.getElementById('updateRequestModal').style.display='none'">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveRequestStatus()"><i class="fas fa-save"></i> Salvar Status</button>
-            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('updateRequestModal').style.display='none'">Cancelar</button><button class="btn btn-primary" onclick="saveRequestStatus()">Salvar</button></div>
         </div>
     </div>
 
-    <!-- Modal Alterar Senha (Cliente) -->
-    <div class="modal-overlay" id="changePasswordModal" style="display: none;">
-        <div class="modal" style="max-width: 380px;">
-            <div class="modal-header">
-                <h2 class="modal-title">Alterar Senha</h2>
-                <button class="btn-ghost btn-icon" onclick="document.getElementById('changePasswordModal').style.display='none'"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Nova Senha</label>
-                    <input type="password" id="newClientPassword" class="form-input" placeholder="Digite sua nova senha">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="document.getElementById('changePasswordModal').style.display='none'">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveNewClientPassword()">Salvar</button>
-            </div>
+    <div class="modal-overlay" id="changePasswordModal" style="display:none;">
+        <div class="modal" style="max-width:380px;">
+            <div class="modal-header"><h2 class="modal-title">Alterar Senha</h2><button class="btn-ghost btn-icon" onclick="document.getElementById('changePasswordModal').style.display='none'"><i class="fas fa-times"></i></button></div>
+            <div class="modal-body"><div class="form-group"><label class="form-label">Nova Senha (mín. 6)</label><input type="password" id="newClientPassword" class="form-input"></div></div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('changePasswordModal').style.display='none'">Cancelar</button><button class="btn btn-primary" onclick="saveNewClientPassword()">Salvar</button></div>
         </div>
     </div>
 
     <script>
         // ============================================
-        // ESTADO GLOBAL E PERSISTÊNCIA
+        // FIREBASE CONFIG
         // ============================================
-        let session = JSON.parse(localStorage.getItem('cf_session')) || { type: null, data: null };
-        let clients = JSON.parse(localStorage.getItem('cf_clients')) || [
-            { 
-                id: '1', 
-                name: 'Empresa Exemplo', 
-                email: 'cliente@exemplo.com', 
-                loginEmail: 'cliente@exemplo.com', 
-                password: '123456', 
-                siteName: 'www.exemplo.com.br', 
-                monthlyValue: '150.00', 
-                planType: 'monthly', 
-                dueDate: new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0],
-                createdAt: new Date().toISOString()
-            }
-        ];
-        let allRequests = JSON.parse(localStorage.getItem('cf_requests')) || [
-            { id: 'r1', clientEmail: 'cliente@exemplo.com', clientName: 'Empresa Exemplo', message: 'Alterar banner principal para promoção de inverno.', status: 'pending', createdAt: Date.now() - 86400000 }
-        ];
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDX8AbbPe_NyEaSdk7U8rUkOf6cPnXWzU",
+            authDomain: "jules-a661e.firebaseapp.com",
+            databaseURL: "https://jules-a661e-default-rtdb.firebaseio.com",
+            projectId: "jules-a661e",
+            storageBucket: "jules-a661e.firebasestorage.app",
+            messagingSenderId: "468339495351",
+            appId: "1:468339495351:web:c092f23760e5d1d71c1832",
+            measurementId: "G-MDNFQLLZ9H"
+        };
 
-        // Admin padrão (se não existir)
-        if (!localStorage.getItem('cf_admin')) {
-            localStorage.setItem('cf_admin', JSON.stringify({ 
-                name: 'Administrador', 
-                email: 'admin@clientflow.com', 
-                password: 'admin123' 
-            }));
-        }
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
 
+        // ============================================
+        // ESTADO GLOBAL
+        // ============================================
+        let currentUser = null;
+        let userRole = null;
+        let clientData = null;
+        let clients = [];
+        let allRequests = [];
         let currentFilter = 'all';
         let searchTerm = '';
-        let isAdminRegisterMode = false;
+        let listeners = [];
 
         // ============================================
-        // FUNÇÕES UTILITÁRIAS DE DATA E STATUS
+        // UTILITÁRIOS
         // ============================================
+        function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
+        function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
         
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            toast.innerHTML = `<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3500);
+        }
+
         function getClientStatus(dueDateStr) {
-            if (!dueDateStr) {
-                return { status: 'unknown', label: 'Sem data', color: 'gray', icon: '❓' };
-            }
-            
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
+            if (!dueDateStr) return { status: 'unknown', label: 'Sem data', color: 'gray' };
+            const today = new Date(); today.setHours(0, 0, 0, 0);
             const dueDate = new Date(dueDateStr + 'T00:00:00');
-            
-            const diffTime = dueDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays < 0) {
-                return { status: 'expired', label: 'Vencido', color: 'red', icon: '🔴' };
-            } else if (diffDays === 0) {
-                return { status: 'dueToday', label: 'Vence Hoje', color: 'red', icon: '🔴' };
-            } else if (diffDays <= 5) {
-                return { status: 'dueSoon', label: 'Vence em Breve', color: 'yellow', icon: '🟡' };
-            } else {
-                return { status: 'active', label: 'Ativo', color: 'green', icon: '✅' };
-            }
+            const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+            if (diffDays < 0) return { status: 'expired', label: 'Vencido', color: 'red' };
+            if (diffDays === 0) return { status: 'dueToday', label: 'Vence Hoje', color: 'red' };
+            if (diffDays <= 5) return { status: 'dueSoon', label: 'Vence em Breve', color: 'yellow' };
+            return { status: 'active', label: 'Ativo', color: 'green' };
         }
 
         function getStatusBadge(dueDateStr) {
-            const status = getClientStatus(dueDateStr);
-            
-            switch(status.status) {
-                case 'active':
-                    return `<span class="badge badge-success"><span class="badge-dot green"></span>${status.label}</span>`;
-                case 'dueSoon':
-                    return `<span class="badge badge-warning"><span class="badge-dot yellow"></span>${status.label}</span>`;
-                case 'dueToday':
-                    return `<span class="badge badge-danger"><span class="badge-dot red"></span>${status.label}</span>`;
-                case 'expired':
-                    return `<span class="badge badge-danger"><span class="badge-dot red"></span>${status.label}</span>`;
-                default:
-                    return `<span class="badge badge-info">${status.label}</span>`;
-            }
+            const s = getClientStatus(dueDateStr);
+            const map = {
+                active: `<span class="badge badge-success"><span class="badge-dot green"></span>${s.label}</span>`,
+                dueSoon: `<span class="badge badge-warning"><span class="badge-dot yellow"></span>${s.label}</span>`,
+                dueToday: `<span class="badge badge-danger"><span class="badge-dot red"></span>${s.label}</span>`,
+                expired: `<span class="badge badge-danger"><span class="badge-dot red"></span>${s.label}</span>`
+            };
+            return map[s.status] || `<span class="badge badge-info">${s.label}</span>`;
         }
 
         function getReminderIcon(dueDateStr) {
-            const status = getClientStatus(dueDateStr);
-            
-            if (status.status === 'dueToday' || status.status === 'expired') {
-                return '<i class="fas fa-exclamation-circle reminder-icon red" title="' + status.label + '"></i>';
-            } else if (status.status === 'dueSoon') {
-                return '<i class="fas fa-exclamation-triangle reminder-icon yellow" title="' + status.label + '"></i>';
-            }
+            const s = getClientStatus(dueDateStr);
+            if (s.status === 'dueToday' || s.status === 'expired') return '<i class="fas fa-exclamation-circle reminder-icon red"></i>';
+            if (s.status === 'dueSoon') return '<i class="fas fa-exclamation-triangle reminder-icon yellow"></i>';
             return '';
         }
 
-        function getPlanLabel(planType) {
-            const labels = {
-                'monthly': 'Mensal',
-                'quarterly': 'Trimestral',
-                'semiannual': 'Semestral',
-                'annual': 'Anual'
-            };
-            return labels[planType] || planType || 'Mensal';
+        function getPlanLabel(pt) {
+            const labels = { monthly: 'Mensal', quarterly: 'Trimestral', semiannual: 'Semestral', annual: 'Anual' };
+            return labels[pt] || pt || 'Mensal';
         }
 
         // ============================================
-        // FUNÇÕES DE PERSISTÊNCIA
+        // SIDEBAR
         // ============================================
-        function saveDB() {
-            localStorage.setItem('cf_clients', JSON.stringify(clients));
-            localStorage.setItem('cf_requests', JSON.stringify(allRequests));
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
         }
 
-        function syncSessionClientData() {
-            if (session.type === 'client' && session.data) {
-                const clientEmail = session.data.email || session.data.loginEmail;
-                const clientIndex = clients.findIndex(c => 
-                    (c.email && c.email.toLowerCase() === clientEmail?.toLowerCase()) || 
-                    (c.loginEmail && c.loginEmail.toLowerCase() === clientEmail?.toLowerCase())
-                );
-                
-                if (clientIndex !== -1) {
-                    session.data = { ...clients[clientIndex] };
-                    localStorage.setItem('cf_session', JSON.stringify(session));
-                }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        }
+
+        document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+
+        // Fechar sidebar ao clicar fora em telas maiores
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== overlay) {
+                // Não fecha em desktop
             }
-        }
+        });
 
         // ============================================
-        // FUNÇÕES DE NAVEGAÇÃO ENTRE TELAS
+        // NAVEGAÇÃO
         // ============================================
-        
         function hideAllScreens() {
-            document.getElementById('briefingScreen').style.display = 'none';
-            document.getElementById('successBriefingScreen').style.display = 'none';
-            document.getElementById('adminAuthScreen').style.display = 'none';
-            document.getElementById('clientAuthScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'none';
+            ['briefingScreen', 'successBriefingScreen', 'adminAuthScreen', 'clientAuthScreen', 'appScreen'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
         }
 
-        window.showBriefingScreen = () => {
-            hideAllScreens();
-            document.getElementById('briefingScreen').style.display = 'flex';
-        };
+        window.showBriefingScreen = () => { hideAllScreens(); document.getElementById('briefingScreen').style.display = 'flex'; };
+        window.showAdminAuthScreen = () => { hideAllScreens(); document.getElementById('adminAuthScreen').style.display = 'flex'; };
+        window.showClientAuthScreen = () => { hideAllScreens(); document.getElementById('clientAuthScreen').style.display = 'flex'; };
+        window.goToClientPanel = () => { document.getElementById('successBriefingScreen').style.display = 'none'; showAppScreen(); };
 
-        window.showAdminAuthScreen = () => {
-            hideAllScreens();
-            document.getElementById('adminAuthScreen').style.display = 'flex';
-            isAdminRegisterMode = false;
-            document.getElementById('nameFieldAdmin').style.display = 'none';
-            document.getElementById('authSubmitTextAdmin').textContent = 'Entrar como Admin';
-            document.getElementById('authToggleTextAdmin').innerHTML = 'Não tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Criar conta</button>';
-        };
-
-        window.showClientAuthScreen = () => {
-            hideAllScreens();
-            document.getElementById('clientAuthScreen').style.display = 'flex';
-        };
-
-        window.goToClientPanel = () => {
-            document.getElementById('successBriefingScreen').style.display = 'none';
-            initSession();
-        };
-
-        window.toggleAdminRegister = () => {
-            isAdminRegisterMode = !isAdminRegisterMode;
-            if(isAdminRegisterMode) {
-                document.getElementById('nameFieldAdmin').style.display = 'block';
-                document.getElementById('authSubmitTextAdmin').textContent = 'Criar Conta';
-                document.getElementById('authToggleTextAdmin').innerHTML = 'Já tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Fazer login</button>';
-            } else {
-                document.getElementById('nameFieldAdmin').style.display = 'none';
-                document.getElementById('authSubmitTextAdmin').textContent = 'Entrar como Admin';
-                document.getElementById('authToggleTextAdmin').innerHTML = 'Não tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Criar conta</button>';
-            }
-        };
-
-        window.handleLogout = () => {
-            localStorage.removeItem('cf_session');
-            session = { type: null, data: null };
-            showBriefingScreen();
-            showToast('Sessão encerrada.', 'info');
-        };
-
-        // ============================================
-        // INICIALIZAÇÃO DE SESSÃO
-        // ============================================
-        function initSession() {
-            if(!session.type) {
-                showBriefingScreen();
-                return;
-            }
-
-            syncSessionClientData();
-
+        function showAppScreen() {
             hideAllScreens();
             document.getElementById('appScreen').style.display = 'flex';
-
-            if(session.type === 'admin') {
+            
+            if (userRole === 'admin') {
                 document.getElementById('menuAdmin').style.display = 'flex';
                 document.getElementById('menuClient').style.display = 'none';
                 document.getElementById('btnNewClient').style.display = 'inline-flex';
                 document.getElementById('adminSearchBox').style.display = 'flex';
                 document.getElementById('clientWelcomeText').style.display = 'none';
                 document.getElementById('btnChangePassword').style.display = 'none';
-                
-                const adminInfo = JSON.parse(localStorage.getItem('cf_admin')) || { email: session.data.email };
-                document.getElementById('sidebarUserName').textContent = adminInfo.name || 'Admin';
-                document.getElementById('sidebarUserInitials').textContent = (adminInfo.name || 'AD').substring(0,2).toUpperCase();
-                document.getElementById('sidebarUserEmailDisplay').textContent = adminInfo.email || '';
-                document.getElementById('sidebarUserPassDisplay').style.display = 'none';
-
-                renderAdminDashboard();
-                renderClientsTable();
-                renderAdminRequests();
+                document.getElementById('sidebarUserName').textContent = 'Admin';
+                document.getElementById('sidebarUserInitials').textContent = 'AD';
+                document.getElementById('sidebarUserEmailDisplay').textContent = currentUser.email;
+                setupRealtimeListeners();
                 switchView('adminDashboard');
             } else {
                 document.getElementById('menuAdmin').style.display = 'none';
@@ -968,32 +957,24 @@
                 document.getElementById('adminSearchBox').style.display = 'none';
                 document.getElementById('clientWelcomeText').style.display = 'block';
                 document.getElementById('btnChangePassword').style.display = 'inline';
-
-                const client = session.data;
-                document.getElementById('sidebarUserName').textContent = client.name;
-                document.getElementById('sidebarUserInitials').textContent = client.name.substring(0,2).toUpperCase();
-                document.getElementById('sidebarUserEmailDisplay').textContent = client.email || client.loginEmail || 'email@exemplo.com';
-                document.getElementById('sidebarUserPassDisplay').style.display = 'block';
-                document.getElementById('sidebarUserPassDisplay').innerHTML = 'Senha: <span>' + (client.password || '123456') + '</span>';
-
-                renderClientDashboard();
-                renderClientRequests();
+                document.getElementById('sidebarUserName').textContent = clientData?.name || 'Cliente';
+                document.getElementById('sidebarUserInitials').textContent = (clientData?.name || 'CL').substring(0,2).toUpperCase();
+                document.getElementById('sidebarUserEmailDisplay').textContent = currentUser.email;
+                setupRealtimeListeners();
                 switchView('clientDashboard');
             }
+            closeSidebar();
         }
 
-        // ============================================
-        // NAVEGAÇÃO DE TELAS INTERNAS
-        // ============================================
         window.switchView = (viewId) => {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(viewId);
-            if(target) target.classList.add('active');
-
+            if (target) target.classList.add('active');
+            
             document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.view === viewId);
             });
-
+            
             if (viewId === 'adminDashboard') renderAdminDashboard();
             if (viewId === 'adminClients') renderClientsTable();
             if (viewId === 'adminAssessoria') renderAdminRequests();
@@ -1001,272 +982,191 @@
             if (viewId === 'clientAssessoria') renderClientRequests();
         };
 
-        document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
-            btn.addEventListener('click', () => {
-                switchView(btn.dataset.view);
+        // ============================================
+        // FIREBASE AUTH
+        // ============================================
+        async function createFirebaseUser(email, password, role, extraData = {}) {
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const uid = userCredential.user.uid;
+            
+            await db.ref('users/' + uid).set({
+                email, role, ...extraData,
+                createdAt: firebase.database.ServerValue.TIMESTAMP
             });
-        });
+            
+            if (role === 'client') {
+                const clientRef = db.ref('clients').push();
+                await clientRef.set({
+                    uid, name: extraData.name || '', email,
+                    loginEmail: email, password,
+                    siteName: extraData.siteName || '',
+                    monthlyValue: extraData.monthlyValue || '150.00',
+                    planType: extraData.planType || 'monthly',
+                    dueDate: extraData.dueDate || new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                });
+            }
+            return { uid, user: userCredential.user };
+        }
+
+        async function loginFirebaseUser(email, password, expectedRole) {
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            const uid = userCredential.user.uid;
+            const snapshot = await db.ref('users/' + uid).once('value');
+            const userData = snapshot.val();
+            
+            if (!userData) { await auth.signOut(); throw new Error('Usuário não encontrado.'); }
+            if (userData.role !== expectedRole) {
+                await auth.signOut();
+                throw new Error(expectedRole === 'admin' ? 
+                    'Você só pode fazer login na área do cliente.' : 
+                    'Você é um administrador. Acesse pelo link secreto no site.');
+            }
+            return { uid, userData, user: userCredential.user };
+        }
+
+        window.handleLogout = async () => {
+            listeners.forEach(ref => ref.off());
+            listeners = [];
+            await auth.signOut();
+            currentUser = null; userRole = null; clientData = null;
+            clients = []; allRequests = [];
+            closeSidebar();
+            showBriefingScreen();
+            showToast('Sessão encerrada.', 'info');
+        };
 
         // ============================================
-        // RENDERIZADORES ADMIN
+        // REALTIME LISTENERS
         // ============================================
-        
+        function setupRealtimeListeners() {
+            listeners.forEach(ref => ref.off());
+            listeners = [];
+            
+            const clientsRef = db.ref('clients');
+            clientsRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                clients = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+                if (userRole === 'admin') { renderAdminDashboard(); renderClientsTable(); }
+                if (userRole === 'client' && currentUser) {
+                    const myClient = clients.find(c => c.uid === currentUser.uid);
+                    if (myClient) { clientData = myClient; renderClientDashboard(); }
+                }
+            });
+            listeners.push(clientsRef);
+            
+            const requestsRef = db.ref('requests');
+            requestsRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                allRequests = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+                if (userRole === 'admin') renderAdminRequests();
+                else renderClientRequests();
+            });
+            listeners.push(requestsRef);
+        }
+
+        // ============================================
+        // RENDERIZADORES
+        // ============================================
         function renderAdminDashboard() {
             document.getElementById('statTotalClients').textContent = clients.length;
-            
-            let activeCount = 0;
-            let dueTodayCount = 0;
+            let activeCount = 0, dueTodayCount = 0;
             const alertsHTML = [];
-            
             clients.forEach(c => {
                 const status = getClientStatus(c.dueDate);
                 if (status.status === 'active') activeCount++;
                 if (status.status === 'dueToday') dueTodayCount++;
                 if (status.status === 'dueToday' || status.status === 'expired') {
-                    alertsHTML.push(`
-                        <div class="alert-banner ${status.status === 'dueToday' ? 'danger' : 'warning'}">
-                            <i class="fas fa-exclamation-${status.status === 'dueToday' ? 'circle' : 'triangle'}"></i>
-                            <div><strong>${c.name}</strong> - ${status.label} ${status.status === 'expired' ? 'desde ' + new Date(c.dueDate + 'T00:00:00').toLocaleDateString('pt-BR') : ''}</div>
-                        </div>
-                    `);
+                    alertsHTML.push(`<div class="alert-banner ${status.status==='dueToday'?'danger':'warning'}"><i class="fas fa-exclamation-${status.status==='dueToday'?'circle':'triangle'}"></i><div><strong>${c.name}</strong> - ${status.label}</div></div>`);
                 }
             });
-            
             document.getElementById('statActiveClients').textContent = activeCount;
             document.getElementById('statDueToday').textContent = dueTodayCount;
-
-            const revenue = clients.reduce((acc, c) => acc + parseFloat(c.monthlyValue || 0), 0);
-            document.getElementById('statMonthlyRevenue').textContent = `R$ ${revenue.toFixed(2)}`;
-            
-            const alertsContainer = document.getElementById('adminAlertsContainer');
-            if (alertsContainer) {
-                alertsContainer.innerHTML = alertsHTML.join('');
-            }
+            document.getElementById('statMonthlyRevenue').textContent = `R$ ${clients.reduce((acc, c) => acc + parseFloat(c.monthlyValue || 0), 0).toFixed(2)}`;
+            document.getElementById('adminAlertsContainer').innerHTML = alertsHTML.join('');
         }
 
         function renderClientsTable() {
             const tbody = document.getElementById('clientsTableBody');
             let filtered = [...clients];
+            if (currentFilter === 'active') filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'active');
+            else if (currentFilter === 'dueToday') filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'dueToday');
+            else if (currentFilter === 'dueSoon') filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'dueSoon');
+            else if (currentFilter === 'expired') filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'expired');
+            if (searchTerm) filtered = filtered.filter(c => c.name?.toLowerCase().includes(searchTerm) || c.siteName?.toLowerCase().includes(searchTerm));
             
-            if(currentFilter === 'active') {
-                filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'active');
-            } else if(currentFilter === 'dueToday') {
-                filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'dueToday');
-            } else if(currentFilter === 'dueSoon') {
-                filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'dueSoon');
-            } else if(currentFilter === 'expired') {
-                filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'expired');
-            }
-
-            if(searchTerm) {
-                filtered = filtered.filter(c => 
-                    c.name.toLowerCase().includes(searchTerm) || 
-                    (c.siteName && c.siteName.toLowerCase().includes(searchTerm))
-                );
-            }
-
-            if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 32px;">Nenhum cliente encontrado.</td></tr>`;
-                return;
-            }
-
+            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:24px;">Nenhum cliente.</td></tr>'; return; }
+            
             tbody.innerHTML = filtered.map(c => {
                 const status = getClientStatus(c.dueDate);
-                const reminderIcon = getReminderIcon(c.dueDate);
-                const statusBadge = getStatusBadge(c.dueDate);
-                
                 let avatarColor = '#3b82f6';
                 if (status.status === 'expired' || status.status === 'dueToday') avatarColor = '#ef4444';
                 else if (status.status === 'dueSoon') avatarColor = '#f59e0b';
-                
-                return `
-                <tr>
-                    <td>
-                        <div class="client-info">
-                            <div class="client-avatar" style="background: ${avatarColor};">${c.name.substring(0,2).toUpperCase()}</div>
-                            <div>
-                                <div class="client-name">
-                                    ${reminderIcon} ${c.name}
-                                </div>
-                                <div class="client-detail">${c.email || ''}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>${c.siteName || '---'}</td>
+                return `<tr>
+                    <td><div class="client-info"><div class="client-avatar" style="background:${avatarColor};">${(c.name||'??').substring(0,2).toUpperCase()}</div><div><div class="client-name">${getReminderIcon(c.dueDate)} ${c.name||'---'}</div><div class="client-detail">${c.email||''}</div></div></div></td>
+                    <td>${c.siteName||'---'}</td>
                     <td><span class="badge badge-info">${getPlanLabel(c.planType)}</span></td>
-                    <td>R$ ${parseFloat(c.monthlyValue || 0).toFixed(2)}</td>
-                    <td>${c.dueDate ? new Date(c.dueDate + 'T00:00:00').toLocaleDateString('pt-BR') : '---'}</td>
-                    <td>${statusBadge}</td>
-                    <td>
-                        <div class="actions-cell">
-                            <button class="action-btn" onclick="openEditClientModal('${c.id}')"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn" onclick="deleteClient('${c.id}')"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </td>
-                </tr>
-                `;
+                    <td>R$${parseFloat(c.monthlyValue||0).toFixed(2)}</td>
+                    <td>${c.dueDate?new Date(c.dueDate+'T00:00:00').toLocaleDateString('pt-BR'):'---'}</td>
+                    <td>${getStatusBadge(c.dueDate)}</td>
+                    <td><div class="actions-cell"><button class="action-btn" onclick="openEditClientModal('${c.id}')"><i class="fas fa-edit"></i></button><button class="action-btn" onclick="deleteClient('${c.id}')"><i class="fas fa-trash"></i></button></div></td>
+                </tr>`;
             }).join('');
         }
 
         function renderAdminRequests() {
             const tbody = document.getElementById('adminRequestsTableBody');
             const pendingCount = allRequests.filter(r => r.status === 'pending').length;
-            const badge = document.getElementById('badgeAdminRequests');
-            if(pendingCount > 0) {
-                badge.style.display = 'inline-block';
-            } else {
-                badge.style.display = 'none';
-            }
-
-            if(allRequests.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 32px;">Nenhuma solicitação de atualização enviada.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = allRequests.map(req => {
-                let statusBadge = '<span class="badge badge-warning">Pendente (5-7 dias)</span>';
-                if(req.status === 'in_progress') statusBadge = '<span class="badge badge-info">Em Andamento</span>';
-                if(req.status === 'completed') statusBadge = '<span class="badge badge-success">Realizado</span>';
-
-                return `
-                    <tr>
-                        <td>${new Date(req.createdAt).toLocaleDateString('pt-BR')}</td>
-                        <td><strong>${req.clientName || 'Cliente'}</strong></td>
-                        <td><div class="req-msg">${req.message}</div></td>
-                        <td>${statusBadge}</td>
-                        <td>
-                            <button class="btn btn-secondary btn-sm" onclick="openUpdateStatusModal('${req.id}', '${req.status}')">
-                                <i class="fas fa-pen"></i> Status
-                            </button>
-                        </td>
-                    </tr>
-                `;
+            document.getElementById('badgeAdminRequests').style.display = pendingCount > 0 ? 'inline-block' : 'none';
+            if (!allRequests.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:24px;">Nenhuma solicitação.</td></tr>'; return; }
+            tbody.innerHTML = allRequests.map(r => {
+                let sb = '<span class="badge badge-warning">Pendente</span>';
+                if (r.status === 'in_progress') sb = '<span class="badge badge-info">Andamento</span>';
+                if (r.status === 'completed') sb = '<span class="badge badge-success">Realizado</span>';
+                return `<tr><td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td><td><strong>${r.clientName||'Cliente'}</strong></td><td><div class="req-msg">${r.message}</div></td><td>${sb}</td><td><button class="btn btn-secondary btn-sm" onclick="openUpdateStatusModal('${r.id}')"><i class="fas fa-pen"></i></button></td></tr>`;
             }).join('');
         }
 
-        // ============================================
-        // RENDERIZADORES CLIENTE
-        // ============================================
-        
         function renderClientDashboard() {
-            syncSessionClientData();
-            const client = session.data;
-            
-            if (!client) return;
-            
-            document.getElementById('clientViewSiteName').textContent = client.siteName || 'Site Profissional';
-            document.getElementById('clientViewPlanType').textContent = getPlanLabel(client.planType) + ' Recorrente';
-            document.getElementById('clientViewValue').textContent = `R$ ${parseFloat(client.monthlyValue || 150).toFixed(2)}`;
-            
-            const dueDateFormatted = client.dueDate ? new Date(client.dueDate + 'T00:00:00').toLocaleDateString('pt-BR') : 'Não definida';
-            document.getElementById('clientViewDueDate').textContent = dueDateFormatted;
-            
-            const status = getClientStatus(client.dueDate);
-            const alertContainer = document.getElementById('clientPlanAlert');
-            
-            if (alertContainer) {
-                if (status.status === 'expired') {
-                    alertContainer.innerHTML = `
-                        <div class="alert-banner danger">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <div><strong>Atenção!</strong> Seu plano está <strong>VENCIDO</strong> desde ${dueDateFormatted}. Entre em contato para renovar.</div>
-                        </div>
-                    `;
-                } else if (status.status === 'dueToday') {
-                    alertContainer.innerHTML = `
-                        <div class="alert-banner warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <div><strong>Atenção!</strong> Seu plano vence <strong>HOJE</strong> (${dueDateFormatted}). Renove para manter os serviços.</div>
-                        </div>
-                    `;
-                } else if (status.status === 'dueSoon') {
-                    alertContainer.innerHTML = `
-                        <div class="alert-banner info">
-                            <i class="fas fa-info-circle"></i>
-                            <div>Seu plano vence em breve (${dueDateFormatted}). Fique atento à renovação.</div>
-                        </div>
-                    `;
-                } else {
-                    alertContainer.innerHTML = `
-                        <div class="alert-banner success">
-                            <i class="fas fa-check-circle"></i>
-                            <div>Seu plano está <strong>ATIVO</strong>. Próximo vencimento: ${dueDateFormatted}.</div>
-                        </div>
-                    `;
-                }
-            }
+            if (!clientData) return;
+            document.getElementById('clientViewSiteName').textContent = clientData.siteName || 'Site';
+            document.getElementById('clientViewPlanType').textContent = getPlanLabel(clientData.planType);
+            document.getElementById('clientViewValue').textContent = `R$${parseFloat(clientData.monthlyValue||150).toFixed(2)}`;
+            document.getElementById('clientViewDueDate').textContent = clientData.dueDate ? new Date(clientData.dueDate+'T00:00:00').toLocaleDateString('pt-BR') : '---';
+            const status = getClientStatus(clientData.dueDate);
+            const df = clientData.dueDate ? new Date(clientData.dueDate+'T00:00:00').toLocaleDateString('pt-BR') : '---';
+            const ac = document.getElementById('clientPlanAlert');
+            if (status.status === 'expired') ac.innerHTML = `<div class="alert-banner danger"><i class="fas fa-exclamation-circle"></i><div><strong>VENCIDO</strong> desde ${df}</div></div>`;
+            else if (status.status === 'dueToday') ac.innerHTML = `<div class="alert-banner warning"><i class="fas fa-exclamation-triangle"></i><div><strong>Vence HOJE!</strong></div></div>`;
+            else if (status.status === 'dueSoon') ac.innerHTML = `<div class="alert-banner info"><i class="fas fa-info-circle"></i><div>Vence em breve (${df})</div></div>`;
+            else ac.innerHTML = `<div class="alert-banner success"><i class="fas fa-check-circle"></i><div><strong>ATIVO</strong> - Vence: ${df}</div></div>`;
         }
 
         function renderClientRequests() {
             const tbody = document.getElementById('clientRequestsTableBody');
-            const clientEmail = session.data?.email || session.data?.loginEmail;
-            const myReqs = allRequests.filter(r => r.clientEmail === clientEmail);
-
-            if(myReqs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #94a3b8; padding: 32px;">Nenhuma solicitação enviada ainda. Use o campo acima para pedir atualizações.</td></tr>`;
-                return;
-            }
-
+            const myReqs = allRequests.filter(r => r.clientUid === currentUser.uid);
+            if (!myReqs.length) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#94a3b8; padding:24px;">Nenhuma solicitação.</td></tr>'; return; }
             tbody.innerHTML = myReqs.map(r => {
-                let statusBadge = '<span class="badge badge-warning">🟡 Solicitado (Prazo: 5 a 7 dias)</span>';
-                if(r.status === 'in_progress') statusBadge = '<span class="badge badge-info">🔵 Em Andamento</span>';
-                if(r.status === 'completed') statusBadge = '<span class="badge badge-success">🟢 Realizado (Concluído)</span>';
-
-                return `
-                    <tr>
-                        <td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td>
-                        <td><div class="req-msg">${r.message}</div></td>
-                        <td>${statusBadge}</td>
-                    </tr>
-                `;
+                let sb = '<span class="badge badge-warning">🟡 Pendente</span>';
+                if (r.status === 'in_progress') sb = '<span class="badge badge-info">🔵 Andamento</span>';
+                if (r.status === 'completed') sb = '<span class="badge badge-success">🟢 Realizado</span>';
+                return `<tr><td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td><td><div class="req-msg">${r.message}</div></td><td>${sb}</td></tr>`;
             }).join('');
         }
 
         // ============================================
-        // AÇÕES DO CLIENTE
+        // AÇÕES
         // ============================================
-        
-        window.submitClientRequest = () => {
-            const text = document.getElementById('newRequestText').value.trim();
-            if(!text) {
-                showToast('Escreva a solicitação antes de enviar.', 'error');
-                return;
-            }
-
-            const client = session.data;
-            const newReq = {
-                id: 'req_' + Date.now(),
-                clientEmail: client.email || client.loginEmail,
-                clientName: client.name,
-                message: text,
-                status: 'pending',
-                createdAt: Date.now()
-            };
-
-            allRequests.unshift(newReq);
-            saveDB();
-            document.getElementById('newRequestText').value = '';
-            renderClientRequests();
-            showToast('Solicitação enviada com sucesso! Prazo de 5 a 7 dias úteis.', 'success');
-        };
-
-        // ============================================
-        // MODAIS DE CLIENTE (ADMIN)
-        // ============================================
-        
         window.openAddClientModal = () => {
             document.getElementById('modalTitle').textContent = 'Novo Cliente';
             document.getElementById('clientForm').reset();
             document.getElementById('clientId').value = '';
-            document.getElementById('activationDate').value = 'Será gerada ao salvar';
+            document.getElementById('activationDate').value = 'Gerada ao salvar';
             document.getElementById('clientModal').style.display = 'flex';
         };
+        window.closeClientModal = () => { document.getElementById('clientModal').style.display = 'none'; };
 
-        window.closeClientModal = () => {
-            document.getElementById('clientModal').style.display = 'none';
-        };
-
-        window.saveClient = () => {
+        window.saveClient = async () => {
             const id = document.getElementById('clientId').value;
             const name = document.getElementById('clientName').value.trim();
             const email = document.getElementById('clientEmail').value.trim();
@@ -1276,155 +1176,113 @@
             const monthlyValue = document.getElementById('monthlyValue').value;
             const planType = document.getElementById('planType').value;
             const dueDate = document.getElementById('dueDate').value;
-
-            if(!name || !monthlyValue || !dueDate) {
-                showToast('Preencha os campos obrigatórios!', 'error');
-                return;
-            }
-
-            if(id) {
-                const idx = clients.findIndex(c => c.id === id);
-                if(idx !== -1) {
-                    clients[idx] = { 
-                        ...clients[idx], 
-                        name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate 
-                    };
-                    
-                    if (session.type === 'client' && 
-                        (session.data.email === clients[idx].email || 
-                         session.data.loginEmail === clients[idx].loginEmail)) {
-                        session.data = { ...clients[idx] };
-                        localStorage.setItem('cf_session', JSON.stringify(session));
-                    }
+            if (!name || !monthlyValue || !dueDate) { showToast('Preencha os campos obrigatórios!', 'error'); return; }
+            if (password.length < 6) { showToast('Senha deve ter no mínimo 6 caracteres.', 'error'); return; }
+            
+            const btn = document.getElementById('btnSaveClient');
+            btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
+            try {
+                if (id) {
+                    await db.ref('clients/' + id).update({ name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate });
+                } else {
+                    await createFirebaseUser(loginEmail || email, password, 'client', { name, email, siteName, monthlyValue, planType, dueDate });
                 }
-            } else {
-                clients.push({ 
-                    id: 'c_' + Date.now(), 
-                    name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate, 
-                    createdAt: new Date().toISOString() 
-                });
+                closeClientModal();
+                showToast('Cliente salvo!', 'success');
+            } catch (error) {
+                showToast(error.code === 'auth/email-already-in-use' ? 'Email já cadastrado.' : 'Erro: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading();
             }
-
-            saveDB();
-            renderClientsTable();
-            renderAdminDashboard();
-            closeClientModal();
-            
-            if (session.type === 'client') {
-                renderClientDashboard();
-            }
-            
-            showToast('Cliente salvo com sucesso!', 'success');
         };
 
         window.openEditClientModal = (id) => {
             const client = clients.find(c => c.id === id);
-            if(!client) return;
-            
+            if (!client) return;
             document.getElementById('modalTitle').textContent = 'Editar Cliente';
             document.getElementById('clientId').value = client.id;
             document.getElementById('clientName').value = client.name || '';
             document.getElementById('clientEmail').value = client.email || '';
-            document.getElementById('clientLoginEmail').value = client.loginEmail || client.email || '';
-            document.getElementById('clientPassword').value = client.password || '123456';
+            document.getElementById('clientLoginEmail').value = client.loginEmail || '';
+            document.getElementById('clientPassword').value = client.password || '';
             document.getElementById('siteName').value = client.siteName || '';
             document.getElementById('monthlyValue').value = client.monthlyValue || '';
             document.getElementById('planType').value = client.planType || 'monthly';
             document.getElementById('dueDate').value = client.dueDate || '';
-            
-            let actDateStr = 'Não registrada';
-            if(client.createdAt) {
-                const d = new Date(client.createdAt);
-                actDateStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-            }
-            document.getElementById('activationDate').value = actDateStr;
-            
+            document.getElementById('activationDate').value = client.createdAt ? new Date(client.createdAt).toLocaleDateString('pt-BR') : '---';
             document.getElementById('clientModal').style.display = 'flex';
         };
 
-        window.deleteClient = (id) => {
-            if(confirm('Tem certeza que deseja excluir este cliente?')) {
-                clients = clients.filter(c => c.id !== id);
-                saveDB();
-                renderClientsTable();
-                renderAdminDashboard();
-                showToast('Cliente excluído com sucesso!', 'success');
-            }
+        window.deleteClient = async (id) => {
+            if (!confirm('Excluir este cliente?')) return;
+            showLoading();
+            try { await db.ref('clients/' + id).remove(); showToast('Cliente excluído.', 'success'); }
+            catch (error) { showToast('Erro ao excluir.', 'error'); }
+            finally { hideLoading(); }
         };
 
-        // ============================================
-        // MODAIS DE SOLICITAÇÃO (ADMIN)
-        // ============================================
-        
-        window.openUpdateStatusModal = (reqId, currentStatus) => {
-            const req = allRequests.find(r => r.id === reqId);
-            if(!req) return;
+        window.submitClientRequest = async () => {
+            const text = document.getElementById('newRequestText').value.trim();
+            if (!text) { showToast('Descreva a solicitação.', 'error'); return; }
+            showLoading();
+            try {
+                await db.ref('requests').push().set({
+                    clientUid: currentUser.uid, clientEmail: currentUser.email,
+                    clientName: clientData?.name || 'Cliente', message: text,
+                    status: 'pending', createdAt: firebase.database.ServerValue.TIMESTAMP
+                });
+                document.getElementById('newRequestText').value = '';
+                showToast('Solicitação enviada!', 'success');
+            } catch (error) { showToast('Erro ao enviar.', 'error'); }
+            finally { hideLoading(); }
+        };
 
+        window.openUpdateStatusModal = (reqId) => {
+            const req = allRequests.find(r => r.id === reqId);
+            if (!req) return;
             document.getElementById('editReqId').value = req.id;
             document.getElementById('newReqStatus').value = req.status;
-            
             document.getElementById('viewReqClientName').textContent = req.clientName || 'Cliente';
             document.getElementById('viewReqDate').textContent = new Date(req.createdAt).toLocaleDateString('pt-BR');
             document.getElementById('viewReqMessage').textContent = req.message;
-
             document.getElementById('updateRequestModal').style.display = 'flex';
         };
 
-        window.saveRequestStatus = () => {
+        window.saveRequestStatus = async () => {
             const reqId = document.getElementById('editReqId').value;
             const newStatus = document.getElementById('newReqStatus').value;
-            const req = allRequests.find(r => r.id === reqId);
-            if(req) {
-                req.status = newStatus;
-                saveDB();
-                renderAdminRequests();
-                if (session.type === 'client') renderClientRequests();
-                
+            showLoading();
+            try {
+                await db.ref('requests/' + reqId).update({ status: newStatus });
                 document.getElementById('updateRequestModal').style.display = 'none';
-                showToast('Status da solicitação atualizado com sucesso!', 'success');
-            }
+                showToast('Status atualizado!', 'success');
+            } catch (error) { showToast('Erro.', 'error'); }
+            finally { hideLoading(); }
         };
 
-        // ============================================
-        // ALTERAR SENHA (CLIENTE)
-        // ============================================
-        
         window.openChangePasswordModal = () => {
             document.getElementById('newClientPassword').value = '';
             document.getElementById('changePasswordModal').style.display = 'flex';
         };
 
-        window.saveNewClientPassword = () => {
+        window.saveNewClientPassword = async () => {
             const newPass = document.getElementById('newClientPassword').value.trim();
-            if(!newPass || newPass.length < 4) {
-                showToast('A senha precisa ter pelo menos 4 caracteres.', 'error');
-                return;
-            }
-
-            const clientEmail = session.data.email || session.data.loginEmail;
-            const clientObj = clients.find(c => (c.email === clientEmail || c.loginEmail === clientEmail));
-            
-            if(clientObj) {
-                clientObj.password = newPass;
-                session.data.password = newPass;
-                saveDB();
-                localStorage.setItem('cf_session', JSON.stringify(session));
-                document.getElementById('sidebarUserPassDisplay').innerHTML = 'Senha: <span>' + newPass + '</span>';
+            if (!newPass || newPass.length < 6) { showToast('Mínimo 6 caracteres.', 'error'); return; }
+            showLoading();
+            try {
+                await auth.currentUser.updatePassword(newPass);
+                if (clientData?.id) await db.ref('clients/' + clientData.id).update({ password: newPass });
                 document.getElementById('changePasswordModal').style.display = 'none';
-                showToast('Senha alterada com sucesso!', 'success');
-            } else {
-                showToast('Erro ao atualizar senha.', 'error');
-            }
+                showToast('Senha alterada!', 'success');
+            } catch (error) {
+                showToast(error.code === 'auth/requires-recent-login' ? 'Faça logout e login novamente.' : 'Erro: ' + error.message, 'error');
+            } finally { hideLoading(); }
         };
 
-        // ============================================
-        // FILTROS E BUSCA
-        // ============================================
-        
         window.setFilter = (filter, el) => {
             currentFilter = filter;
             document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-            if(el) el.classList.add('active');
+            if (el) el.classList.add('active');
             renderClientsTable();
         };
 
@@ -1434,162 +1292,104 @@
         };
 
         // ============================================
-        // TOASTS E NOTIFICAÇÕES
+        // FORMULÁRIOS
         // ============================================
-        
-        function showToast(msg, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
-            toast.innerHTML = `<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
-        }
-
-        // ============================================
-        // EVENT LISTENERS DOS FORMULÁRIOS
-        // ============================================
-        
-        // Form Admin Auth (TELA SEPARADA)
-        document.getElementById('formAdminAuth').addEventListener('submit', (e) => {
+        document.getElementById('formAdminAuth').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('authEmailAdmin').value.trim().toLowerCase();
+            const email = document.getElementById('authEmailAdmin').value.trim();
             const password = document.getElementById('authPasswordAdmin').value.trim();
-            
-            const adminData = JSON.parse(localStorage.getItem('cf_admin'));
-            
-            if(isAdminRegisterMode) {
-                // Registro de novo admin
-                const name = document.getElementById('authNameAdmin').value.trim();
-                if (!name) {
-                    showToast('Preencha o nome do administrador.', 'error');
-                    return;
-                }
-                
-                // Verifica se já existe admin com este email
-                if (adminData && adminData.email.toLowerCase() === email) {
-                    showToast('Já existe um administrador com este email.', 'error');
-                    return;
-                }
-                
-                localStorage.setItem('cf_admin', JSON.stringify({ name, email, password }));
-                showToast('Administrador cadastrado com sucesso!', 'success');
-                toggleAdminRegister();
-            } else {
-                // Login admin
-                if (!adminData) {
-                    showToast('Nenhum administrador cadastrado. Crie uma conta primeiro.', 'error');
-                    return;
-                }
-                
-                if (adminData.email.toLowerCase() !== email || adminData.password !== password) {
-                    showToast('Email ou senha de administrador inválidos! Esta área é exclusiva para administradores.', 'error');
-                    return;
-                }
-                
-                session = { type: 'admin', data: { email } };
-                localStorage.setItem('cf_session', JSON.stringify(session));
-                initSession();
-                showToast('Login de Administrador efetuado!', 'success');
-            }
+            if (!email || !password) { showToast('Preencha todos os campos.', 'error'); return; }
+            const btn = document.getElementById('btnAdminLogin');
+            btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
+            try {
+                const result = await loginFirebaseUser(email, password, 'admin');
+                currentUser = result.user; userRole = 'admin';
+                showAppScreen(); showToast('Login efetuado!', 'success');
+            } catch (error) { showToast(error.message || 'Erro no login.', 'error'); }
+            finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
-        // Form Client Auth (TELA SEPARADA)
-        document.getElementById('formClientAuth').addEventListener('submit', (e) => {
+        document.getElementById('formClientAuth').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('authLoginClient').value.trim().toLowerCase();
+            const email = document.getElementById('authLoginClient').value.trim();
             const password = document.getElementById('authPasswordClient').value.trim();
-
-            // Verifica se é admin tentando logar como cliente
-            const adminData = JSON.parse(localStorage.getItem('cf_admin'));
-            if (adminData && adminData.email.toLowerCase() === email) {
-                showToast('Você é um administrador. Para acessar o painel admin, clique em "algo incrível" no site principal.', 'error');
-                return;
-            }
-
-            // Busca o cliente
-            const foundClient = clients.find(c => 
-                (c.email && c.email.toLowerCase() === email || 
-                 c.loginEmail && c.loginEmail.toLowerCase() === email) && 
-                (c.password === password || password === '123456')
-            );
-            
-            if(foundClient) {
-                session = { type: 'client', data: { ...foundClient } };
-                localStorage.setItem('cf_session', JSON.stringify(session));
-                initSession();
-                showToast('Login de Cliente efetuado com sucesso!', 'success');
-            } else {
-                showToast('Email ou senha de cliente inválidos! Se você é administrador, acesse pelo link secreto no site.', 'error');
-            }
+            if (!email || !password) { showToast('Preencha todos os campos.', 'error'); return; }
+            const btn = document.getElementById('btnClientLogin');
+            btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
+            try {
+                const result = await loginFirebaseUser(email, password, 'client');
+                currentUser = result.user; userRole = 'client';
+                const cs = await db.ref('clients').orderByChild('uid').equalTo(currentUser.uid).once('value');
+                const cd = cs.val();
+                if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
+                showAppScreen(); showToast('Login efetuado!', 'success');
+            } catch (error) { showToast(error.message || 'Erro no login.', 'error'); }
+            finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
-        // Briefing Form Submission
-        document.getElementById('formBriefing').addEventListener('submit', (e) => {
+        document.getElementById('formBriefing').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('bfName').value.trim();
             const email = document.getElementById('bfEmail').value.trim();
             const segment = document.getElementById('bfSegment').value.trim();
-            const colors = document.getElementById('bfColors').value.trim();
-            const features = [];
-            document.querySelectorAll('input[name="bfFeatures"]:checked').forEach(cb => features.push(cb.value));
-            const purposeCb = document.querySelector('input[name="bfPurpose"]:checked');
-            const purpose = purposeCb ? purposeCb.value : '';
-            const extraInfo = document.getElementById('bfExtraInfo').value.trim();
-
-            const futureDate = new Date(Date.now() + 30 * 86400000);
-            const newClient = {
-                id: 'c_' + Date.now(),
-                name,
-                email,
-                loginEmail: email,
-                password: '123456',
-                siteName: segment,
-                monthlyValue: '150.00',
-                planType: 'monthly',
-                dueDate: futureDate.toISOString().split('T')[0],
-                features,
-                purpose,
-                colors,
-                extraInfo,
-                createdAt: new Date().toISOString()
-            };
-
-            clients.push(newClient);
-            saveDB();
-
-            session = { type: 'client', data: { ...newClient } };
-            localStorage.setItem('cf_session', JSON.stringify(session));
-
-            const successMsg = `
-                <p style="margin-bottom: 12px;">Com base em nossa experiência desde 2010 criando mais de 1 mil marcas, <strong>${name}</strong>, entendemos que o seu segmento de <strong>${segment}</strong> possui grande potencial.</p>
-                <p style="margin-bottom: 12px;">Vamos realizar a melhor versão do seu novo site profissional com carregamento em alta velocidade para transmitir profissionalismo, receber mais clientes e vender mais. 🚀🎯</p>
-                <p style="margin-bottom: 12px;">🧑🏼‍🎨🖼️ Assim que finalizar te enviamos atualizações. 🚀🎯</p>
-                <p style="margin-bottom: 12px;">Desejamos que a sua marca continue crescendo por muitos anos sem parar.</p>
-                <p style="font-weight: 700; color: #3b82f6;">Vamos para cima. 🚀🎯✅</p>
-            `;
-            document.getElementById('successMessageText').innerHTML = successMsg;
-            document.getElementById('briefingScreen').style.display = 'none';
-            document.getElementById('successBriefingScreen').style.display = 'flex';
+            if (!name || !email || !segment) { showToast('Preencha os campos obrigatórios.', 'error'); return; }
+            const btn = document.getElementById('btnSubmitBriefing');
+            btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
+            try {
+                const futureDate = new Date(Date.now() + 30*86400000);
+                await createFirebaseUser(email, '123456', 'client', {
+                    name, email, siteName: segment,
+                    monthlyValue: '150.00', planType: 'monthly',
+                    dueDate: futureDate.toISOString().split('T')[0]
+                });
+                const result = await loginFirebaseUser(email, '123456', 'client');
+                currentUser = result.user; userRole = 'client';
+                const cs = await db.ref('clients').orderByChild('uid').equalTo(currentUser.uid).once('value');
+                const cd = cs.val();
+                if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
+                document.getElementById('successMessageText').innerHTML = `<p style="margin-bottom:10px;"><strong>${name}</strong>, seu segmento <strong>${segment}</strong> tem grande potencial.</p><p style="margin-bottom:10px;">Vamos criar o melhor site profissional para você. 🚀🎯</p><p style="font-weight:700; color:#3b82f6;">Vamos para cima! 🚀🎯✅</p>`;
+                document.getElementById('briefingScreen').style.display = 'none';
+                document.getElementById('successBriefingScreen').style.display = 'flex';
+                showToast('Cadastro realizado!', 'success');
+            } catch (error) {
+                showToast(error.code === 'auth/email-already-in-use' ? 'Email já cadastrado. Faça login.' : 'Erro: ' + error.message, 'error');
+            } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
         // ============================================
-        // INICIALIZAÇÃO AUTOMÁTICA
+        // INICIALIZAÇÃO
         // ============================================
-        window.onload = () => {
-            initSession();
-        };
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                const us = await db.ref('users/' + user.uid).once('value');
+                const ud = us.val();
+                if (ud) {
+                    userRole = ud.role;
+                    if (userRole === 'client') {
+                        const cs = await db.ref('clients').orderByChild('uid').equalTo(user.uid).once('value');
+                        const cd = cs.val();
+                        if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
+                    }
+                    showAppScreen();
+                } else { await auth.signOut(); showBriefingScreen(); }
+            } else { showBriefingScreen(); }
+        });
 
-        setInterval(() => {
-            if (session.type === 'admin') {
-                renderAdminDashboard();
-                renderClientsTable();
-            } else if (session.type === 'client') {
-                syncSessionClientData();
-                renderClientDashboard();
-            }
-        }, 30000);
+        async function createDefaultAdmin() {
+            try {
+                const snapshot = await db.ref('users').orderByChild('role').equalTo('admin').once('value');
+                if (!snapshot.exists()) {
+                    await createFirebaseUser('admin@clientflow.com', 'admin123', 'admin', { name: 'Administrador' });
+                    console.log('Admin padrão criado.');
+                }
+            } catch (error) { console.error('Erro admin padrão:', error); }
+        }
+
+        window.onload = () => { createDefaultAdmin(); };
+
+        // Previne zoom em inputs no iOS
+        document.addEventListener('gesturestart', (e) => { e.preventDefault(); });
     </script>
 </body>
 </html>
