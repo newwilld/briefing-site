@@ -15,73 +15,33 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
-        :root {
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
-        }
+        :root { --safe-bottom: env(safe-area-inset-bottom, 0px); }
 
-        * {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background: #f1f5f9;
-            color: #0f172a;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
+        * { font-family: 'Inter', system-ui, -apple-system, sans-serif; margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: #f1f5f9; color: #0f172a; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow-x: hidden; min-height: 100vh; }
         ::-webkit-scrollbar { width: 3px; height: 3px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
         .app-container { display: flex; min-height: 100vh; }
-
-        .sidebar {
-            width: 280px; max-width: 85vw; background: #ffffff;
-            border-right: 1px solid #e2e8f0; display: flex; flex-direction: column;
-            position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
-            transform: translateX(-100%); transition: transform 0.3s ease;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.1); padding-bottom: var(--safe-bottom);
-        }
+        .sidebar { width: 280px; max-width: 85vw; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transform: translateX(-100%); transition: transform 0.3s ease; box-shadow: 4px 0 20px rgba(0,0,0,0.1); padding-bottom: var(--safe-bottom); }
         .sidebar.open { transform: translateX(0); }
-
-        .sidebar-overlay {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5);
-            z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-        }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
-
         .sidebar-logo { padding: 20px 16px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; }
-        .sidebar-logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
+        .sidebar-logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg,#3b82f6,#6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
         .sidebar-logo-text { font-weight: 700; font-size: 17px; color: #0f172a; }
         .sidebar-nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
-        .sidebar-nav-item {
-            display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px;
-            color: #475569; font-weight: 500; font-size: 14px; cursor: pointer;
-            border: none; background: none; width: 100%; text-align: left; min-height: 44px; position: relative;
-        }
+        .sidebar-nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; color: #475569; font-weight: 500; font-size: 14px; cursor: pointer; border: none; background: none; width: 100%; text-align: left; min-height: 44px; position: relative; }
         .sidebar-nav-item.active { background: #eef2ff; color: #3b82f6; font-weight: 600; }
         .sidebar-nav-item i { width: 20px; text-align: center; font-size: 15px; }
         .sidebar-footer { padding: 12px 16px; border-top: 1px solid #e2e8f0; }
-
-        .notification-badge {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            background: #ef4444; color: white; font-size: 10px; font-weight: 700;
-            min-width: 18px; height: 18px; border-radius: 9px;
-            display: flex; align-items: center; justify-content: center; padding: 0 5px;
-        }
+        .notification-badge { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #ef4444; color: white; font-size: 10px; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
 
         .main-content { flex: 1; margin-left: 0; min-height: 100vh; display: flex; flex-direction: column; width: 100%; }
-
         .header { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
         .header-search { display: flex; align-items: center; gap: 8px; background: #f1f5f9; border-radius: 10px; padding: 8px 12px; width: 100%; max-width: 300px; border: 1px solid transparent; }
-        .header-search:focus-within { background: #ffffff; border-color: #3b82f6; }
+        .header-search:focus-within { background: #fff; border-color: #3b82f6; }
         .header-search input { border: none; background: none; outline: none; font-size: 14px; width: 100%; }
 
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; border: none; min-height: 42px; }
@@ -99,26 +59,25 @@
         .content-area { padding: 16px; flex: 1; padding-bottom: calc(16px + var(--safe-bottom)); }
         .page-title { font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
         .page-subtitle { font-size: 13px; color: #64748b; margin-bottom: 16px; }
-        
         .view-section { display: none; animation: fadeIn 0.25s ease; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
-        .stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 16px; }
+        .stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; }
         .stat-card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
         .stat-card-icon.blue { background: #eef2ff; color: #3b82f6; }
         .stat-card-icon.green { background: #f0fdf4; color: #10b981; }
         .stat-card-icon.red { background: #fef2f2; color: #ef4444; }
         .stat-card-icon.purple { background: #faf5ff; color: #8b5cf6; }
-        .stat-card-value { font-size: 22px; font-weight: 700; color: #0f172a; }
-        .stat-card-label { font-size: 11px; color: #64748b; font-weight: 500; }
+        .stat-card-value { font-size: 22px; font-weight: 700; }
+        .stat-card-label { font-size: 11px; color: #64748b; }
 
-        .monthly-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
-        .monthly-stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; text-align: center; }
+        .monthly-stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 16px; }
+        .monthly-stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; text-align: center; }
         .monthly-stat-card.current { border-color: #3b82f6; background: #eef2ff; }
         .monthly-stat-value { font-size: 24px; font-weight: 700; }
-        .monthly-stat-label { font-size: 10px; color: #64748b; font-weight: 500; text-transform: uppercase; }
+        .monthly-stat-label { font-size: 10px; color: #64748b; text-transform: uppercase; }
         .monthly-stat-trend { font-size: 10px; font-weight: 600; margin-top: 2px; }
         .monthly-stat-trend.up { color: #10b981; }
         .monthly-stat-trend.down { color: #ef4444; }
@@ -138,19 +97,19 @@
         .badge-dot.green { background: #10b981; }
         .badge-dot.yellow { background: #f59e0b; }
         .badge-dot.red { background: #ef4444; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        .filter-bar { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px; margin-bottom: 12px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+        .filter-bar { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px; margin-bottom: 12px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
         .filter-bar::-webkit-scrollbar { display: none; }
-        .filter-pill { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid #e2e8f0; background: #ffffff; color: #475569; white-space: nowrap; min-height: 32px; }
+        .filter-pill { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid #e2e8f0; background: #fff; color: #475569; white-space: nowrap; min-height: 32px; }
         .filter-pill.active { background: #3b82f6; color: white; border-color: #3b82f6; }
 
-        .table-container { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
+        .table-container { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 650px; }
         thead { background: #f8fafc; }
         th { padding: 10px 12px; text-align: left; font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; }
-        td { padding: 12px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9; }
+        td { padding: 12px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
         .client-avatar { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: white; }
         .client-info { display: flex; align-items: center; gap: 8px; }
         .client-name { font-weight: 600; font-size: 13px; }
@@ -158,7 +117,7 @@
         .actions-cell { display: flex; gap: 4px; }
         .action-btn { width: 30px; height: 30px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; background: #f1f5f9; color: #64748b; }
 
-        .notifications-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
+        .notifications-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
         .notifications-header { padding: 14px 16px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: #f8fafc; }
         .notifications-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .notifications-count { background: #ef4444; color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
@@ -174,23 +133,23 @@
         .notification-content { flex: 1; min-width: 0; }
         .notification-text { font-size: 13px; font-weight: 500; }
         .notification-time { font-size: 11px; color: #94a3b8; margin-top: 2px; }
-        .notification-empty { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 13px; }
+        .notification-empty { text-align: center; padding: 40px 20px; color: #94a3b8; }
 
         .tabs-container { display: flex; gap: 4px; background: #f1f5f9; border-radius: 10px; padding: 4px; margin-bottom: 16px; }
         .tab-btn { flex: 1; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: #64748b; text-align: center; }
-        .tab-btn.active { background: #ffffff; color: #3b82f6; }
+        .tab-btn.active { background: #fff; color: #3b82f6; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
-        .modal { background: #ffffff; border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 -4px 30px rgba(0,0,0,0.15); animation: modalUp 0.3s ease; padding-bottom: var(--safe-bottom); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
+        .modal { background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 -4px 30px rgba(0,0,0,0.15); animation: modalUp 0.3s ease; padding-bottom: var(--safe-bottom); }
         @keyframes modalUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; background: #ffffff; z-index: 1; border-radius: 20px 20px 0 0; }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; background: #fff; z-index: 1; border-radius: 20px 20px 0 0; }
         .modal-title { font-size: 16px; font-weight: 700; }
         .modal-body { padding: 16px; }
-        .modal-footer { display: flex; gap: 8px; justify-content: flex-end; padding: 14px 16px; border-top: 1px solid #e2e8f0; position: sticky; bottom: 0; background: #ffffff; }
+        .modal-footer { display: flex; gap: 8px; justify-content: flex-end; padding: 14px 16px; border-top: 1px solid #e2e8f0; position: sticky; bottom: 0; background: #fff; }
         
         .form-group { margin-bottom: 14px; }
         .form-label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 4px; }
-        .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #ffffff; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #fff; }
         .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #3b82f6; }
         .form-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .form-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 14px; }
@@ -199,14 +158,14 @@
         .auth-card { background: white; border-radius: 20px; padding: 28px 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
         .briefing-card { background: white; border-radius: 20px; padding: 24px 16px; width: 100%; max-width: 600px; }
         .auth-logo { text-align: center; margin-bottom: 20px; }
-        .auth-logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: white; font-size: 22px; }
+        .auth-logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg,#3b82f6,#6366f1); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: white; font-size: 22px; }
         .auth-title { font-size: 20px; font-weight: 700; }
         .auth-form { display: flex; flex-direction: column; gap: 12px; }
         .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .custom-checkbox { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #475569; cursor: pointer; min-height: 32px; }
 
         .toast-container { position: fixed; top: 12px; right: 12px; left: 12px; z-index: 300; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
-        .toast { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; animation: toastIn 0.3s ease; pointer-events: auto; }
+        .toast { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; animation: toastIn 0.3s ease; pointer-events: auto; }
         @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         .toast.success { border-left: 4px solid #10b981; }
         .toast.error { border-left: 4px solid #ef4444; }
@@ -215,19 +174,18 @@
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 400; display: flex; align-items: center; justify-content: center; }
         .loading-spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.7s linear infinite; }
 
-        .section-title { font-size: 14px; font-weight: 700; margin: 20px 0 12px 0; display: flex; align-items: center; gap: 8px; }
+        .section-title { font-size: 14px; font-weight: 700; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px; }
         .reminder-icon.red { color: #ef4444; }
         .reminder-icon.yellow { color: #f59e0b; }
 
         @media (min-width: 768px) {
-            .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
-            .monthly-stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .stats-grid { grid-template-columns: repeat(4,1fr); gap: 14px; }
+            .monthly-stats-grid { grid-template-columns: repeat(4,1fr); }
             .form-row { grid-template-columns: 1fr 1fr; }
             .modal { border-radius: 20px; max-width: 600px; margin: auto; }
             .modal-overlay { align-items: center; padding: 20px; }
             @keyframes modalUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         }
-
         @media (min-width: 1024px) {
             .sidebar { transform: translateX(0); width: 250px; max-width: 250px; box-shadow: none; }
             .sidebar-overlay { display: none !important; }
@@ -248,9 +206,9 @@
             <form id="formBriefing" class="auth-form">
                 <div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" id="bfName" required class="form-input"></div><div class="form-group"><label class="form-label">Email *</label><input type="email" id="bfEmail" required class="form-input"></div></div>
                 <div class="form-row"><div class="form-group"><label class="form-label">Segmento *</label><input type="text" id="bfSegment" required class="form-input"></div><div class="form-group"><label class="form-label">Cores</label><input type="text" id="bfColors" class="form-input"></div></div>
-                <div class="form-section"><label class="form-label">Preferências</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Formulário de Contato"> Formulário de Contato</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão do WhatsApp"> WhatsApp</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão Instagram"> Instagram</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão YouTube"> YouTube</label></div></div>
-                <div class="form-section"><label class="form-label">Propósito</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Vender mais" required> Vender mais</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais credibilidade"> Credibilidade</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais profissionalismo"> Profissionalismo</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Divulgar minha marca"> Divulgar</label></div></div>
-                <div class="form-group"><label class="form-label">Informações Adicionais</label><textarea id="bfExtraInfo" class="form-textarea"></textarea></div>
+                <div class="form-section"><label class="form-label">Preferências</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Formulário de Contato"> Formulário</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão WhatsApp"> WhatsApp</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão Instagram"> Instagram</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão YouTube"> YouTube</label></div></div>
+                <div class="form-section"><label class="form-label">Propósito</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Vender mais" required> Vender mais</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Credibilidade"> Credibilidade</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Profissionalismo"> Profissionalismo</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Divulgar"> Divulgar</label></div></div>
+                <div class="form-group"><label class="form-label">Info Adicional</label><textarea id="bfExtraInfo" class="form-textarea"></textarea></div>
                 <button type="submit" class="btn btn-primary" style="width:100%;" id="btnSubmitBriefing"><i class="fas fa-paper-plane"></i> Enviar e Acessar</button>
                 <button type="button" class="btn" onclick="showClientAuthScreen()" style="width:100%;background:#1d4ed8;color:white;"><i class="fas fa-user-circle"></i> Área do Cliente</button>
             </form>
@@ -259,12 +217,12 @@
 
     <!-- SUCCESS -->
     <div id="successBriefingScreen" class="auth-screen" style="display:none;">
-        <div class="success-screen-content" style="text-align:center;max-width:500px;padding:32px 20px;background:white;border-radius:24px;">
+        <div style="text-align:center;max-width:500px;padding:32px 20px;background:white;border-radius:24px;">
             <h2 style="font-size:22px;font-weight:800;margin-bottom:20px;">Entendido! 🚀🎯</h2>
-            <div class="success-text" id="successMessageText" style="font-size:14px;text-align:left;"></div>
+            <div id="successMessageText" style="font-size:14px;text-align:left;"></div>
             <div style="display:flex;flex-direction:column;gap:10px;margin-top:28px;">
-                <button class="btn btn-primary" onclick="goToClientPanel()" style="width:100%;justify-content:center;">Ir para o Painel</button>
-                <a href="https://api.whatsapp.com/send?phone=5579988645865&text=Oi" target="_blank" class="btn btn-success" style="width:100%;justify-content:center;text-decoration:none;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <button class="btn btn-primary" onclick="goToClientPanel()" style="width:100%;">Ir para o Painel</button>
+                <a href="https://api.whatsapp.com/send?phone=5579988645865&text=Oi" target="_blank" class="btn btn-success" style="width:100%;text-decoration:none;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
             </div>
         </div>
     </div>
@@ -273,7 +231,7 @@
     <div id="adminAuthScreen" class="auth-screen" style="display:none;">
         <div class="auth-card">
             <button onclick="showBriefingScreen()" style="background:none;border:none;color:#64748b;font-size:12px;cursor:pointer;margin-bottom:12px;"><i class="fas fa-arrow-left"></i> Voltar</button>
-            <div class="auth-logo"><div class="auth-logo-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626);"><i class="fas fa-shield-alt"></i></div><h1 class="auth-title">Área Administrativa</h1><p class="auth-subtitle" style="color:#ef4444;">Acesso restrito</p></div>
+            <div class="auth-logo"><div class="auth-logo-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626);"><i class="fas fa-shield-alt"></i></div><h1 class="auth-title">Admin</h1><p style="color:#ef4444;">Acesso restrito</p></div>
             <form id="formAdminAuth" class="auth-form">
                 <div class="form-group"><label class="form-label">Email</label><input type="email" id="authEmailAdmin" class="form-input" required></div>
                 <div class="form-group"><label class="form-label">Senha</label><input type="password" id="authPasswordAdmin" class="form-input" required></div>
@@ -322,7 +280,7 @@
             <header class="header">
                 <div style="display:flex;align-items:center;gap:8px;flex:1;">
                     <button class="btn-ghost btn-icon" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-                    <div class="header-search" id="adminSearchBox" style="display:none;"><i class="fas fa-search"></i><input type="text" id="globalSearch" placeholder="Buscar..." oninput="handleSearch()"></div>
+                    <div class="header-search" id="adminSearchBox" style="display:none;"><i class="fas fa-search"></i><input type="text" id="globalSearch" placeholder="Buscar clientes..." oninput="handleSearch()"></div>
                     <div id="clientWelcomeText" style="display:none;font-weight:600;">Bem-vindo(a)!</div>
                 </div>
                 <button class="btn btn-primary btn-sm" id="btnNewClient" onclick="openAddClientModal()" style="display:none;"><i class="fas fa-plus"></i> Novo</button>
@@ -345,11 +303,11 @@
                 <div id="adminNotifications" class="view-section">
                     <h1 class="page-title">Notificações</h1>
                     <div class="tabs-container">
-                        <button class="tab-btn active" onclick="filterNotifications('all', this)">Todas</button>
-                        <button class="tab-btn" onclick="filterNotifications('unread', this)">Não lidas</button>
-                        <button class="tab-btn" onclick="filterNotifications('login', this)">Logins</button>
-                        <button class="tab-btn" onclick="filterNotifications('request', this)">Solicitações</button>
-                        <button class="tab-btn" onclick="filterNotifications('due', this)">Vencimentos</button>
+                        <button class="tab-btn active" onclick="filterNotifications('all',this)">Todas</button>
+                        <button class="tab-btn" onclick="filterNotifications('unread',this)">Não lidas</button>
+                        <button class="tab-btn" onclick="filterNotifications('login',this)">Logins</button>
+                        <button class="tab-btn" onclick="filterNotifications('request',this)">Solicitações</button>
+                        <button class="tab-btn" onclick="filterNotifications('due',this)">Vencimentos</button>
                     </div>
                     <div class="notifications-panel">
                         <div class="notifications-header"><div class="notifications-title"><i class="fas fa-bell"></i> Notificações <span class="notifications-count" id="notifCount">0</span></div><button class="btn btn-secondary btn-sm" onclick="markAllNotificationsRead()">Marcar lidas</button></div>
@@ -360,11 +318,11 @@
                 <div id="adminClients" class="view-section">
                     <h1 class="page-title">Clientes</h1>
                     <div class="filter-bar">
-                        <button class="filter-pill active" onclick="setFilter('all', this)">Todos</button>
-                        <button class="filter-pill" onclick="setFilter('active', this)">✅ Ativos</button>
-                        <button class="filter-pill" onclick="setFilter('dueToday', this)">🔴 Hoje</button>
-                        <button class="filter-pill" onclick="setFilter('dueSoon', this)">🟡 Breve</button>
-                        <button class="filter-pill" onclick="setFilter('expired', this)">⚠️ Vencidos</button>
+                        <button class="filter-pill active" onclick="setFilter('all',this)">Todos</button>
+                        <button class="filter-pill" onclick="setFilter('active',this)">✅ Ativos</button>
+                        <button class="filter-pill" onclick="setFilter('dueToday',this)">🔴 Hoje</button>
+                        <button class="filter-pill" onclick="setFilter('dueSoon',this)">🟡 Breve</button>
+                        <button class="filter-pill" onclick="setFilter('expired',this)">⚠️ Vencidos</button>
                     </div>
                     <div class="table-container"><div class="table-wrapper"><table><thead><tr><th>Cliente</th><th>Site</th><th>Plano</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="clientsTableBody"></tbody></table></div></div>
                 </div>
@@ -405,7 +363,7 @@
                 <form id="clientForm" onsubmit="return false;">
                     <input type="hidden" id="clientId">
                     <div class="form-section"><div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" class="form-input" id="clientName" required></div><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="clientEmail"></div></div></div>
-                    <div class="form-section"><div class="form-row"><div class="form-group"><label class="form-label">Email Login</label><input type="email" class="form-input" id="clientLoginEmail"></div><div class="form-group"><label class="form-label">Senha</label><input type="text" class="form-input" id="clientPassword"></div></div></div>
+                    <div class="form-section"><div class="form-row"><div class="form-group"><label class="form-label">Email Login</label><input type="email" class="form-input" id="clientLoginEmail"></div><div class="form-group"><label class="form-label">Senha (mín. 6)</label><input type="text" class="form-input" id="clientPassword"></div></div></div>
                     <div class="form-section"><div class="form-row"><div class="form-group"><label class="form-label">Site</label><input type="text" class="form-input" id="siteName"></div><div class="form-group"><label class="form-label">Valor R$ *</label><input type="number" class="form-input" id="monthlyValue" step="0.01" required></div></div><div class="form-row"><div class="form-group"><label class="form-label">Plano</label><select class="form-select" id="planType"><option value="monthly">Mensal</option><option value="quarterly">Trimestral</option><option value="semiannual">Semestral</option><option value="annual">Anual</option></select></div><div class="form-group"><label class="form-label">Vencimento *</label><input type="date" class="form-input" id="dueDate" required></div></div></div>
                 </form>
             </div>
@@ -417,7 +375,7 @@
     <div class="modal-overlay" id="changePasswordModal" style="display:none;">
         <div class="modal" style="max-width:380px;">
             <div class="modal-header"><h2 class="modal-title">Alterar Senha</h2><button class="btn-ghost btn-icon" onclick="document.getElementById('changePasswordModal').style.display='none'"><i class="fas fa-times"></i></button></div>
-            <div class="modal-body"><div class="form-group"><label class="form-label">Nova Senha</label><input type="password" id="newClientPassword" class="form-input"></div></div>
+            <div class="modal-body"><div class="form-group"><label class="form-label">Nova Senha (mín. 6)</label><input type="password" id="newClientPassword" class="form-input"></div></div>
             <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('changePasswordModal').style.display='none'">Cancelar</button><button class="btn btn-primary" onclick="saveNewClientPassword()">Salvar</button></div>
         </div>
     </div>
@@ -445,6 +403,7 @@
         let clients = [], allRequests = [], notifications = [];
         let currentFilter = 'all', currentNotifFilter = 'all', searchTerm = '';
         let listeners = [];
+        let adminCredentials = null; // Guarda credenciais do admin para re-login
 
         function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
         function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
@@ -509,10 +468,7 @@
             if (!t) return '';
             const diff = Date.now() - t;
             const m = Math.floor(diff/60000), h = Math.floor(diff/3600000), d = Math.floor(diff/86400000);
-            if (m<1) return 'Agora';
-            if (m<60) return `${m}min`;
-            if (h<24) return `${h}h`;
-            if (d<7) return `${d}d`;
+            if (m<1) return 'Agora'; if (m<60) return `${m}min`; if (h<24) return `${h}h`; if (d<7) return `${d}d`;
             return new Date(t).toLocaleDateString('pt-BR');
         }
 
@@ -602,46 +558,50 @@
         };
 
         // ============================================
-        // CRIAÇÃO DE USUÁRIO CORRIGIDA
+        // CRIAÇÃO DE USUÁRIO (ADMIN CRIA CLIENTE - NÃO FAZ LOGIN)
         // ============================================
-        async function createFirebaseUser(email, password, role, extraData = {}) {
-            // 1. Cria no Firebase Auth
-            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-            const uid = userCredential.user.uid;
+        async function createClientByAdmin(email, password, extraData = {}) {
+            // Salva o admin atual para re-login depois
+            const adminEmail = currentUser.email;
             
-            // 2. Salva em /users/{uid}
-            await db.ref('users/' + uid).set({
-                email, role,
+            // 1. Cria o novo usuário no Firebase Auth
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const newUid = userCredential.user.uid;
+            
+            // 2. Salva dados do novo cliente no Realtime Database
+            await db.ref('users/' + newUid).set({
+                email, role: 'client',
                 name: extraData.name || email.split('@')[0],
                 createdAt: firebase.database.ServerValue.TIMESTAMP
             });
             
-            // 3. Se for cliente, salva em /clients/
-            if (role === 'client') {
-                const clientRef = db.ref('clients').push();
-                await clientRef.set({
-                    uid, 
-                    name: extraData.name || '',
-                    email: email,
-                    loginEmail: email,
-                    password: password,
-                    siteName: extraData.siteName || '',
-                    monthlyValue: extraData.monthlyValue || '150.00',
-                    planType: extraData.planType || 'monthly',
-                    dueDate: extraData.dueDate || new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
-                    createdAt: firebase.database.ServerValue.TIMESTAMP
-                });
-                
-                // Notificação (não crítica)
-                try { await createNotification('new_client', `Novo cliente: ${extraData.name || email}`); } catch(e) {}
-            }
+            await db.ref('clients').push().set({
+                uid: newUid,
+                name: extraData.name || '',
+                email: email,
+                loginEmail: email,
+                password: password,
+                siteName: extraData.siteName || '',
+                monthlyValue: extraData.monthlyValue || '150.00',
+                planType: extraData.planType || 'monthly',
+                dueDate: extraData.dueDate || new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            });
             
-            // 4. Volta a logar como admin (se for admin criando cliente)
-            if (userRole === 'admin' && currentUser) {
-                // Já está logado como admin, não precisa fazer nada
-            }
+            // 3. Notificação
+            try { await createNotification('new_client', `Novo cliente criado pelo admin: ${extraData.name || email}`); } catch(e) {}
             
-            return { uid, user: userCredential.user };
+            // 4. VOLTA A LOGAR COMO ADMIN (IMPORTANTE!)
+            // Faz logout do novo usuário e login do admin novamente
+            await auth.signOut();
+            const adminLogin = await auth.signInWithEmailAndPassword(adminEmail, adminCredentials.password);
+            currentUser = adminLogin.user;
+            userRole = 'admin';
+            
+            // Atualiza listeners
+            setupRealtimeListeners();
+            
+            return { uid: newUid };
         }
 
         async function loginAdminUser(email, password) {
@@ -654,6 +614,10 @@
                 await db.ref('users/' + uid).set(userData);
             }
             if (userData.role !== 'admin') { await auth.signOut(); throw new Error('Acesso negado!'); }
+            
+            // Salva credenciais do admin para re-login
+            adminCredentials = { email, password };
+            
             return { uid, userData, user: userCredential.user };
         }
 
@@ -673,6 +637,7 @@
             listeners = [];
             await auth.signOut();
             currentUser = null; userRole = null; clientData = null;
+            adminCredentials = null;
             clients = []; allRequests = []; notifications = [];
             closeSidebar();
             showBriefingScreen();
@@ -686,7 +651,6 @@
             clientsRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 clients = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-                console.log('📋 Clientes carregados:', clients.length, clients);
                 if (userRole === 'admin') { renderAdminDashboard(); renderClientsTable(); }
                 if (userRole === 'client' && currentUser) {
                     const mc = clients.find(c => c.uid === currentUser.uid);
@@ -747,12 +711,7 @@
             else if (currentFilter === 'expired') filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'expired');
             if (searchTerm) filtered = filtered.filter(c => (c.name||'').toLowerCase().includes(searchTerm) || (c.siteName||'').toLowerCase().includes(searchTerm));
             
-            console.log('📊 Renderizando tabela:', filtered.length, 'clientes');
-            
-            if (!filtered.length) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">Nenhum cliente encontrado.</td></tr>';
-                return;
-            }
+            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">Nenhum cliente.</td></tr>'; return; }
             
             tbody.innerHTML = filtered.map(c => {
                 const s = getClientStatus(c.dueDate);
@@ -778,7 +737,7 @@
                 let sb = '<span class="badge badge-warning">Pendente</span>';
                 if (r.status === 'in_progress') sb = '<span class="badge badge-info">Andamento</span>';
                 if (r.status === 'completed') sb = '<span class="badge badge-success">Realizado</span>';
-                return `<tr><td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td><td><strong>${r.clientName||'Cliente'}</strong></td><td>${r.message}</td><td>${sb}</td><td><button class="btn btn-secondary btn-sm" onclick="openUpdateStatusModal('${r.id}')"><i class="fas fa-pen"></i></button></td></tr>`;
+                return `<tr><td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td><td><strong>${r.clientName||'Cliente'}</strong></td><td>${r.message}</td><td>${sb}</td><td><button class="btn btn-secondary btn-sm" onclick="toggleRequestStatus('${r.id}','${r.status}')"><i class="fas fa-pen"></i></button></td></tr>`;
             }).join('');
         }
 
@@ -843,15 +802,15 @@
                     await db.ref('clients/' + id).update({ name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate });
                     showToast('Cliente atualizado!', 'success');
                 } else {
-                    // Criar novo - esta função cria no Auth + DB
-                    await createFirebaseUser(loginEmail || email, password, 'client', { name, email, siteName, monthlyValue, planType, dueDate });
-                    showToast('Cliente criado com sucesso!', 'success');
+                    // CRIAR NOVO CLIENTE - ADMIN CONTINUA LOGADO
+                    await createClientByAdmin(loginEmail || email, password, { name, email, siteName, monthlyValue, planType, dueDate });
+                    showToast('Cliente criado com sucesso! Você continua como admin.', 'success');
                 }
                 closeClientModal();
             } catch (error) {
                 console.error('Erro ao salvar:', error);
                 if (error.code === 'auth/email-already-in-use') {
-                    showToast('Este email já está cadastrado no sistema.', 'error');
+                    showToast('Este email já está cadastrado.', 'error');
                 } else {
                     showToast('Erro: ' + (error.message || 'Desconhecido'), 'error');
                 }
@@ -902,13 +861,12 @@
             finally { hideLoading(); }
         };
 
-        window.openUpdateStatusModal = (reqId) => {
-            const req = allRequests.find(r => r.id === reqId);
-            if (!req) return;
-            // Implementação simplificada - apenas muda status
-            const newStatus = req.status === 'pending' ? 'in_progress' : (req.status === 'in_progress' ? 'completed' : 'pending');
-            db.ref('requests/' + reqId).update({ status: newStatus });
-            showToast('Status atualizado!', 'success');
+        window.toggleRequestStatus = async (reqId, currentStatus) => {
+            const nextStatus = currentStatus === 'pending' ? 'in_progress' : (currentStatus === 'in_progress' ? 'completed' : 'pending');
+            try {
+                await db.ref('requests/' + reqId).update({ status: nextStatus });
+                showToast('Status atualizado!', 'success');
+            } catch (e) { showToast('Erro: ' + e.message, 'error'); }
         };
 
         window.openChangePasswordModal = () => {
@@ -992,13 +950,22 @@
             btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
             try {
                 const futureDate = new Date(Date.now() + 30*86400000).toISOString().split('T')[0];
-                await createFirebaseUser(email, '123456', 'client', { name, email, siteName: segment, monthlyValue: '150.00', planType: 'monthly', dueDate: futureDate });
-                const r = await loginClientUser(email, '123456');
-                currentUser = r.user; userRole = 'client';
-                const cs = await db.ref('clients').orderByChild('uid').equalTo(currentUser.uid).once('value');
+                
+                // Cria usuário
+                const userCredential = await auth.createUserWithEmailAndPassword(email, '123456');
+                const uid = userCredential.user.uid;
+                
+                // Salva no DB
+                await db.ref('users/' + uid).set({ email, role: 'client', name, createdAt: firebase.database.ServerValue.TIMESTAMP });
+                await db.ref('clients').push().set({ uid, name, email, loginEmail: email, password: '123456', siteName: segment, monthlyValue: '150.00', planType: 'monthly', dueDate: futureDate, createdAt: firebase.database.ServerValue.TIMESTAMP });
+                
+                // Login do cliente
+                currentUser = userCredential.user; userRole = 'client';
+                const cs = await db.ref('clients').orderByChild('uid').equalTo(uid).once('value');
                 const cd = cs.val();
                 if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
-                document.getElementById('successMessageText').innerHTML = `<p><strong>${name}</strong>, seu site <strong>${segment}</strong> está sendo criado! 🚀</p><p>Sua senha inicial é: <strong>123456</strong></p>`;
+                
+                document.getElementById('successMessageText').innerHTML = `<p><strong>${name}</strong>, seu site está sendo criado! 🚀</p><p>Sua senha: <strong>123456</strong></p>`;
                 document.getElementById('briefingScreen').style.display = 'none';
                 document.getElementById('successBriefingScreen').style.display = 'flex';
             } catch (err) {
