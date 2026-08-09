@@ -278,11 +278,6 @@
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 8px;" id="btnSubmitBriefing">
                     <i class="fas fa-paper-plane"></i> Enviar Informações e Acessar Painel
                 </button>
-                
-                <!-- Botão Área do Cliente adicionado abaixo -->
-                <button type="button" class="btn btn-primary" onclick="showClientLoginDirect()" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 8px; background: #1e40af;">
-                    <i class="fas fa-user"></i> Área do Cliente
-                </button>
             </form>
         </div>
     </div>
@@ -654,27 +649,6 @@
     <div class="modal-overlay" id="updateRequestModal" style="display: none;">
         <div class="modal" style="max-width: 400px;">
             <div class="modal-header">
-                <h2 class="modal-title">Atualizar Status</h2>
-                <button class="btn-ghost btn-icon" onclick="document.getElementById('updateRequestModal').style.display='none'"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Status</label>
-                    <select class="form-select" id="newReqStatus">
-                        <option value="pending">Pendente (5-7 dias)</option>
-                        <option value="in_progress">Em Andamento</option>
-                        <option value="completed">Realizado</option>
-                    </select>
-                </div>
-                <input type="hidden" id="editReqId">
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="document.getElementById('updateRequestModal').style.display='none'">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveRequestStatus()">Salvar</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal Alterar Senha (Cliente) -->
     <div class="modal-overlay" id="changePasswordModal" style="display: none;">
         <div class="modal" style="max-width: 380px;">
@@ -737,15 +711,6 @@
             document.getElementById('successBriefingScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'none';
             document.getElementById('briefingScreen').style.display = 'flex';
-        };
-
-        // Função para abrir diretamente a tela de login do cliente
-        window.showClientLoginDirect = () => {
-            document.getElementById('briefingScreen').style.display = 'none';
-            document.getElementById('successBriefingScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'none';
-            document.getElementById('authScreen').style.display = 'flex';
-            switchAuthType('client');
         };
 
         window.toggleAdminRegister = () => {
