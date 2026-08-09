@@ -192,6 +192,7 @@
         .notification-icon.request { background: #fffbeb; color: #f59e0b; }
         .notification-icon.due { background: #fef2f2; color: #ef4444; }
         .notification-icon.new-client { background: #f0fdf4; color: #10b981; }
+        .notification-icon.password-change { background: #faf5ff; color: #8b5cf6; }
         .notification-content { flex: 1; min-width: 0; }
         .notification-text { font-size: 13px; color: #0f172a; font-weight: 500; }
         .notification-time { font-size: 11px; color: #94a3b8; margin-top: 2px; }
@@ -248,6 +249,9 @@
 
         .section-title { font-size: 14px; font-weight: 700; color: #0f172a; margin: 20px 0 12px 0; display: flex; align-items: center; gap: 8px; }
 
+        .password-field { position: relative; }
+        .password-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px; }
+
         @media (min-width: 768px) {
             .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
             .monthly-stats-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
@@ -284,7 +288,7 @@
     <div class="loading-overlay" id="loadingOverlay" style="display:none;"><div class="loading-spinner"></div></div>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-    <!-- ==================== BRIEFING SCREEN ==================== -->
+    <!-- BRIEFING SCREEN -->
     <div id="briefingScreen" class="auth-screen">
         <div class="briefing-card">
             <div class="auth-logo" style="margin-bottom:24px;">
@@ -306,7 +310,7 @@
         </div>
     </div>
 
-    <!-- ==================== SUCCESS BRIEFING ==================== -->
+    <!-- SUCCESS BRIEFING -->
     <div id="successBriefingScreen" class="auth-screen" style="display:none;">
         <div class="success-screen-content">
             <h2 style="font-size:22px;font-weight:800;color:#0f172a;margin-bottom:20px;">Entendido! 🚀🎯</h2>
@@ -318,12 +322,12 @@
         </div>
     </div>
 
-    <!-- ==================== ADMIN AUTH ==================== -->
+    <!-- ADMIN AUTH -->
     <div id="adminAuthScreen" class="auth-screen" style="display:none;">
         <div class="auth-card">
             <button onclick="showBriefingScreen()" style="background:none;border:none;color:#64748b;font-size:12px;cursor:pointer;margin-bottom:12px;"><i class="fas fa-arrow-left"></i> Voltar</button>
             <div class="auth-logo"><div class="auth-logo-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626);"><i class="fas fa-shield-alt"></i></div><h1 class="auth-title">Área Administrativa</h1><p class="auth-subtitle" style="color:#ef4444;font-weight:600;">Acesso restrito à equipe</p></div>
-            <div class="alert-banner info" style="margin-bottom:16px;"><i class="fas fa-info-circle"></i><div><strong>Atenção:</strong> Apenas o administrador principal tem acesso a esta área.</div></div>
+            <div class="alert-banner info" style="margin-bottom:16px;"><i class="fas fa-info-circle"></i><div><strong>Atenção:</strong> Apenas o administrador principal tem acesso.</div></div>
             <form id="formAdminAuth" class="auth-form">
                 <div class="form-group"><label class="form-label">Email</label><input type="email" id="authEmailAdmin" class="form-input" placeholder="admin@exemplo.com" required></div>
                 <div class="form-group"><label class="form-label">Senha</label><input type="password" id="authPasswordAdmin" class="form-input" placeholder="••••••••" required></div>
@@ -332,7 +336,7 @@
         </div>
     </div>
 
-    <!-- ==================== CLIENT AUTH ==================== -->
+    <!-- CLIENT AUTH -->
     <div id="clientAuthScreen" class="auth-screen" style="display:none;">
         <div class="auth-card">
             <button onclick="showBriefingScreen()" style="background:none;border:none;color:#64748b;font-size:12px;cursor:pointer;margin-bottom:12px;"><i class="fas fa-arrow-left"></i> Voltar</button>
@@ -346,7 +350,7 @@
         </div>
     </div>
 
-    <!-- ==================== APP PRINCIPAL ==================== -->
+    <!-- APP PRINCIPAL -->
     <div id="appScreen" class="app-container" style="display:none;">
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-layer-group"></i></div><span class="sidebar-logo-text">ClientFlow</span></div>
@@ -363,7 +367,7 @@
             <div class="sidebar-footer">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
                     <div style="width:32px;height:32px;background:#eef2ff;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#3b82f6;font-weight:600;font-size:12px;" id="sidebarUserInitials">--</div>
-                    <div style="overflow:hidden;flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="sidebarUserName">Usuário</div><div style="font-size:10px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="sidebarUserEmailDisplay">email</div></div>
+                    <div style="overflow:hidden;flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="sidebarUserName">Usuário</div><div style="font-size:10px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="sidebarUserEmailDisplay">email</div><div style="font-size:10px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="sidebarUserPassDisplay" style="display:none;"></div></div>
                 </div>
                 <div style="display:flex;justify-content:space-between;border-top:1px solid #f1f5f9;padding-top:8px;font-size:11px;">
                     <button onclick="openChangePasswordModal();closeSidebar();" style="color:#3b82f6;background:none;border:none;cursor:pointer;font-weight:600;" id="btnChangePassword">Alterar senha</button>
@@ -467,7 +471,7 @@
         </main>
     </div>
 
-    <!-- ==================== MODAIS ==================== -->
+    <!-- MODAL CLIENTE -->
     <div class="modal-overlay" id="clientModal" style="display:none;">
         <div class="modal">
             <div class="modal-header"><h2 class="modal-title" id="modalTitle">Novo Cliente</h2><button class="btn-ghost btn-icon" onclick="closeClientModal()"><i class="fas fa-times"></i></button></div>
@@ -475,7 +479,7 @@
                 <form id="clientForm" onsubmit="return false;">
                     <input type="hidden" id="clientId">
                     <div class="form-section"><div class="form-label" style="text-transform:uppercase;font-size:10px;">Dados Cadastrais</div><div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" class="form-input" id="clientName" required></div><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="clientEmail"></div></div><div class="form-group"><label class="form-label">Site / Serviço</label><input type="text" class="form-input" id="siteName"></div></div>
-                    <div class="form-section"><div class="form-label" style="text-transform:uppercase;font-size:10px;">🔐 Acesso</div><div class="form-row"><div class="form-group"><label class="form-label">Email Login</label><input type="email" class="form-input" id="clientLoginEmail"></div><div class="form-group"><label class="form-label">Senha (mín. 6)</label><input type="text" class="form-input" id="clientPassword"></div></div></div>
+                    <div class="form-section"><div class="form-label" style="text-transform:uppercase;font-size:10px;">🔐 Acesso ao Painel</div><div class="form-row"><div class="form-group"><label class="form-label">Email de Login</label><input type="email" class="form-input" id="clientLoginEmail"></div><div class="form-group password-field"><label class="form-label">Senha</label><input type="text" class="form-input" id="clientPassword" placeholder="Mínimo 6 caracteres"><button type="button" class="password-toggle" onclick="togglePasswordVisibility('clientPassword')"><i class="fas fa-eye"></i></button></div></div></div>
                     <div class="form-section"><div class="form-label" style="text-transform:uppercase;font-size:10px;">Plano</div><div class="form-row"><div class="form-group"><label class="form-label">Valor R$ *</label><input type="number" class="form-input" id="monthlyValue" step="0.01" required></div><div class="form-group"><label class="form-label">Plano</label><select class="form-select" id="planType"><option value="monthly">Mensal</option><option value="quarterly">Trimestral</option><option value="semiannual">Semestral</option><option value="annual">Anual</option></select></div></div><div class="form-row"><div class="form-group"><label class="form-label">Vencimento *</label><input type="date" class="form-input" id="dueDate" required></div><div class="form-group"><label class="form-label">Ativação</label><input type="text" class="form-input" id="activationDate" readonly style="background:#f1f5f9;color:#64748b;"></div></div></div>
                 </form>
             </div>
@@ -483,6 +487,7 @@
         </div>
     </div>
 
+    <!-- MODAL SOLICITAÇÃO -->
     <div class="modal-overlay" id="updateRequestModal" style="display:none;">
         <div class="modal" style="max-width:500px;">
             <div class="modal-header"><h2 class="modal-title">Solicitação</h2><button class="btn-ghost btn-icon" onclick="document.getElementById('updateRequestModal').style.display='none'"><i class="fas fa-times"></i></button></div>
@@ -496,10 +501,13 @@
         </div>
     </div>
 
+    <!-- MODAL ALTERAR SENHA -->
     <div class="modal-overlay" id="changePasswordModal" style="display:none;">
         <div class="modal" style="max-width:380px;">
             <div class="modal-header"><h2 class="modal-title">Alterar Senha</h2><button class="btn-ghost btn-icon" onclick="document.getElementById('changePasswordModal').style.display='none'"><i class="fas fa-times"></i></button></div>
-            <div class="modal-body"><div class="form-group"><label class="form-label">Nova Senha (mín. 6)</label><input type="password" id="newClientPassword" class="form-input"></div></div>
+            <div class="modal-body">
+                <div class="form-group"><label class="form-label">Nova Senha (mín. 6 caracteres)</label><input type="password" id="newClientPassword" class="form-input" placeholder="Digite sua nova senha"></div>
+            </div>
             <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('changePasswordModal').style.display='none'">Cancelar</button><button class="btn btn-primary" onclick="saveNewClientPassword()">Salvar</button></div>
         </div>
     </div>
@@ -642,16 +650,29 @@
             return new Date(timestamp).toLocaleDateString('pt-BR');
         }
 
+        window.togglePasswordVisibility = (inputId) => {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling?.querySelector('i');
+            if (input.type === 'password' || input.type === 'text') {
+                input.type = input.type === 'password' ? 'text' : 'password';
+                if (icon) icon.className = input.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+            }
+        };
+
         // ============================================
         // NOTIFICAÇÕES
         // ============================================
         async function createNotification(type, title, clientName = '', clientId = '') {
-            const notifRef = db.ref('notifications').push();
-            await notifRef.set({
-                type, title, clientName, clientId,
-                read: false,
-                createdAt: firebase.database.ServerValue.TIMESTAMP
-            });
+            try {
+                const notifRef = db.ref('notifications').push();
+                await notifRef.set({
+                    type, title, clientName, clientId,
+                    read: false,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                });
+            } catch (e) {
+                console.warn('Erro ao criar notificação (não crítico):', e.message);
+            }
         }
 
         function getNotificationIcon(type) {
@@ -659,7 +680,8 @@
                 login: { icon: 'fa-sign-in-alt', class: 'login' },
                 request: { icon: 'fa-tools', class: 'request' },
                 due: { icon: 'fa-clock', class: 'due' },
-                new_client: { icon: 'fa-user-plus', class: 'new-client' }
+                new_client: { icon: 'fa-user-plus', class: 'new-client' },
+                password_change: { icon: 'fa-key', class: 'password-change' }
             };
             return icons[type] || { icon: 'fa-bell', class: 'login' };
         }
@@ -688,12 +710,16 @@
             }).join('');
         }
 
-        async function markNotificationRead(notifId) { await db.ref('notifications/' + notifId).update({ read: true }); }
+        async function markNotificationRead(notifId) {
+            try { await db.ref('notifications/' + notifId).update({ read: true }); } catch(e) {}
+        }
 
         async function markAllNotificationsRead() {
             const updates = {};
             notifications.forEach(n => { if (!n.read) updates[n.id + '/read'] = true; });
-            if (Object.keys(updates).length > 0) { await db.ref('notifications').update(updates); showToast('Todas notificações marcadas como lidas!', 'success'); }
+            if (Object.keys(updates).length > 0) {
+                try { await db.ref('notifications').update(updates); showToast('Todas notificações marcadas como lidas!', 'success'); } catch(e) {}
+            }
         }
 
         window.filterNotifications = (filter, el) => {
@@ -732,6 +758,7 @@
                 document.getElementById('adminSearchBox').style.display = 'flex';
                 document.getElementById('clientWelcomeText').style.display = 'none';
                 document.getElementById('btnChangePassword').style.display = 'none';
+                document.getElementById('sidebarUserPassDisplay').style.display = 'none';
                 document.getElementById('sidebarUserName').textContent = 'Admin';
                 document.getElementById('sidebarUserInitials').textContent = 'AD';
                 document.getElementById('sidebarUserEmailDisplay').textContent = currentUser.email;
@@ -744,9 +771,11 @@
                 document.getElementById('adminSearchBox').style.display = 'none';
                 document.getElementById('clientWelcomeText').style.display = 'block';
                 document.getElementById('btnChangePassword').style.display = 'inline';
+                document.getElementById('sidebarUserPassDisplay').style.display = 'block';
                 document.getElementById('sidebarUserName').textContent = clientData?.name || 'Cliente';
                 document.getElementById('sidebarUserInitials').textContent = (clientData?.name || 'CL').substring(0,2).toUpperCase();
                 document.getElementById('sidebarUserEmailDisplay').textContent = currentUser.email;
+                document.getElementById('sidebarUserPassDisplay').innerHTML = 'Senha: <span style="font-weight:600;">' + (clientData?.password || '123456') + '</span>';
                 setupRealtimeListeners();
                 switchView('clientDashboard');
             }
@@ -772,36 +801,49 @@
         async function createFirebaseUser(email, password, role, extraData = {}) {
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
             const uid = userCredential.user.uid;
-            await db.ref('users/' + uid).set({ email, role, ...extraData, createdAt: firebase.database.ServerValue.TIMESTAMP });
+            
+            // Salva em users
+            await db.ref('users/' + uid).set({
+                email, role, ...extraData,
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            });
+            
+            // Se for cliente, salva em clients
             if (role === 'client') {
                 const clientRef = db.ref('clients').push();
-                await clientRef.set({ uid, name: extraData.name || '', email, loginEmail: email, password, siteName: extraData.siteName || '', monthlyValue: extraData.monthlyValue || '150.00', planType: extraData.planType || 'monthly', dueDate: extraData.dueDate || new Date(Date.now() + 30*86400000).toISOString().split('T')[0], createdAt: firebase.database.ServerValue.TIMESTAMP });
+                await clientRef.set({
+                    uid, name: extraData.name || '', email,
+                    loginEmail: email, password,
+                    siteName: extraData.siteName || '',
+                    monthlyValue: extraData.monthlyValue || '150.00',
+                    planType: extraData.planType || 'monthly',
+                    dueDate: extraData.dueDate || new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
+                    features: extraData.features || [],
+                    purpose: extraData.purpose || '',
+                    colors: extraData.colors || '',
+                    extraInfo: extraData.extraInfo || '',
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                // Notificação de novo cliente
                 await createNotification('new_client', `Novo cliente: ${extraData.name || email}`, extraData.name || email);
             }
+            
             return { uid, user: userCredential.user };
         }
 
         async function loginAdminUser(email, password) {
-            // Faz login no Firebase Auth
             const userCredential = await auth.signInWithEmailAndPassword(email, password);
             const uid = userCredential.user.uid;
             
-            // Busca dados no Realtime Database
-            const snapshot = await db.ref('users/' + uid).once('value');
+            let snapshot = await db.ref('users/' + uid).once('value');
             let userData = snapshot.val();
             
-            // Se não existe no banco, cria automaticamente com role 'admin' (apenas para o master admin)
             if (!userData) {
-                userData = {
-                    email: email,
-                    role: 'admin',
-                    name: email.split('@')[0],
-                    createdAt: firebase.database.ServerValue.TIMESTAMP
-                };
+                userData = { email, role: 'admin', name: email.split('@')[0], createdAt: Date.now() };
                 await db.ref('users/' + uid).set(userData);
             }
             
-            // Verifica se tem role de admin
             if (userData.role !== 'admin') {
                 await auth.signOut();
                 throw new Error('Acesso negado! Você não é um administrador.');
@@ -823,15 +865,9 @@
             
             if (userData.role === 'admin') {
                 await auth.signOut();
-                throw new Error('Este email pertence a um administrador. Use a área de admin.');
+                throw new Error('Este email pertence a um administrador.');
             }
             
-            if (userData.role !== 'client') {
-                await auth.signOut();
-                throw new Error('Acesso não autorizado.');
-            }
-            
-            // Notifica login
             await createNotification('login', `${userData.name || email} fez login`, userData.name || email);
             
             return { uid, userData, user: userCredential.user };
@@ -862,7 +898,11 @@
                 if (userRole === 'admin') { renderAdminDashboard(); renderClientsTable(); }
                 if (userRole === 'client' && currentUser) {
                     const myClient = clients.find(c => c.uid === currentUser.uid);
-                    if (myClient) { clientData = myClient; renderClientDashboard(); }
+                    if (myClient) { 
+                        clientData = myClient;
+                        document.getElementById('sidebarUserPassDisplay').innerHTML = 'Senha: <span style="font-weight:600;">' + (myClient.password || '123456') + '</span>';
+                        renderClientDashboard(); 
+                    }
                 }
             });
             listeners.push(clientsRef);
@@ -995,26 +1035,46 @@
             const monthlyValue = document.getElementById('monthlyValue').value;
             const planType = document.getElementById('planType').value;
             const dueDate = document.getElementById('dueDate').value;
+            
             if (!name || !monthlyValue || !dueDate) { showToast('Preencha os campos obrigatórios!', 'error'); return; }
             if (password.length < 6) { showToast('Senha deve ter no mínimo 6 caracteres.', 'error'); return; }
+            
             const btn = document.getElementById('btnSaveClient');
             btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
+            
             try {
                 if (id) {
-                    await db.ref('clients/' + id).update({ name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate });
+                    // Editar cliente existente
+                    const updates = { name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate };
+                    await db.ref('clients/' + id).update(updates);
                 } else {
-                    await createFirebaseUser(loginEmail || email, password, 'client', { name, email, siteName, monthlyValue, planType, dueDate });
+                    // Criar novo cliente
+                    await createFirebaseUser(loginEmail || email, password, 'client', {
+                        name, email, siteName, monthlyValue, planType, dueDate
+                    });
                 }
                 closeClientModal();
                 showToast('Cliente salvo!', 'success');
             } catch (error) {
-                showToast(error.code === 'auth/email-already-in-use' ? 'Email já cadastrado.' : 'Erro: ' + error.message, 'error');
-            } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
+                console.error('Erro ao salvar:', error);
+                if (error.code === 'auth/email-already-in-use') {
+                    showToast('Email já cadastrado no sistema.', 'error');
+                } else if (error.message?.includes('Permission denied')) {
+                    showToast('Erro de permissão. Verifique as regras do Firebase.', 'error');
+                } else {
+                    showToast('Erro: ' + (error.message || 'Desconhecido'), 'error');
+                }
+            } finally { 
+                btn.disabled = false; 
+                btn.classList.remove('btn-loading'); 
+                hideLoading(); 
+            }
         };
 
         window.openEditClientModal = (id) => {
             const client = clients.find(c => c.id === id);
             if (!client) return;
+            
             document.getElementById('modalTitle').textContent = 'Editar Cliente';
             document.getElementById('clientId').value = client.id;
             document.getElementById('clientName').value = client.name || '';
@@ -1026,15 +1086,21 @@
             document.getElementById('planType').value = client.planType || 'monthly';
             document.getElementById('dueDate').value = client.dueDate || '';
             document.getElementById('activationDate').value = client.createdAt ? new Date(client.createdAt).toLocaleDateString('pt-BR') : '---';
+            
             document.getElementById('clientModal').style.display = 'flex';
         };
 
         window.deleteClient = async (id) => {
-            if (!confirm('Excluir este cliente?')) return;
+            if (!confirm('Excluir este cliente? Esta ação não pode ser desfeita.')) return;
             showLoading();
-            try { await db.ref('clients/' + id).remove(); showToast('Cliente excluído.', 'success'); }
-            catch (error) { showToast('Erro ao excluir.', 'error'); }
-            finally { hideLoading(); }
+            try { 
+                await db.ref('clients/' + id).remove(); 
+                showToast('Cliente excluído.', 'success'); 
+            } catch (error) { 
+                showToast('Erro ao excluir: ' + error.message, 'error'); 
+            } finally { 
+                hideLoading(); 
+            }
         };
 
         window.submitClientRequest = async () => {
@@ -1042,12 +1108,19 @@
             if (!text) { showToast('Descreva a solicitação.', 'error'); return; }
             showLoading();
             try {
-                await db.ref('requests').push().set({ clientUid: currentUser.uid, clientEmail: currentUser.email, clientName: clientData?.name || 'Cliente', message: text, status: 'pending', createdAt: firebase.database.ServerValue.TIMESTAMP });
+                await db.ref('requests').push().set({
+                    clientUid: currentUser.uid, clientEmail: currentUser.email,
+                    clientName: clientData?.name || 'Cliente', message: text,
+                    status: 'pending', createdAt: firebase.database.ServerValue.TIMESTAMP
+                });
                 document.getElementById('newRequestText').value = '';
                 await createNotification('request', `${clientData?.name || 'Cliente'} solicitou uma alteração`, clientData?.name || 'Cliente');
-                showToast('Solicitação enviada!', 'success');
-            } catch (error) { showToast('Erro ao enviar.', 'error'); }
-            finally { hideLoading(); }
+                showToast('Solicitação enviada! Prazo: 5 a 7 dias úteis.', 'success');
+            } catch (error) { 
+                showToast('Erro ao enviar: ' + error.message, 'error'); 
+            } finally { 
+                hideLoading(); 
+            }
         };
 
         window.openUpdateStatusModal = (reqId) => {
@@ -1065,12 +1138,21 @@
             const reqId = document.getElementById('editReqId').value;
             const newStatus = document.getElementById('newReqStatus').value;
             showLoading();
-            try { await db.ref('requests/' + reqId).update({ status: newStatus }); document.getElementById('updateRequestModal').style.display = 'none'; showToast('Status atualizado!', 'success'); }
-            catch (error) { showToast('Erro.', 'error'); }
-            finally { hideLoading(); }
+            try { 
+                await db.ref('requests/' + reqId).update({ status: newStatus }); 
+                document.getElementById('updateRequestModal').style.display = 'none'; 
+                showToast('Status atualizado!', 'success'); 
+            } catch (error) { 
+                showToast('Erro: ' + error.message, 'error'); 
+            } finally { 
+                hideLoading(); 
+            }
         };
 
-        window.openChangePasswordModal = () => { document.getElementById('newClientPassword').value = ''; document.getElementById('changePasswordModal').style.display = 'flex'; };
+        window.openChangePasswordModal = () => { 
+            document.getElementById('newClientPassword').value = ''; 
+            document.getElementById('changePasswordModal').style.display = 'flex'; 
+        };
 
         window.saveNewClientPassword = async () => {
             const newPass = document.getElementById('newClientPassword').value.trim();
@@ -1078,20 +1160,45 @@
             showLoading();
             try {
                 await auth.currentUser.updatePassword(newPass);
-                if (clientData?.id) await db.ref('clients/' + clientData.id).update({ password: newPass });
+                
+                // Atualiza no Realtime Database
+                if (clientData?.id) {
+                    await db.ref('clients/' + clientData.id).update({ password: newPass });
+                    clientData.password = newPass;
+                    document.getElementById('sidebarUserPassDisplay').innerHTML = 'Senha: <span style="font-weight:600;">' + newPass + '</span>';
+                }
+                
+                // Notifica admin
+                await createNotification('password_change', `${clientData?.name || currentUser.email} alterou a senha`, clientData?.name || '');
+                
                 document.getElementById('changePasswordModal').style.display = 'none';
-                showToast('Senha alterada!', 'success');
-            } catch (error) { showToast(error.code === 'auth/requires-recent-login' ? 'Faça logout e login novamente.' : 'Erro: ' + error.message, 'error'); }
-            finally { hideLoading(); }
+                showToast('Senha alterada com sucesso!', 'success');
+            } catch (error) {
+                if (error.code === 'auth/requires-recent-login') {
+                    showToast('Por segurança, faça logout e login novamente para alterar a senha.', 'error');
+                } else {
+                    showToast('Erro: ' + error.message, 'error');
+                }
+            } finally { 
+                hideLoading(); 
+            }
         };
 
-        window.setFilter = (filter, el) => { currentFilter = filter; document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active')); if (el) el.classList.add('active'); renderClientsTable(); };
-        window.handleSearch = () => { searchTerm = document.getElementById('globalSearch').value.toLowerCase(); renderClientsTable(); };
+        window.setFilter = (filter, el) => { 
+            currentFilter = filter; 
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active')); 
+            if (el) el.classList.add('active'); 
+            renderClientsTable(); 
+        };
+        
+        window.handleSearch = () => { 
+            searchTerm = document.getElementById('globalSearch').value.toLowerCase(); 
+            renderClientsTable(); 
+        };
 
         async function checkDueDates() {
             if (userRole !== 'admin') return;
             const today = new Date(); today.setHours(0, 0, 0, 0);
-            const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
             clients.forEach(async (c) => {
                 if (!c.dueDate) return;
                 const dueDate = new Date(c.dueDate + 'T00:00:00');
@@ -1108,51 +1215,36 @@
         // FORMULÁRIOS
         // ============================================
         
-        // ADMIN LOGIN - Apenas willdalves1@gmail.com (ou emails cadastrados como admin)
         document.getElementById('formAdminAuth').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmailAdmin').value.trim();
             const password = document.getElementById('authPasswordAdmin').value.trim();
-            
             if (!email || !password) { showToast('Preencha todos os campos.', 'error'); return; }
-            
-            // Verifica se é o email master admin OU se já está cadastrado como admin no banco
-            // Nota: O loginAdminUser verifica a role no banco de dados
             
             const btn = document.getElementById('btnAdminLogin');
             btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
             
             try {
                 const result = await loginAdminUser(email, password);
-                currentUser = result.user; 
-                userRole = 'admin';
-                showAppScreen(); 
-                showToast('Login de administrador efetuado!', 'success');
+                currentUser = result.user; userRole = 'admin';
+                showAppScreen(); showToast('Login de administrador efetuado!', 'success');
             } catch (error) {
-                console.error('Erro login admin:', error);
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-email') {
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                     showToast('Email ou senha inválidos.', 'error');
                 } else {
                     showToast(error.message || 'Erro no login.', 'error');
                 }
-            } finally { 
-                btn.disabled = false; 
-                btn.classList.remove('btn-loading'); 
-                hideLoading(); 
-            }
+            } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
-        // CLIENT LOGIN
         document.getElementById('formClientAuth').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authLoginClient').value.trim();
             const password = document.getElementById('authPasswordClient').value.trim();
-            
             if (!email || !password) { showToast('Preencha todos os campos.', 'error'); return; }
             
-            // Verifica se está tentando logar com email de admin
             if (email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) {
-                showToast('Este email pertence ao administrador. Use a área de admin para acessar.', 'error');
+                showToast('Este email pertence ao administrador. Use a área de admin.', 'error');
                 return;
             }
             
@@ -1161,39 +1253,34 @@
             
             try {
                 const result = await loginClientUser(email, password);
-                currentUser = result.user; 
-                userRole = 'client';
+                currentUser = result.user; userRole = 'client';
                 
                 const cs = await db.ref('clients').orderByChild('uid').equalTo(currentUser.uid).once('value');
                 const cd = cs.val();
                 if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
                 
-                showAppScreen(); 
-                showToast('Login efetuado!', 'success');
+                showAppScreen(); showToast('Login efetuado!', 'success');
             } catch (error) {
-                console.error('Erro login cliente:', error);
                 if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                     showToast('Email ou senha inválidos.', 'error');
                 } else {
                     showToast(error.message || 'Erro no login.', 'error');
                 }
-            } finally { 
-                btn.disabled = false; 
-                btn.classList.remove('btn-loading'); 
-                hideLoading(); 
-            }
+            } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
-        // BRIEFING FORM
         document.getElementById('formBriefing').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('bfName').value.trim();
             const email = document.getElementById('bfEmail').value.trim();
             const segment = document.getElementById('bfSegment').value.trim();
+            const colors = document.getElementById('bfColors').value.trim();
+            const features = Array.from(document.querySelectorAll('input[name="bfFeatures"]:checked')).map(cb => cb.value);
+            const purposeCb = document.querySelector('input[name="bfPurpose"]:checked');
+            const purpose = purposeCb ? purposeCb.value : '';
+            const extraInfo = document.getElementById('bfExtraInfo').value.trim();
             
             if (!name || !email || !segment) { showToast('Preencha os campos obrigatórios.', 'error'); return; }
-            
-            // Não permite cadastro com email de admin
             if (email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) {
                 showToast('Este email é reservado para o administrador.', 'error');
                 return;
@@ -1205,9 +1292,9 @@
             try {
                 const futureDate = new Date(Date.now() + 30*86400000);
                 await createFirebaseUser(email, '123456', 'client', {
-                    name, email, siteName: segment,
-                    monthlyValue: '150.00', planType: 'monthly',
-                    dueDate: futureDate.toISOString().split('T')[0]
+                    name, email, siteName: segment, monthlyValue: '150.00',
+                    planType: 'monthly', dueDate: futureDate.toISOString().split('T')[0],
+                    features, purpose, colors, extraInfo
                 });
                 
                 const result = await loginClientUser(email, '123456');
@@ -1220,14 +1307,14 @@
                 document.getElementById('successMessageText').innerHTML = `<p style="margin-bottom:10px;"><strong>${name}</strong>, seu segmento <strong>${segment}</strong> tem grande potencial.</p><p style="margin-bottom:10px;">Vamos criar o melhor site profissional para você. 🚀🎯</p><p style="font-weight:700;color:#3b82f6;">Vamos para cima! 🚀🎯✅</p>`;
                 document.getElementById('briefingScreen').style.display = 'none';
                 document.getElementById('successBriefingScreen').style.display = 'flex';
-                showToast('Cadastro realizado!', 'success');
+                showToast('Cadastro realizado! Sua senha inicial é: 123456', 'success');
             } catch (error) {
-                showToast(error.code === 'auth/email-already-in-use' ? 'Email já cadastrado. Faça login.' : 'Erro: ' + error.message, 'error');
-            } finally { 
-                btn.disabled = false; 
-                btn.classList.remove('btn-loading'); 
-                hideLoading(); 
-            }
+                if (error.code === 'auth/email-already-in-use') {
+                    showToast('Email já cadastrado. Faça login na Área do Cliente.', 'error');
+                } else {
+                    showToast('Erro: ' + error.message, 'error');
+                }
+            } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
         // ============================================
@@ -1248,13 +1335,9 @@
                     }
                     showAppScreen();
                 } else {
-                    // Usuário no Auth mas sem dados no DB
-                    // Se for o master admin, cria automaticamente
                     if (user.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) {
                         await db.ref('users/' + user.uid).set({
-                            email: user.email,
-                            role: 'admin',
-                            name: 'Will',
+                            email: user.email, role: 'admin', name: 'Will',
                             createdAt: firebase.database.ServerValue.TIMESTAMP
                         });
                         userRole = 'admin';
@@ -1262,7 +1345,6 @@
                     } else {
                         await auth.signOut();
                         showBriefingScreen();
-                        showToast('Sessão inválida. Faça login novamente.', 'error');
                     }
                 }
             } else {
