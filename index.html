@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#3b82f6">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>ClientFlow - Gestão de Clientes</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -17,16 +16,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
         :root {
-            --bg-primary: #f8fafc;
-            --bg-secondary: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --text-muted: #94a3b8;
-            --border-color: #e2e8f0;
-            --accent: #3b82f6;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --success: #10b981;
             --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
 
@@ -45,20 +34,19 @@
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
             min-height: 100vh;
-            min-height: -webkit-fill-available;
         }
 
         ::-webkit-scrollbar { width: 3px; height: 3px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        .app-container { display: flex; min-height: 100vh; min-height: -webkit-fill-available; position: relative; }
+        .app-container { display: flex; min-height: 100vh; }
 
         .sidebar {
             width: 280px; max-width: 85vw; background: #ffffff;
             border-right: 1px solid #e2e8f0; display: flex; flex-direction: column;
             position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
-            transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-100%); transition: transform 0.3s ease;
             box-shadow: 4px 0 20px rgba(0,0,0,0.1); padding-bottom: var(--safe-bottom);
         }
         .sidebar.open { transform: translateX(0); }
@@ -69,19 +57,18 @@
         }
         .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
 
-        .sidebar-logo { padding: 20px 16px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .sidebar-logo { padding: 20px 16px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; }
         .sidebar-logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
         .sidebar-logo-text { font-weight: 700; font-size: 17px; color: #0f172a; }
-        .sidebar-nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .sidebar-nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
         .sidebar-nav-item {
             display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px;
-            color: #475569; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.15s;
+            color: #475569; font-weight: 500; font-size: 14px; cursor: pointer;
             border: none; background: none; width: 100%; text-align: left; min-height: 44px; position: relative;
         }
-        .sidebar-nav-item:active { background: #f1f5f9; }
         .sidebar-nav-item.active { background: #eef2ff; color: #3b82f6; font-weight: 600; }
         .sidebar-nav-item i { width: 20px; text-align: center; font-size: 15px; }
-        .sidebar-footer { padding: 12px 16px; border-top: 1px solid #e2e8f0; flex-shrink: 0; }
+        .sidebar-footer { padding: 12px 16px; border-top: 1px solid #e2e8f0; }
 
         .notification-badge {
             position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
@@ -92,21 +79,17 @@
 
         .main-content { flex: 1; margin-left: 0; min-height: 100vh; display: flex; flex-direction: column; width: 100%; }
 
-        .header { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; gap: 8px; flex-shrink: 0; }
-        .header-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
-        .header-search { display: flex; align-items: center; gap: 8px; background: #f1f5f9; border-radius: 10px; padding: 8px 12px; width: 100%; max-width: 300px; transition: all 0.2s; border: 1px solid transparent; }
-        .header-search:focus-within { background: #ffffff; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        .header-search input { border: none; background: none; outline: none; font-size: 14px; width: 100%; color: #0f172a; min-width: 0; }
-        .header-search i { color: #94a3b8; font-size: 14px; flex-shrink: 0; }
+        .header { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
+        .header-search { display: flex; align-items: center; gap: 8px; background: #f1f5f9; border-radius: 10px; padding: 8px 12px; width: 100%; max-width: 300px; border: 1px solid transparent; }
+        .header-search:focus-within { background: #ffffff; border-color: #3b82f6; }
+        .header-search input { border: none; background: none; outline: none; font-size: 14px; width: 100%; }
 
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.15s; border: none; white-space: nowrap; min-height: 42px; -webkit-tap-highlight-color: transparent; user-select: none; }
-        .btn:active { transform: scale(0.97); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; border: none; min-height: 42px; }
         .btn-primary { background: #3b82f6; color: white; }
-        .btn-primary:active { background: #2563eb; }
         .btn-secondary { background: #f1f5f9; color: #475569; }
         .btn-danger { background: #fef2f2; color: #ef4444; }
         .btn-success { background: #10b981; color: white; }
-        .btn-ghost { background: transparent; color: #64748b; padding: 8px; border-radius: 8px; }
+        .btn-ghost { background: transparent; color: #64748b; padding: 8px; }
         .btn-icon { width: 40px; height: 40px; min-height: 40px; padding: 0; border-radius: 10px; }
         .btn-sm { padding: 6px 10px; font-size: 11px; border-radius: 8px; min-height: 32px; }
         .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
@@ -123,34 +106,30 @@
 
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
         .stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; }
-        .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .stat-card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
         .stat-card-icon.blue { background: #eef2ff; color: #3b82f6; }
-        .stat-card-icon.red { background: #fef2f2; color: #ef4444; }
         .stat-card-icon.green { background: #f0fdf4; color: #10b981; }
+        .stat-card-icon.red { background: #fef2f2; color: #ef4444; }
         .stat-card-icon.purple { background: #faf5ff; color: #8b5cf6; }
-        .stat-card-icon.amber { background: #fffbeb; color: #f59e0b; }
-        .stat-card-value { font-size: 22px; font-weight: 700; color: #0f172a; line-height: 1.2; }
+        .stat-card-value { font-size: 22px; font-weight: 700; color: #0f172a; }
         .stat-card-label { font-size: 11px; color: #64748b; font-weight: 500; }
 
         .monthly-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
         .monthly-stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; text-align: center; }
         .monthly-stat-card.current { border-color: #3b82f6; background: #eef2ff; }
-        .monthly-stat-value { font-size: 24px; font-weight: 700; color: #0f172a; }
-        .monthly-stat-label { font-size: 10px; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; }
+        .monthly-stat-value { font-size: 24px; font-weight: 700; }
+        .monthly-stat-label { font-size: 10px; color: #64748b; font-weight: 500; text-transform: uppercase; }
         .monthly-stat-trend { font-size: 10px; font-weight: 600; margin-top: 2px; }
         .monthly-stat-trend.up { color: #10b981; }
         .monthly-stat-trend.down { color: #ef4444; }
-        .monthly-stat-trend.neutral { color: #64748b; }
 
-        .alert-banner { border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; font-weight: 500; }
+        .alert-banner { border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; }
         .alert-banner.danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
         .alert-banner.warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
         .alert-banner.success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #065f46; }
         .alert-banner.info { background: #eef2ff; border: 1px solid #bfdbfe; color: #1e40af; }
-        .alert-banner i { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 
-        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .badge-success { background: #f0fdf4; color: #065f46; }
         .badge-warning { background: #fffbeb; color: #92400e; }
         .badge-danger { background: #fef2f2; color: #991b1b; }
@@ -161,30 +140,29 @@
         .badge-dot.red { background: #ef4444; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        .filter-bar { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .filter-bar { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px; margin-bottom: 12px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
         .filter-bar::-webkit-scrollbar { display: none; }
-        .filter-pill { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: 1px solid #e2e8f0; background: #ffffff; color: #475569; white-space: nowrap; flex-shrink: 0; min-height: 32px; }
+        .filter-pill { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid #e2e8f0; background: #ffffff; color: #475569; white-space: nowrap; min-height: 32px; }
         .filter-pill.active { background: #3b82f6; color: white; border-color: #3b82f6; }
 
         .table-container { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
-        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 650px; }
-        thead { background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
-        th { padding: 10px 12px; text-align: left; font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; }
-        td { padding: 12px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        tbody tr:active { background: #f8fafc; }
-        .client-avatar { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: white; flex-shrink: 0; }
+        thead { background: #f8fafc; }
+        th { padding: 10px 12px; text-align: left; font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; }
+        td { padding: 12px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9; }
+        .client-avatar { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: white; }
         .client-info { display: flex; align-items: center; gap: 8px; }
-        .client-name { font-weight: 600; color: #0f172a; font-size: 13px; }
+        .client-name { font-weight: 600; font-size: 13px; }
         .client-detail { font-size: 11px; color: #94a3b8; }
         .actions-cell { display: flex; gap: 4px; }
-        .action-btn { width: 30px; height: 30px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.15s; background: #f1f5f9; color: #64748b; }
+        .action-btn { width: 30px; height: 30px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; background: #f1f5f9; color: #64748b; }
 
         .notifications-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
         .notifications-header { padding: 14px 16px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: #f8fafc; }
-        .notifications-title { font-size: 14px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+        .notifications-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .notifications-count { background: #ef4444; color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
-        .notifications-list { max-height: 400px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .notifications-list { max-height: 400px; overflow-y: auto; }
         .notification-item { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
         .notification-item.unread { background: #eef2ff; }
         .notification-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
@@ -194,91 +172,66 @@
         .notification-icon.new-client { background: #f0fdf4; color: #10b981; }
         .notification-icon.password-change { background: #faf5ff; color: #8b5cf6; }
         .notification-content { flex: 1; min-width: 0; }
-        .notification-text { font-size: 13px; color: #0f172a; font-weight: 500; }
+        .notification-text { font-size: 13px; font-weight: 500; }
         .notification-time { font-size: 11px; color: #94a3b8; margin-top: 2px; }
         .notification-empty { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 13px; }
 
         .tabs-container { display: flex; gap: 4px; background: #f1f5f9; border-radius: 10px; padding: 4px; margin-bottom: 16px; }
-        .tab-btn { flex: 1; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; border: none; background: transparent; color: #64748b; text-align: center; }
-        .tab-btn.active { background: #ffffff; color: #3b82f6; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .tab-btn { flex: 1; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: #64748b; text-align: center; }
+        .tab-btn.active { background: #ffffff; color: #3b82f6; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: flex-end; justify-content: center; padding: 0; }
-        .modal { background: #ffffff; border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.15); animation: modalUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding-bottom: var(--safe-bottom); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
+        .modal { background: #ffffff; border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 -4px 30px rgba(0,0,0,0.15); animation: modalUp 0.3s ease; padding-bottom: var(--safe-bottom); }
         @keyframes modalUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; background: #ffffff; z-index: 1; border-radius: 20px 20px 0 0; }
-        .modal-title { font-size: 16px; font-weight: 700; color: #0f172a; }
+        .modal-title { font-size: 16px; font-weight: 700; }
         .modal-body { padding: 16px; }
         .modal-footer { display: flex; gap: 8px; justify-content: flex-end; padding: 14px 16px; border-top: 1px solid #e2e8f0; position: sticky; bottom: 0; background: #ffffff; }
         
         .form-group { margin-bottom: 14px; }
         .form-label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 4px; }
-        .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; color: #0f172a; background: #ffffff; transition: all 0.15s; -webkit-appearance: none; }
-        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        .form-textarea { resize: vertical; min-height: 80px; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #ffffff; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #3b82f6; }
         .form-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .form-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 14px; }
 
-        .auth-screen { min-height: 100vh; min-height: -webkit-fill-available; display: flex; align-items: center; justify-content: center; background: #f1f5f9; padding: 16px; }
+        .auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f1f5f9; padding: 16px; }
         .auth-card { background: white; border-radius: 20px; padding: 28px 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
-        .briefing-card { background: white; border-radius: 20px; padding: 24px 16px; width: 100%; max-width: 600px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); margin: 0; }
+        .briefing-card { background: white; border-radius: 20px; padding: 24px 16px; width: 100%; max-width: 600px; }
         .auth-logo { text-align: center; margin-bottom: 20px; }
         .auth-logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: white; font-size: 22px; }
-        .auth-title { font-size: 20px; font-weight: 700; color: #0f172a; }
-        .auth-subtitle { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .auth-title { font-size: 20px; font-weight: 700; }
         .auth-form { display: flex; flex-direction: column; gap: 12px; }
-        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .custom-checkbox { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #475569; cursor: pointer; min-height: 32px; }
-        .custom-checkbox input { width: 16px; height: 16px; cursor: pointer; }
-        .success-screen-content { text-align: center; max-width: 500px; padding: 32px 20px; background: white; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
-        .success-text { font-size: 14px; color: #334155; line-height: 1.6; margin-bottom: 20px; text-align: left; }
-        .req-msg { background: #f1f5f9; padding: 10px; border-radius: 10px; font-size: 13px; color: #334155; border-left: 3px solid #cbd5e1; word-break: break-word; }
 
         .toast-container { position: fixed; top: 12px; right: 12px; left: 12px; z-index: 300; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
-        .toast { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; animation: toastIn 0.3s ease; pointer-events: auto; }
+        .toast { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; animation: toastIn 0.3s ease; pointer-events: auto; }
         @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        .toast.success { border-left: 4px solid #10b981; } .toast.success i { color: #10b981; }
-        .toast.error { border-left: 4px solid #ef4444; } .toast.error i { color: #ef4444; }
-        .toast.info { border-left: 4px solid #3b82f6; } .toast.info i { color: #3b82f6; }
-
-        .reminder-icon { font-size: 12px; }
-        .reminder-icon.red { color: #ef4444; }
-        .reminder-icon.yellow { color: #f59e0b; }
+        .toast.success { border-left: 4px solid #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; }
+        .toast.info { border-left: 4px solid #3b82f6; }
 
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 400; display: flex; align-items: center; justify-content: center; }
         .loading-spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.7s linear infinite; }
 
-        .section-title { font-size: 14px; font-weight: 700; color: #0f172a; margin: 20px 0 12px 0; display: flex; align-items: center; gap: 8px; }
-
-        .password-field { position: relative; }
-        .password-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px; }
+        .section-title { font-size: 14px; font-weight: 700; margin: 20px 0 12px 0; display: flex; align-items: center; gap: 8px; }
+        .reminder-icon.red { color: #ef4444; }
+        .reminder-icon.yellow { color: #f59e0b; }
 
         @media (min-width: 768px) {
             .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
-            .monthly-stats-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
-            .stat-card { padding: 18px; }
-            .stat-card-value { font-size: 26px; }
-            .content-area { padding: 24px; }
-            .page-title { font-size: 22px; }
+            .monthly-stats-grid { grid-template-columns: repeat(4, 1fr); }
             .form-row { grid-template-columns: 1fr 1fr; }
-            .modal { border-radius: 20px; max-width: 600px; margin: auto; max-height: 90vh; }
+            .modal { border-radius: 20px; max-width: 600px; margin: auto; }
             .modal-overlay { align-items: center; padding: 20px; }
-            @keyframes modalUp { from { transform: scale(0.95) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-            .auth-card { padding: 36px 32px; }
-            .briefing-card { padding: 32px 28px; margin: 20px auto; }
+            @keyframes modalUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         }
 
         @media (min-width: 1024px) {
-            .sidebar { transform: translateX(0); position: fixed; width: 250px; box-shadow: none; max-width: 250px; }
+            .sidebar { transform: translateX(0); width: 250px; max-width: 250px; box-shadow: none; }
             .sidebar-overlay { display: none !important; }
             .main-content { margin-left: 250px; }
-            .header { padding: 14px 24px; }
-            .content-area { padding: 28px; }
-        }
-
-        @media (min-width: 1280px) {
-            .sidebar { width: 270px; max-width: 270px; }
-            .main-content { margin-left: 270px; }
-            .content-area { padding: 32px; }
         }
     </style>
 </head>
@@ -288,36 +241,30 @@
     <div class="loading-overlay" id="loadingOverlay" style="display:none;"><div class="loading-spinner"></div></div>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-    <!-- BRIEFING SCREEN -->
+    <!-- BRIEFING -->
     <div id="briefingScreen" class="auth-screen">
         <div class="briefing-card">
-            <div class="auth-logo" style="margin-bottom:24px;">
-                <div class="auth-logo-icon"><i class="fas fa-rocket"></i></div>
-                <h1 class="auth-title">Briefing de Marca</h1>
-                <p class="auth-subtitle" style="font-weight:500;color:#3b82f6;margin-top:6px;">
-                    Conte sua visão para criarmos <span onclick="showAdminAuthScreen()" title="Admin" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted;">algo incrível.</span>
-                </p>
-            </div>
+            <div class="auth-logo"><div class="auth-logo-icon"><i class="fas fa-rocket"></i></div><h1 class="auth-title">Briefing de Marca</h1><p class="auth-subtitle" style="font-weight:500;color:#3b82f6;margin-top:6px;">Conte sua visão para criarmos <span onclick="showAdminAuthScreen()" title="Admin" style="cursor:pointer;text-decoration:underline;">algo incrível.</span></p></div>
             <form id="formBriefing" class="auth-form">
-                <div class="form-row"><div class="form-group"><label class="form-label">Nome <span style="color:red">*</span></label><input type="text" id="bfName" required class="form-input" placeholder="Seu nome completo"></div><div class="form-group"><label class="form-label">Email <span style="color:red">*</span></label><input type="email" id="bfEmail" required class="form-input" placeholder="seuemail@exemplo.com"></div></div>
-                <div class="form-row"><div class="form-group"><label class="form-label">Segmento <span style="color:red">*</span></label><input type="text" id="bfSegment" required class="form-input" placeholder="Ex: Advocacia, E-commerce..."></div><div class="form-group"><label class="form-label">Cores de Preferência</label><input type="text" id="bfColors" class="form-input" placeholder="Azul escuro, Dourado..."></div></div>
-                <div class="form-section"><label class="form-label">Preferências do Site</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Formulário de Contato"> Formulário de Contato</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão do WhatsApp"> Botão WhatsApp</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão Instagram"> Botão Instagram</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão YouTube"> Botão YouTube</label></div></div>
-                <div class="form-section"><label class="form-label">Propósito do Site</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Vender mais" required> Vender mais</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais credibilidade"> Credibilidade</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais profissionalismo"> Profissionalismo</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Divulgar minha marca"> Divulgar marca</label></div></div>
-                <div class="form-group"><label class="form-label">Informações Adicionais</label><textarea id="bfExtraInfo" class="form-textarea" placeholder="Conte mais sobre sua ideia..."></textarea></div>
-                <button type="submit" class="btn btn-primary" style="width:100%;" id="btnSubmitBriefing"><i class="fas fa-paper-plane"></i> Enviar e Acessar Painel</button>
+                <div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" id="bfName" required class="form-input"></div><div class="form-group"><label class="form-label">Email *</label><input type="email" id="bfEmail" required class="form-input"></div></div>
+                <div class="form-row"><div class="form-group"><label class="form-label">Segmento *</label><input type="text" id="bfSegment" required class="form-input"></div><div class="form-group"><label class="form-label">Cores</label><input type="text" id="bfColors" class="form-input"></div></div>
+                <div class="form-section"><label class="form-label">Preferências</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Formulário de Contato"> Formulário de Contato</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão do WhatsApp"> WhatsApp</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão Instagram"> Instagram</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão YouTube"> YouTube</label></div></div>
+                <div class="form-section"><label class="form-label">Propósito</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Vender mais" required> Vender mais</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais credibilidade"> Credibilidade</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais profissionalismo"> Profissionalismo</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Divulgar minha marca"> Divulgar</label></div></div>
+                <div class="form-group"><label class="form-label">Informações Adicionais</label><textarea id="bfExtraInfo" class="form-textarea"></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width:100%;" id="btnSubmitBriefing"><i class="fas fa-paper-plane"></i> Enviar e Acessar</button>
                 <button type="button" class="btn" onclick="showClientAuthScreen()" style="width:100%;background:#1d4ed8;color:white;"><i class="fas fa-user-circle"></i> Área do Cliente</button>
             </form>
         </div>
     </div>
 
-    <!-- SUCCESS BRIEFING -->
+    <!-- SUCCESS -->
     <div id="successBriefingScreen" class="auth-screen" style="display:none;">
-        <div class="success-screen-content">
-            <h2 style="font-size:22px;font-weight:800;color:#0f172a;margin-bottom:20px;">Entendido! 🚀🎯</h2>
-            <div class="success-text" id="successMessageText"></div>
+        <div class="success-screen-content" style="text-align:center;max-width:500px;padding:32px 20px;background:white;border-radius:24px;">
+            <h2 style="font-size:22px;font-weight:800;margin-bottom:20px;">Entendido! 🚀🎯</h2>
+            <div class="success-text" id="successMessageText" style="font-size:14px;text-align:left;"></div>
             <div style="display:flex;flex-direction:column;gap:10px;margin-top:28px;">
-                <button class="btn btn-primary" onclick="goToClientPanel()" style="width:100%;justify-content:center;"><i class="fas fa-arrow-right"></i> Ir para o Painel</button>
-                <a href="https://api.whatsapp.com/send?phone=5579988645865&text=Oi" target="_blank" class="btn btn-success" style="width:100%;justify-content:center;text-decoration:none;"><i class="fab fa-whatsapp" style="font-size:16px;"></i> Falar no WhatsApp</a>
+                <button class="btn btn-primary" onclick="goToClientPanel()" style="width:100%;justify-content:center;">Ir para o Painel</button>
+                <a href="https://api.whatsapp.com/send?phone=5579988645865&text=Oi" target="_blank" class="btn btn-success" style="width:100%;justify-content:center;text-decoration:none;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
             </div>
         </div>
     </div>
@@ -326,11 +273,10 @@
     <div id="adminAuthScreen" class="auth-screen" style="display:none;">
         <div class="auth-card">
             <button onclick="showBriefingScreen()" style="background:none;border:none;color:#64748b;font-size:12px;cursor:pointer;margin-bottom:12px;"><i class="fas fa-arrow-left"></i> Voltar</button>
-            <div class="auth-logo"><div class="auth-logo-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626);"><i class="fas fa-shield-alt"></i></div><h1 class="auth-title">Área Administrativa</h1><p class="auth-subtitle" style="color:#ef4444;font-weight:600;">Acesso restrito à equipe</p></div>
-            <div class="alert-banner info" style="margin-bottom:16px;"><i class="fas fa-info-circle"></i><div><strong>Atenção:</strong> Apenas o administrador principal tem acesso.</div></div>
+            <div class="auth-logo"><div class="auth-logo-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626);"><i class="fas fa-shield-alt"></i></div><h1 class="auth-title">Área Administrativa</h1><p class="auth-subtitle" style="color:#ef4444;">Acesso restrito</p></div>
             <form id="formAdminAuth" class="auth-form">
-                <div class="form-group"><label class="form-label">Email</label><input type="email" id="authEmailAdmin" class="form-input" placeholder="admin@exemplo.com" required></div>
-                <div class="form-group"><label class="form-label">Senha</label><input type="password" id="authPasswordAdmin" class="form-input" placeholder="••••••••" required></div>
+                <div class="form-group"><label class="form-label">Email</label><input type="email" id="authEmailAdmin" class="form-input" required></div>
+                <div class="form-group"><label class="form-label">Senha</label><input type="password" id="authPasswordAdmin" class="form-input" required></div>
                 <button type="submit" class="btn btn-primary" style="width:100%;background:#ef4444;" id="btnAdminLogin"><i class="fas fa-sign-in-alt"></i> Entrar</button>
             </form>
         </div>
@@ -340,17 +286,16 @@
     <div id="clientAuthScreen" class="auth-screen" style="display:none;">
         <div class="auth-card">
             <button onclick="showBriefingScreen()" style="background:none;border:none;color:#64748b;font-size:12px;cursor:pointer;margin-bottom:12px;"><i class="fas fa-arrow-left"></i> Voltar</button>
-            <div class="auth-logo"><div class="auth-logo-icon"><i class="fas fa-user-circle"></i></div><h1 class="auth-title">Área do Cliente</h1><p class="auth-subtitle">Acesse o portal da sua assessoria</p></div>
-            <div class="alert-banner info" style="margin-bottom:16px;"><i class="fas fa-info-circle"></i><div><strong>Atenção:</strong> Área exclusiva para clientes.</div></div>
+            <div class="auth-logo"><div class="auth-logo-icon"><i class="fas fa-user-circle"></i></div><h1 class="auth-title">Área do Cliente</h1></div>
             <form id="formClientAuth" class="auth-form">
-                <div class="form-group"><label class="form-label">Email</label><input type="email" id="authLoginClient" required class="form-input" placeholder="seuemail@exemplo.com"></div>
-                <div class="form-group"><label class="form-label">Senha</label><input type="password" id="authPasswordClient" required class="form-input" placeholder="••••••••"></div>
-                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;" id="btnClientLogin"><i class="fas fa-user"></i> Entrar</button>
+                <div class="form-group"><label class="form-label">Email</label><input type="email" id="authLoginClient" required class="form-input"></div>
+                <div class="form-group"><label class="form-label">Senha</label><input type="password" id="authPasswordClient" required class="form-input"></div>
+                <button type="submit" class="btn btn-primary" style="width:100%;" id="btnClientLogin"><i class="fas fa-user"></i> Entrar</button>
             </form>
         </div>
     </div>
 
-    <!-- APP PRINCIPAL -->
+    <!-- APP -->
     <div id="appScreen" class="app-container" style="display:none;">
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-layer-group"></i></div><span class="sidebar-logo-text">ClientFlow</span></div>
@@ -358,19 +303,16 @@
                 <button class="sidebar-nav-item active" data-view="adminDashboard" onclick="switchView('adminDashboard');closeSidebar();"><i class="fas fa-th-large"></i> Dashboard</button>
                 <button class="sidebar-nav-item" data-view="adminNotifications" onclick="switchView('adminNotifications');closeSidebar();"><i class="fas fa-bell"></i> Notificações <span class="notification-badge" id="sidebarNotifBadge" style="display:none;">0</span></button>
                 <button class="sidebar-nav-item" data-view="adminClients" onclick="switchView('adminClients');closeSidebar();"><i class="fas fa-users"></i> Clientes</button>
-                <button class="sidebar-nav-item" data-view="adminAssessoria" onclick="switchView('adminAssessoria');closeSidebar();"><i class="fas fa-tools"></i> Solicitações <span id="badgeAdminRequests" class="badge-dot red" style="display:none;margin-left:auto;"></span></button>
+                <button class="sidebar-nav-item" data-view="adminAssessoria" onclick="switchView('adminAssessoria');closeSidebar();"><i class="fas fa-tools"></i> Solicitações</button>
             </nav>
             <nav class="sidebar-nav" id="menuClient" style="display:none;">
                 <button class="sidebar-nav-item active" data-view="clientDashboard" onclick="switchView('clientDashboard');closeSidebar();"><i class="fas fa-home"></i> Meu Plano</button>
                 <button class="sidebar-nav-item" data-view="clientAssessoria" onclick="switchView('clientAssessoria');closeSidebar();"><i class="fas fa-headset"></i> Assessoria</button>
             </nav>
             <div class="sidebar-footer">
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <div style="width:32px;height:32px;background:#eef2ff;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#3b82f6;font-weight:600;font-size:12px;" id="sidebarUserInitials">--</div>
-                    <div style="overflow:hidden;flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="sidebarUserName">Usuário</div><div style="font-size:10px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="sidebarUserEmailDisplay">email</div><div style="font-size:10px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="sidebarUserPassDisplay" style="display:none;"></div></div>
-                </div>
-                <div style="display:flex;justify-content:space-between;border-top:1px solid #f1f5f9;padding-top:8px;font-size:11px;">
-                    <button onclick="openChangePasswordModal();closeSidebar();" style="color:#3b82f6;background:none;border:none;cursor:pointer;font-weight:600;" id="btnChangePassword">Alterar senha</button>
+                <div id="sidebarUserInfo" style="font-size:12px;"></div>
+                <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;">
+                    <button onclick="openChangePasswordModal();" style="color:#3b82f6;background:none;border:none;cursor:pointer;" id="btnChangePassword">Alterar senha</button>
                     <button onclick="handleLogout()" style="color:#ef4444;background:none;border:none;cursor:pointer;">Sair</button>
                 </div>
             </div>
@@ -378,36 +320,30 @@
 
         <main class="main-content">
             <header class="header">
-                <div class="header-left">
-                    <button class="btn-ghost btn-icon" onclick="toggleSidebar()" style="flex-shrink:0;"><i class="fas fa-bars"></i></button>
-                    <div class="header-search" id="adminSearchBox" style="display:none;"><i class="fas fa-search"></i><input type="text" id="globalSearch" placeholder="Buscar clientes..." oninput="handleSearch()"></div>
-                    <div id="clientWelcomeText" style="display:none;font-weight:600;color:#475569;font-size:14px;">Bem-vindo(a)!</div>
+                <div style="display:flex;align-items:center;gap:8px;flex:1;">
+                    <button class="btn-ghost btn-icon" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <div class="header-search" id="adminSearchBox" style="display:none;"><i class="fas fa-search"></i><input type="text" id="globalSearch" placeholder="Buscar..." oninput="handleSearch()"></div>
+                    <div id="clientWelcomeText" style="display:none;font-weight:600;">Bem-vindo(a)!</div>
                 </div>
-                <div class="header-actions" style="flex-shrink:0;">
-                    <button class="btn btn-primary btn-sm" id="btnNewClient" onclick="openAddClientModal()" style="display:none;"><i class="fas fa-plus"></i> Novo</button>
-                </div>
+                <button class="btn btn-primary btn-sm" id="btnNewClient" onclick="openAddClientModal()" style="display:none;"><i class="fas fa-plus"></i> Novo</button>
             </header>
 
             <div class="content-area">
-                <!-- ADMIN DASHBOARD -->
                 <div id="adminDashboard" class="view-section active">
                     <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Visão geral dos seus clientes</p>
                     <div class="stats-grid">
-                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon blue"><i class="fas fa-users"></i></div></div><div class="stat-card-value" id="statTotalClients">0</div><div class="stat-card-label">Total de Clientes</div></div>
-                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon green"><i class="fas fa-check-circle"></i></div></div><div class="stat-card-value" id="statActiveClients">0</div><div class="stat-card-label">Ativos</div></div>
-                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon red"><i class="fas fa-exclamation-triangle"></i></div></div><div class="stat-card-value" id="statDueToday">0</div><div class="stat-card-label">Vence Hoje</div></div>
-                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div></div><div class="stat-card-value" id="statMonthlyRevenue">R$ 0</div><div class="stat-card-label">Receita Estimada</div></div>
+                        <div class="stat-card"><div class="stat-card-icon blue"><i class="fas fa-users"></i></div><div class="stat-card-value" id="statTotalClients">0</div><div class="stat-card-label">Total</div></div>
+                        <div class="stat-card"><div class="stat-card-icon green"><i class="fas fa-check-circle"></i></div><div class="stat-card-value" id="statActiveClients">0</div><div class="stat-card-label">Ativos</div></div>
+                        <div class="stat-card"><div class="stat-card-icon red"><i class="fas fa-exclamation-triangle"></i></div><div class="stat-card-value" id="statDueToday">0</div><div class="stat-card-label">Vence Hoje</div></div>
+                        <div class="stat-card"><div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div><div class="stat-card-value" id="statMonthlyRevenue">R$0</div><div class="stat-card-label">Receita</div></div>
                     </div>
                     <div class="section-title"><i class="fas fa-chart-line" style="color:#3b82f6;"></i> Novos Clientes por Mês</div>
                     <div class="monthly-stats-grid" id="monthlyStatsGrid"></div>
                     <div id="adminAlertsContainer"></div>
                 </div>
 
-                <!-- ADMIN NOTIFICAÇÕES -->
                 <div id="adminNotifications" class="view-section">
                     <h1 class="page-title">Notificações</h1>
-                    <p class="page-subtitle">Acompanhe os eventos importantes</p>
                     <div class="tabs-container">
                         <button class="tab-btn active" onclick="filterNotifications('all', this)">Todas</button>
                         <button class="tab-btn" onclick="filterNotifications('unread', this)">Não lidas</button>
@@ -416,18 +352,13 @@
                         <button class="tab-btn" onclick="filterNotifications('due', this)">Vencimentos</button>
                     </div>
                     <div class="notifications-panel">
-                        <div class="notifications-header">
-                            <div class="notifications-title"><i class="fas fa-bell"></i> Central de Notificações <span class="notifications-count" id="notifCount">0</span></div>
-                            <button class="btn btn-secondary btn-sm" onclick="markAllNotificationsRead()"><i class="fas fa-check-double"></i> Marcar todas lidas</button>
-                        </div>
-                        <div class="notifications-list" id="notificationsList"><div class="notification-empty"><i class="fas fa-bell-slash" style="font-size:32px;display:block;margin-bottom:8px;"></i>Nenhuma notificação</div></div>
+                        <div class="notifications-header"><div class="notifications-title"><i class="fas fa-bell"></i> Notificações <span class="notifications-count" id="notifCount">0</span></div><button class="btn btn-secondary btn-sm" onclick="markAllNotificationsRead()">Marcar lidas</button></div>
+                        <div class="notifications-list" id="notificationsList"></div>
                     </div>
                 </div>
 
-                <!-- ADMIN CLIENTES -->
                 <div id="adminClients" class="view-section">
                     <h1 class="page-title">Clientes</h1>
-                    <p class="page-subtitle">Gerencie assinaturas e acessos</p>
                     <div class="filter-bar">
                         <button class="filter-pill active" onclick="setFilter('all', this)">Todos</button>
                         <button class="filter-pill" onclick="setFilter('active', this)">✅ Ativos</button>
@@ -438,33 +369,28 @@
                     <div class="table-container"><div class="table-wrapper"><table><thead><tr><th>Cliente</th><th>Site</th><th>Plano</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="clientsTableBody"></tbody></table></div></div>
                 </div>
 
-                <!-- ADMIN ASSESSORIA -->
                 <div id="adminAssessoria" class="view-section">
                     <h1 class="page-title">Solicitações</h1>
-                    <p class="page-subtitle">Pedidos dos clientes</p>
                     <div class="table-container"><div class="table-wrapper"><table><thead><tr><th>Data</th><th>Cliente</th><th>Solicitação</th><th>Status</th><th>Ações</th></tr></thead><tbody id="adminRequestsTableBody"></tbody></table></div></div>
                 </div>
 
-                <!-- CLIENT DASHBOARD -->
                 <div id="clientDashboard" class="view-section">
                     <h1 class="page-title">Meu Plano</h1>
-                    <p class="page-subtitle">Resumo da assinatura</p>
                     <div class="stats-grid">
-                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon blue"><i class="fas fa-globe"></i></div></div><div class="stat-card-value" id="clientViewSiteName">---</div><div class="stat-card-label">Site</div></div>
-                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon green"><i class="fas fa-calendar-check"></i></div></div><div class="stat-card-value" id="clientViewPlanType">---</div><div class="stat-card-label">Ciclo</div></div>
-                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div></div><div class="stat-card-value" id="clientViewValue">R$0</div><div class="stat-card-label">Valor</div></div>
-                        <div class="stat-card"><div class="stat-card-header"><div class="stat-card-icon amber"><i class="fas fa-clock"></i></div></div><div class="stat-card-value" id="clientViewDueDate">---</div><div class="stat-card-label">Vencimento</div></div>
+                        <div class="stat-card"><div class="stat-card-icon blue"><i class="fas fa-globe"></i></div><div class="stat-card-value" id="clientViewSiteName">---</div><div class="stat-card-label">Site</div></div>
+                        <div class="stat-card"><div class="stat-card-icon green"><i class="fas fa-calendar-check"></i></div><div class="stat-card-value" id="clientViewPlanType">---</div><div class="stat-card-label">Ciclo</div></div>
+                        <div class="stat-card"><div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div><div class="stat-card-value" id="clientViewValue">R$0</div><div class="stat-card-label">Valor</div></div>
+                        <div class="stat-card"><div class="stat-card-icon" style="background:#fffbeb;color:#f59e0b;"><i class="fas fa-clock"></i></div><div class="stat-card-value" id="clientViewDueDate">---</div><div class="stat-card-label">Vencimento</div></div>
                     </div>
                     <div id="clientPlanAlert"></div>
                 </div>
 
-                <!-- CLIENT ASSESSORIA -->
                 <div id="clientAssessoria" class="view-section">
                     <h1 class="page-title">Assessoria</h1>
-                    <p class="page-subtitle">Solicite atualizações</p>
-                    <div class="alert-banner info"><i class="fas fa-info-circle"></i><div><strong>Prazo:</strong> 5 a 7 dias úteis</div></div>
-                    <div class="form-section"><textarea id="newRequestText" class="form-textarea" placeholder="Descreva a atualização desejada..."></textarea><button class="btn btn-primary" style="margin-top:10px;width:100%;" onclick="submitClientRequest()"><i class="fas fa-paper-plane"></i> Enviar</button></div>
-                    <h3 style="font-size:15px;font-weight:700;margin:20px 0 10px;">Histórico</h3>
+                    <div class="alert-banner info"><i class="fas fa-info-circle"></i> Prazo: 5 a 7 dias úteis</div>
+                    <textarea id="newRequestText" class="form-textarea" placeholder="Descreva a atualização..."></textarea>
+                    <button class="btn btn-primary" style="margin-top:10px;width:100%;" onclick="submitClientRequest()">Enviar</button>
+                    <h3 style="margin:20px 0 10px;">Histórico</h3>
                     <div class="table-container"><div class="table-wrapper"><table><thead><tr><th>Data</th><th>Mensagem</th><th>Status</th></tr></thead><tbody id="clientRequestsTableBody"></tbody></table></div></div>
                 </div>
             </div>
@@ -478,26 +404,12 @@
             <div class="modal-body">
                 <form id="clientForm" onsubmit="return false;">
                     <input type="hidden" id="clientId">
-                    <div class="form-section"><div class="form-label" style="text-transform:uppercase;font-size:10px;">Dados Cadastrais</div><div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" class="form-input" id="clientName" required></div><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="clientEmail"></div></div><div class="form-group"><label class="form-label">Site / Serviço</label><input type="text" class="form-input" id="siteName"></div></div>
-                    <div class="form-section"><div class="form-label" style="text-transform:uppercase;font-size:10px;">🔐 Acesso ao Painel</div><div class="form-row"><div class="form-group"><label class="form-label">Email de Login</label><input type="email" class="form-input" id="clientLoginEmail"></div><div class="form-group password-field"><label class="form-label">Senha</label><input type="text" class="form-input" id="clientPassword" placeholder="Mínimo 6 caracteres"><button type="button" class="password-toggle" onclick="togglePasswordVisibility('clientPassword')"><i class="fas fa-eye"></i></button></div></div></div>
-                    <div class="form-section"><div class="form-label" style="text-transform:uppercase;font-size:10px;">Plano</div><div class="form-row"><div class="form-group"><label class="form-label">Valor R$ *</label><input type="number" class="form-input" id="monthlyValue" step="0.01" required></div><div class="form-group"><label class="form-label">Plano</label><select class="form-select" id="planType"><option value="monthly">Mensal</option><option value="quarterly">Trimestral</option><option value="semiannual">Semestral</option><option value="annual">Anual</option></select></div></div><div class="form-row"><div class="form-group"><label class="form-label">Vencimento *</label><input type="date" class="form-input" id="dueDate" required></div><div class="form-group"><label class="form-label">Ativação</label><input type="text" class="form-input" id="activationDate" readonly style="background:#f1f5f9;color:#64748b;"></div></div></div>
+                    <div class="form-section"><div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" class="form-input" id="clientName" required></div><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="clientEmail"></div></div></div>
+                    <div class="form-section"><div class="form-row"><div class="form-group"><label class="form-label">Email Login</label><input type="email" class="form-input" id="clientLoginEmail"></div><div class="form-group"><label class="form-label">Senha</label><input type="text" class="form-input" id="clientPassword"></div></div></div>
+                    <div class="form-section"><div class="form-row"><div class="form-group"><label class="form-label">Site</label><input type="text" class="form-input" id="siteName"></div><div class="form-group"><label class="form-label">Valor R$ *</label><input type="number" class="form-input" id="monthlyValue" step="0.01" required></div></div><div class="form-row"><div class="form-group"><label class="form-label">Plano</label><select class="form-select" id="planType"><option value="monthly">Mensal</option><option value="quarterly">Trimestral</option><option value="semiannual">Semestral</option><option value="annual">Anual</option></select></div><div class="form-group"><label class="form-label">Vencimento *</label><input type="date" class="form-input" id="dueDate" required></div></div></div>
                 </form>
             </div>
-            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeClientModal()">Cancelar</button><button class="btn btn-primary" onclick="saveClient()" id="btnSaveClient"><i class="fas fa-save"></i> Salvar</button></div>
-        </div>
-    </div>
-
-    <!-- MODAL SOLICITAÇÃO -->
-    <div class="modal-overlay" id="updateRequestModal" style="display:none;">
-        <div class="modal" style="max-width:500px;">
-            <div class="modal-header"><h2 class="modal-title">Solicitação</h2><button class="btn-ghost btn-icon" onclick="document.getElementById('updateRequestModal').style.display='none'"><i class="fas fa-times"></i></button></div>
-            <div class="modal-body">
-                <input type="hidden" id="editReqId">
-                <div style="margin-bottom:12px;"><div style="font-size:11px;color:#64748b;font-weight:600;">CLIENTE</div><div style="font-size:14px;font-weight:600;" id="viewReqClientName">---</div><div style="font-size:11px;color:#64748b;" id="viewReqDate">---</div></div>
-                <div style="margin-bottom:16px;"><div style="font-size:11px;color:#64748b;font-weight:600;">MENSAGEM</div><div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;font-size:13px;white-space:pre-wrap;max-height:180px;overflow-y:auto;" id="viewReqMessage">---</div></div>
-                <div class="form-group"><label class="form-label">Status</label><select id="newReqStatus" class="form-select"><option value="pending">🟡 Pendente</option><option value="in_progress">🔵 Em Andamento</option><option value="completed">🟢 Concluída</option></select></div>
-            </div>
-            <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('updateRequestModal').style.display='none'">Cancelar</button><button class="btn btn-primary" onclick="saveRequestStatus()">Salvar</button></div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeClientModal()">Cancelar</button><button class="btn btn-primary" onclick="saveClient()" id="btnSaveClient">Salvar</button></div>
         </div>
     </div>
 
@@ -505,9 +417,7 @@
     <div class="modal-overlay" id="changePasswordModal" style="display:none;">
         <div class="modal" style="max-width:380px;">
             <div class="modal-header"><h2 class="modal-title">Alterar Senha</h2><button class="btn-ghost btn-icon" onclick="document.getElementById('changePasswordModal').style.display='none'"><i class="fas fa-times"></i></button></div>
-            <div class="modal-body">
-                <div class="form-group"><label class="form-label">Nova Senha (mín. 6 caracteres)</label><input type="password" id="newClientPassword" class="form-input" placeholder="Digite sua nova senha"></div>
-            </div>
+            <div class="modal-body"><div class="form-group"><label class="form-label">Nova Senha</label><input type="password" id="newClientPassword" class="form-input"></div></div>
             <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('changePasswordModal').style.display='none'">Cancelar</button><button class="btn btn-primary" onclick="saveNewClientPassword()">Salvar</button></div>
         </div>
     </div>
@@ -523,36 +433,19 @@
             projectId: "jules-a661e",
             storageBucket: "jules-a661e.firebasestorage.app",
             messagingSenderId: "468339495351",
-            appId: "1:468339495351:web:c092f23760e5d1d71c1832",
-            measurementId: "G-MDNFQLLZ9H"
+            appId: "1:468339495351:web:c092f23760e5d1d71c1832"
         };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // ============================================
-        // CONFIGURAÇÃO DO ADMIN PRINCIPAL
-        // ============================================
         const MASTER_ADMIN_EMAIL = 'willdalves1@gmail.com';
-
-        // ============================================
-        // ESTADO GLOBAL
-        // ============================================
-        let currentUser = null;
-        let userRole = null;
-        let clientData = null;
-        let clients = [];
-        let allRequests = [];
-        let notifications = [];
-        let currentFilter = 'all';
-        let currentNotifFilter = 'all';
-        let searchTerm = '';
+        let currentUser = null, userRole = null, clientData = null;
+        let clients = [], allRequests = [], notifications = [];
+        let currentFilter = 'all', currentNotifFilter = 'all', searchTerm = '';
         let listeners = [];
 
-        // ============================================
-        // UTILITÁRIOS
-        // ============================================
         function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
         function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
         
@@ -563,184 +456,108 @@
             const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
             toast.innerHTML = `<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
             container.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3500);
+            setTimeout(() => toast.remove(), 3500);
         }
 
         function getClientStatus(dueDateStr) {
             if (!dueDateStr) return { status: 'unknown', label: 'Sem data', color: 'gray' };
-            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const today = new Date(); today.setHours(0,0,0,0);
             const dueDate = new Date(dueDateStr + 'T00:00:00');
-            const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+            const diffDays = Math.ceil((dueDate - today) / 86400000);
             if (diffDays < 0) return { status: 'expired', label: 'Vencido', color: 'red' };
             if (diffDays === 0) return { status: 'dueToday', label: 'Vence Hoje', color: 'red' };
             if (diffDays <= 5) return { status: 'dueSoon', label: 'Vence em Breve', color: 'yellow' };
             return { status: 'active', label: 'Ativo', color: 'green' };
         }
 
-        function getStatusBadge(dueDateStr) {
-            const s = getClientStatus(dueDateStr);
-            const map = {
-                active: `<span class="badge badge-success"><span class="badge-dot green"></span>${s.label}</span>`,
-                dueSoon: `<span class="badge badge-warning"><span class="badge-dot yellow"></span>${s.label}</span>`,
-                dueToday: `<span class="badge badge-danger"><span class="badge-dot red"></span>${s.label}</span>`,
-                expired: `<span class="badge badge-danger"><span class="badge-dot red"></span>${s.label}</span>`
-            };
-            return map[s.status] || `<span class="badge badge-info">${s.label}</span>`;
+        function getStatusBadge(d) {
+            const s = getClientStatus(d);
+            const m = { active: 'badge-success', dueSoon: 'badge-warning', dueToday: 'badge-danger', expired: 'badge-danger' };
+            return `<span class="badge ${m[s.status]||'badge-info'}"><span class="badge-dot ${s.color}"></span>${s.label}</span>`;
         }
 
-        function getReminderIcon(dueDateStr) {
-            const s = getClientStatus(dueDateStr);
+        function getReminderIcon(d) {
+            const s = getClientStatus(d);
             if (s.status === 'dueToday' || s.status === 'expired') return '<i class="fas fa-exclamation-circle reminder-icon red"></i>';
             if (s.status === 'dueSoon') return '<i class="fas fa-exclamation-triangle reminder-icon yellow"></i>';
             return '';
         }
 
-        function getPlanLabel(pt) {
-            const labels = { monthly: 'Mensal', quarterly: 'Trimestral', semiannual: 'Semestral', annual: 'Anual' };
-            return labels[pt] || pt || 'Mensal';
-        }
-
-        function getMonthName(monthIndex) {
-            const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            return months[monthIndex];
-        }
+        function getPlanLabel(p) { return { monthly:'Mensal', quarterly:'Trimestral', semiannual:'Semestral', annual:'Anual' }[p] || 'Mensal'; }
+        function getMonthName(i) { return ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][i]; }
 
         function getNewClientsByMonth() {
-            const monthlyData = {};
+            const md = {};
             const now = new Date();
             for (let i = 5; i >= 0; i--) {
                 const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                monthlyData[key] = { year: d.getFullYear(), month: d.getMonth(), monthName: getMonthName(d.getMonth()), count: 0, isCurrentMonth: i === 0 };
+                const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                md[key] = { year: d.getFullYear(), month: d.getMonth(), monthName: getMonthName(d.getMonth()), count: 0, isCurrentMonth: i===0 };
             }
             clients.forEach(c => {
                 if (c.createdAt) {
                     const d = new Date(c.createdAt);
-                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                    if (monthlyData[key] !== undefined) monthlyData[key].count++;
+                    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                    if (md[key] !== undefined) md[key].count++;
                 }
             });
-            return Object.values(monthlyData).reverse();
+            return Object.values(md).reverse();
         }
 
-        function getTrend(current, previous) {
-            if (previous === 0 && current > 0) return 'up';
-            if (current > previous) return 'up';
-            if (current < previous) return 'down';
-            return 'neutral';
+        function getTrend(c, p) { if (p===0 && c>0) return 'up'; if (c>p) return 'up'; if (c<p) return 'down'; return 'neutral'; }
+        function getTimeAgo(t) {
+            if (!t) return '';
+            const diff = Date.now() - t;
+            const m = Math.floor(diff/60000), h = Math.floor(diff/3600000), d = Math.floor(diff/86400000);
+            if (m<1) return 'Agora';
+            if (m<60) return `${m}min`;
+            if (h<24) return `${h}h`;
+            if (d<7) return `${d}d`;
+            return new Date(t).toLocaleDateString('pt-BR');
         }
 
-        function getTrendIcon(trend) {
-            if (trend === 'up') return '↑';
-            if (trend === 'down') return '↓';
-            return '→';
-        }
-
-        function getTimeAgo(timestamp) {
-            if (!timestamp) return 'Data desconhecida';
-            const now = Date.now();
-            const diff = now - timestamp;
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(diff / 3600000);
-            const days = Math.floor(diff / 86400000);
-            if (minutes < 1) return 'Agora mesmo';
-            if (minutes < 60) return `${minutes} min atrás`;
-            if (hours < 24) return `${hours}h atrás`;
-            if (days < 7) return `${days}d atrás`;
-            return new Date(timestamp).toLocaleDateString('pt-BR');
-        }
-
-        window.togglePasswordVisibility = (inputId) => {
-            const input = document.getElementById(inputId);
-            const icon = input.nextElementSibling?.querySelector('i');
-            if (input.type === 'password' || input.type === 'text') {
-                input.type = input.type === 'password' ? 'text' : 'password';
-                if (icon) icon.className = input.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
-            }
-        };
-
-        // ============================================
-        // NOTIFICAÇÕES
-        // ============================================
-        async function createNotification(type, title, clientName = '', clientId = '') {
-            try {
-                const notifRef = db.ref('notifications').push();
-                await notifRef.set({
-                    type, title, clientName, clientId,
-                    read: false,
-                    createdAt: firebase.database.ServerValue.TIMESTAMP
-                });
-            } catch (e) {
-                console.warn('Erro ao criar notificação (não crítico):', e.message);
-            }
-        }
-
-        function getNotificationIcon(type) {
-            const icons = {
-                login: { icon: 'fa-sign-in-alt', class: 'login' },
-                request: { icon: 'fa-tools', class: 'request' },
-                due: { icon: 'fa-clock', class: 'due' },
-                new_client: { icon: 'fa-user-plus', class: 'new-client' },
-                password_change: { icon: 'fa-key', class: 'password-change' }
-            };
-            return icons[type] || { icon: 'fa-bell', class: 'login' };
+        async function createNotification(type, title, clientName = '') {
+            try { await db.ref('notifications').push().set({ type, title, clientName, read: false, createdAt: firebase.database.ServerValue.TIMESTAMP }); } catch(e) {}
         }
 
         function renderNotifications() {
             const container = document.getElementById('notificationsList');
-            let filtered = [...notifications];
-            if (currentNotifFilter === 'unread') filtered = filtered.filter(n => !n.read);
-            else if (currentNotifFilter !== 'all') filtered = filtered.filter(n => n.type === currentNotifFilter);
-            
-            const unreadCount = notifications.filter(n => !n.read).length;
-            document.getElementById('notifCount').textContent = unreadCount;
+            let f = [...notifications];
+            if (currentNotifFilter === 'unread') f = f.filter(n => !n.read);
+            else if (currentNotifFilter !== 'all') f = f.filter(n => n.type === currentNotifFilter);
+            const unread = notifications.filter(n => !n.read).length;
+            document.getElementById('notifCount').textContent = unread;
             const badge = document.getElementById('sidebarNotifBadge');
-            if (unreadCount > 0) { badge.style.display = 'flex'; badge.textContent = unreadCount; }
-            else { badge.style.display = 'none'; }
-            
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="notification-empty"><i class="fas fa-bell-slash" style="font-size:32px;display:block;margin-bottom:8px;"></i>Nenhuma notificação${currentNotifFilter !== 'all' ? ' deste tipo' : ''}</div>`;
-                return;
-            }
-            
-            container.innerHTML = filtered.map(n => {
-                const iconData = getNotificationIcon(n.type);
-                const timeAgo = getTimeAgo(n.createdAt);
-                return `<div class="notification-item ${n.read ? '' : 'unread'}" onclick="markNotificationRead('${n.id}')"><div class="notification-icon ${iconData.class}"><i class="fas ${iconData.icon}"></i></div><div class="notification-content"><div class="notification-text">${n.title}</div><div class="notification-time">${timeAgo}</div></div>${!n.read ? '<span class="badge-dot red" style="flex-shrink:0;margin-top:8px;"></span>' : ''}</div>`;
+            badge.style.display = unread > 0 ? 'flex' : 'none';
+            if (unread > 0) badge.textContent = unread;
+            if (!f.length) { container.innerHTML = '<div class="notification-empty">Nenhuma notificação</div>'; return; }
+            const icons = { login: ['fa-sign-in-alt','login'], request: ['fa-tools','request'], due: ['fa-clock','due'], new_client: ['fa-user-plus','new-client'], password_change: ['fa-key','password-change'] };
+            container.innerHTML = f.map(n => {
+                const [ico, cls] = icons[n.type] || ['fa-bell','login'];
+                return `<div class="notification-item ${n.read?'':'unread'}" onclick="markNotificationRead('${n.id}')"><div class="notification-icon ${cls}"><i class="fas ${ico}"></i></div><div class="notification-content"><div class="notification-text">${n.title}</div><div class="notification-time">${getTimeAgo(n.createdAt)}</div></div></div>`;
             }).join('');
         }
 
-        async function markNotificationRead(notifId) {
-            try { await db.ref('notifications/' + notifId).update({ read: true }); } catch(e) {}
-        }
-
+        async function markNotificationRead(id) { try { await db.ref('notifications/'+id).update({read:true}); } catch(e) {} }
         async function markAllNotificationsRead() {
-            const updates = {};
-            notifications.forEach(n => { if (!n.read) updates[n.id + '/read'] = true; });
-            if (Object.keys(updates).length > 0) {
-                try { await db.ref('notifications').update(updates); showToast('Todas notificações marcadas como lidas!', 'success'); } catch(e) {}
-            }
+            const u = {};
+            notifications.forEach(n => { if (!n.read) u[n.id+'/read'] = true; });
+            if (Object.keys(u).length) { try { await db.ref('notifications').update(u); } catch(e) {} }
         }
 
-        window.filterNotifications = (filter, el) => {
-            currentNotifFilter = filter;
+        window.filterNotifications = (f, el) => {
+            currentNotifFilter = f;
             document.querySelectorAll('#adminNotifications .tab-btn').forEach(b => b.classList.remove('active'));
             if (el) el.classList.add('active');
             renderNotifications();
         };
 
-        // ============================================
-        // SIDEBAR
-        // ============================================
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('active'); }
         document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
 
-        // ============================================
-        // NAVEGAÇÃO
-        // ============================================
         function hideAllScreens() {
-            ['briefingScreen', 'successBriefingScreen', 'adminAuthScreen', 'clientAuthScreen', 'appScreen'].forEach(id => document.getElementById(id).style.display = 'none');
+            ['briefingScreen','successBriefingScreen','adminAuthScreen','clientAuthScreen','appScreen'].forEach(id => document.getElementById(id).style.display = 'none');
         }
 
         window.showBriefingScreen = () => { hideAllScreens(); document.getElementById('briefingScreen').style.display = 'flex'; };
@@ -751,34 +568,23 @@
         function showAppScreen() {
             hideAllScreens();
             document.getElementById('appScreen').style.display = 'flex';
-            if (userRole === 'admin') {
-                document.getElementById('menuAdmin').style.display = 'flex';
-                document.getElementById('menuClient').style.display = 'none';
-                document.getElementById('btnNewClient').style.display = 'inline-flex';
-                document.getElementById('adminSearchBox').style.display = 'flex';
-                document.getElementById('clientWelcomeText').style.display = 'none';
-                document.getElementById('btnChangePassword').style.display = 'none';
-                document.getElementById('sidebarUserPassDisplay').style.display = 'none';
-                document.getElementById('sidebarUserName').textContent = 'Admin';
-                document.getElementById('sidebarUserInitials').textContent = 'AD';
-                document.getElementById('sidebarUserEmailDisplay').textContent = currentUser.email;
-                setupRealtimeListeners();
-                switchView('adminDashboard');
+            const isAdmin = userRole === 'admin';
+            document.getElementById('menuAdmin').style.display = isAdmin ? 'flex' : 'none';
+            document.getElementById('menuClient').style.display = isAdmin ? 'none' : 'flex';
+            document.getElementById('btnNewClient').style.display = isAdmin ? 'inline-flex' : 'none';
+            document.getElementById('adminSearchBox').style.display = isAdmin ? 'flex' : 'none';
+            document.getElementById('clientWelcomeText').style.display = isAdmin ? 'none' : 'block';
+            document.getElementById('btnChangePassword').style.display = isAdmin ? 'none' : 'inline';
+            
+            const info = document.getElementById('sidebarUserInfo');
+            if (isAdmin) {
+                info.innerHTML = `<strong>Admin</strong><br><small>${currentUser.email}</small>`;
             } else {
-                document.getElementById('menuAdmin').style.display = 'none';
-                document.getElementById('menuClient').style.display = 'flex';
-                document.getElementById('btnNewClient').style.display = 'none';
-                document.getElementById('adminSearchBox').style.display = 'none';
-                document.getElementById('clientWelcomeText').style.display = 'block';
-                document.getElementById('btnChangePassword').style.display = 'inline';
-                document.getElementById('sidebarUserPassDisplay').style.display = 'block';
-                document.getElementById('sidebarUserName').textContent = clientData?.name || 'Cliente';
-                document.getElementById('sidebarUserInitials').textContent = (clientData?.name || 'CL').substring(0,2).toUpperCase();
-                document.getElementById('sidebarUserEmailDisplay').textContent = currentUser.email;
-                document.getElementById('sidebarUserPassDisplay').innerHTML = 'Senha: <span style="font-weight:600;">' + (clientData?.password || '123456') + '</span>';
-                setupRealtimeListeners();
-                switchView('clientDashboard');
+                info.innerHTML = `<strong>${clientData?.name||'Cliente'}</strong><br><small>${currentUser.email}</small><br><small style="color:#94a3b8;">Senha: ${clientData?.password||'123456'}</small>`;
             }
+            
+            setupRealtimeListeners();
+            switchView(isAdmin ? 'adminDashboard' : 'clientDashboard');
             closeSidebar();
         }
 
@@ -786,7 +592,7 @@
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(viewId);
             if (target) target.classList.add('active');
-            document.querySelectorAll('.sidebar-nav-item').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewId));
+            document.querySelectorAll('.sidebar-nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === viewId));
             if (viewId === 'adminDashboard') renderAdminDashboard();
             if (viewId === 'adminNotifications') renderNotifications();
             if (viewId === 'adminClients') renderClientsTable();
@@ -796,37 +602,43 @@
         };
 
         // ============================================
-        // FIREBASE AUTH
+        // CRIAÇÃO DE USUÁRIO CORRIGIDA
         // ============================================
         async function createFirebaseUser(email, password, role, extraData = {}) {
+            // 1. Cria no Firebase Auth
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
             const uid = userCredential.user.uid;
             
-            // Salva em users
+            // 2. Salva em /users/{uid}
             await db.ref('users/' + uid).set({
-                email, role, ...extraData,
+                email, role,
+                name: extraData.name || email.split('@')[0],
                 createdAt: firebase.database.ServerValue.TIMESTAMP
             });
             
-            // Se for cliente, salva em clients
+            // 3. Se for cliente, salva em /clients/
             if (role === 'client') {
                 const clientRef = db.ref('clients').push();
                 await clientRef.set({
-                    uid, name: extraData.name || '', email,
-                    loginEmail: email, password,
+                    uid, 
+                    name: extraData.name || '',
+                    email: email,
+                    loginEmail: email,
+                    password: password,
                     siteName: extraData.siteName || '',
                     monthlyValue: extraData.monthlyValue || '150.00',
                     planType: extraData.planType || 'monthly',
                     dueDate: extraData.dueDate || new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
-                    features: extraData.features || [],
-                    purpose: extraData.purpose || '',
-                    colors: extraData.colors || '',
-                    extraInfo: extraData.extraInfo || '',
                     createdAt: firebase.database.ServerValue.TIMESTAMP
                 });
                 
-                // Notificação de novo cliente
-                await createNotification('new_client', `Novo cliente: ${extraData.name || email}`, extraData.name || email);
+                // Notificação (não crítica)
+                try { await createNotification('new_client', `Novo cliente: ${extraData.name || email}`); } catch(e) {}
+            }
+            
+            // 4. Volta a logar como admin (se for admin criando cliente)
+            if (userRole === 'admin' && currentUser) {
+                // Já está logado como admin, não precisa fazer nada
             }
             
             return { uid, user: userCredential.user };
@@ -835,20 +647,13 @@
         async function loginAdminUser(email, password) {
             const userCredential = await auth.signInWithEmailAndPassword(email, password);
             const uid = userCredential.user.uid;
-            
             let snapshot = await db.ref('users/' + uid).once('value');
             let userData = snapshot.val();
-            
             if (!userData) {
-                userData = { email, role: 'admin', name: email.split('@')[0], createdAt: Date.now() };
+                userData = { email, role: 'admin', name: 'Admin', createdAt: Date.now() };
                 await db.ref('users/' + uid).set(userData);
             }
-            
-            if (userData.role !== 'admin') {
-                await auth.signOut();
-                throw new Error('Acesso negado! Você não é um administrador.');
-            }
-            
+            if (userData.role !== 'admin') { await auth.signOut(); throw new Error('Acesso negado!'); }
             return { uid, userData, user: userCredential.user };
         }
 
@@ -857,19 +662,9 @@
             const uid = userCredential.user.uid;
             const snapshot = await db.ref('users/' + uid).once('value');
             const userData = snapshot.val();
-            
-            if (!userData) {
-                await auth.signOut();
-                throw new Error('Usuário não encontrado. Cadastre-se primeiro.');
-            }
-            
-            if (userData.role === 'admin') {
-                await auth.signOut();
-                throw new Error('Este email pertence a um administrador.');
-            }
-            
-            await createNotification('login', `${userData.name || email} fez login`, userData.name || email);
-            
+            if (!userData) { await auth.signOut(); throw new Error('Usuário não encontrado.'); }
+            if (userData.role === 'admin') { await auth.signOut(); throw new Error('Este email é do administrador.'); }
+            try { await createNotification('login', `${userData.name||email} fez login`); } catch(e) {}
             return { uid, userData, user: userCredential.user };
         }
 
@@ -881,12 +676,8 @@
             clients = []; allRequests = []; notifications = [];
             closeSidebar();
             showBriefingScreen();
-            showToast('Sessão encerrada.', 'info');
         };
 
-        // ============================================
-        // REALTIME LISTENERS
-        // ============================================
         function setupRealtimeListeners() {
             listeners.forEach(ref => ref.off());
             listeners = [];
@@ -895,14 +686,11 @@
             clientsRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 clients = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+                console.log('📋 Clientes carregados:', clients.length, clients);
                 if (userRole === 'admin') { renderAdminDashboard(); renderClientsTable(); }
                 if (userRole === 'client' && currentUser) {
-                    const myClient = clients.find(c => c.uid === currentUser.uid);
-                    if (myClient) { 
-                        clientData = myClient;
-                        document.getElementById('sidebarUserPassDisplay').innerHTML = 'Senha: <span style="font-weight:600;">' + (myClient.password || '123456') + '</span>';
-                        renderClientDashboard(); 
-                    }
+                    const mc = clients.find(c => c.uid === currentUser.uid);
+                    if (mc) { clientData = mc; renderClientDashboard(); }
                 }
             });
             listeners.push(clientsRef);
@@ -919,39 +707,34 @@
             const notifRef = db.ref('notifications');
             notifRef.on('value', (snapshot) => {
                 const data = snapshot.val();
-                notifications = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)) : [];
+                notifications = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a,b) => (b.createdAt||0)-(a.createdAt||0)) : [];
                 if (userRole === 'admin') renderNotifications();
             });
             listeners.push(notifRef);
         }
 
-        // ============================================
-        // RENDERIZADORES
-        // ============================================
         function renderAdminDashboard() {
             document.getElementById('statTotalClients').textContent = clients.length;
-            let activeCount = 0, dueTodayCount = 0;
-            const alertsHTML = [];
+            let active = 0, dueToday = 0;
+            const alerts = [];
             clients.forEach(c => {
-                const status = getClientStatus(c.dueDate);
-                if (status.status === 'active') activeCount++;
-                if (status.status === 'dueToday') dueTodayCount++;
-                if (status.status === 'dueToday') alertsHTML.push(`<div class="alert-banner danger"><i class="fas fa-exclamation-circle"></i><div><strong>${c.name}</strong> - Vence HOJE!</div></div>`);
-                else if (status.status === 'expired') alertsHTML.push(`<div class="alert-banner warning"><i class="fas fa-exclamation-triangle"></i><div><strong>${c.name}</strong> - Vencido</div></div>`);
+                const s = getClientStatus(c.dueDate);
+                if (s.status === 'active') active++;
+                if (s.status === 'dueToday') dueToday++;
+                if (s.status === 'dueToday') alerts.push(`<div class="alert-banner danger"><i class="fas fa-exclamation-circle"></i><strong>${c.name}</strong> - Vence HOJE!</div>`);
+                else if (s.status === 'expired') alerts.push(`<div class="alert-banner warning"><i class="fas fa-exclamation-triangle"></i><strong>${c.name}</strong> - Vencido</div>`);
             });
-            document.getElementById('statActiveClients').textContent = activeCount;
-            document.getElementById('statDueToday').textContent = dueTodayCount;
-            document.getElementById('statMonthlyRevenue').textContent = `R$ ${clients.reduce((acc, c) => acc + parseFloat(c.monthlyValue || 0), 0).toFixed(2)}`;
-            document.getElementById('adminAlertsContainer').innerHTML = alertsHTML.join('');
-            renderMonthlyStats();
-        }
-
-        function renderMonthlyStats() {
-            const monthlyData = getNewClientsByMonth();
-            document.getElementById('monthlyStatsGrid').innerHTML = monthlyData.map((data, index) => {
-                const prevData = monthlyData[index + 1];
-                const trend = prevData ? getTrend(data.count, prevData.count) : 'neutral';
-                return `<div class="monthly-stat-card ${data.isCurrentMonth ? 'current' : ''}"><div class="monthly-stat-label">${data.monthName} ${data.year}</div><div class="monthly-stat-value">${data.count}</div><div class="monthly-stat-trend ${trend}">${data.count > 0 ? getTrendIcon(trend) + ' novos' : '---'}${data.isCurrentMonth ? ' (atual)' : ''}</div></div>`;
+            document.getElementById('statActiveClients').textContent = active;
+            document.getElementById('statDueToday').textContent = dueToday;
+            document.getElementById('statMonthlyRevenue').textContent = 'R$ ' + clients.reduce((a,c) => a + parseFloat(c.monthlyValue||0), 0).toFixed(2);
+            document.getElementById('adminAlertsContainer').innerHTML = alerts.join('');
+            
+            const md = getNewClientsByMonth();
+            document.getElementById('monthlyStatsGrid').innerHTML = md.map((d,i) => {
+                const prev = md[i+1];
+                const trend = prev ? getTrend(d.count, prev.count) : 'neutral';
+                const icon = trend === 'up' ? '↑' : (trend === 'down' ? '↓' : '→');
+                return `<div class="monthly-stat-card ${d.isCurrentMonth?'current':''}"><div class="monthly-stat-label">${d.monthName} ${d.year}</div><div class="monthly-stat-value">${d.count}</div><div class="monthly-stat-trend ${trend}">${d.count>0?icon+' novos':'---'}${d.isCurrentMonth?' (atual)':''}</div></div>`;
             }).join('');
         }
 
@@ -962,54 +745,67 @@
             else if (currentFilter === 'dueToday') filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'dueToday');
             else if (currentFilter === 'dueSoon') filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'dueSoon');
             else if (currentFilter === 'expired') filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'expired');
-            if (searchTerm) filtered = filtered.filter(c => c.name?.toLowerCase().includes(searchTerm) || c.siteName?.toLowerCase().includes(searchTerm));
-            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">Nenhum cliente.</td></tr>'; return; }
+            if (searchTerm) filtered = filtered.filter(c => (c.name||'').toLowerCase().includes(searchTerm) || (c.siteName||'').toLowerCase().includes(searchTerm));
+            
+            console.log('📊 Renderizando tabela:', filtered.length, 'clientes');
+            
+            if (!filtered.length) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">Nenhum cliente encontrado.</td></tr>';
+                return;
+            }
+            
             tbody.innerHTML = filtered.map(c => {
-                const status = getClientStatus(c.dueDate);
-                let avatarColor = '#3b82f6';
-                if (status.status === 'expired' || status.status === 'dueToday') avatarColor = '#ef4444';
-                else if (status.status === 'dueSoon') avatarColor = '#f59e0b';
-                return `<tr><td><div class="client-info"><div class="client-avatar" style="background:${avatarColor};">${(c.name||'??').substring(0,2).toUpperCase()}</div><div><div class="client-name">${getReminderIcon(c.dueDate)} ${c.name||'---'}</div><div class="client-detail">${c.email||''}</div></div></div></td><td>${c.siteName||'---'}</td><td><span class="badge badge-info">${getPlanLabel(c.planType)}</span></td><td>R$${parseFloat(c.monthlyValue||0).toFixed(2)}</td><td>${c.dueDate?new Date(c.dueDate+'T00:00:00').toLocaleDateString('pt-BR'):'---'}</td><td>${getStatusBadge(c.dueDate)}</td><td><div class="actions-cell"><button class="action-btn" onclick="openEditClientModal('${c.id}')"><i class="fas fa-edit"></i></button><button class="action-btn" onclick="deleteClient('${c.id}')"><i class="fas fa-trash"></i></button></div></td></tr>`;
+                const s = getClientStatus(c.dueDate);
+                let ac = '#3b82f6';
+                if (s.status === 'expired' || s.status === 'dueToday') ac = '#ef4444';
+                else if (s.status === 'dueSoon') ac = '#f59e0b';
+                return `<tr>
+                    <td><div class="client-info"><div class="client-avatar" style="background:${ac}">${(c.name||'??').substring(0,2).toUpperCase()}</div><div><div class="client-name">${getReminderIcon(c.dueDate)} ${c.name||'---'}</div><div class="client-detail">${c.email||''}</div></div></div></td>
+                    <td>${c.siteName||'---'}</td>
+                    <td><span class="badge badge-info">${getPlanLabel(c.planType)}</span></td>
+                    <td>R$${parseFloat(c.monthlyValue||0).toFixed(2)}</td>
+                    <td>${c.dueDate?new Date(c.dueDate+'T00:00:00').toLocaleDateString('pt-BR'):'---'}</td>
+                    <td>${getStatusBadge(c.dueDate)}</td>
+                    <td><div class="actions-cell"><button class="action-btn" onclick="openEditClientModal('${c.id}')"><i class="fas fa-edit"></i></button><button class="action-btn" onclick="deleteClient('${c.id}')"><i class="fas fa-trash"></i></button></div></td>
+                </tr>`;
             }).join('');
         }
 
         function renderAdminRequests() {
             const tbody = document.getElementById('adminRequestsTableBody');
-            const pendingCount = allRequests.filter(r => r.status === 'pending').length;
-            document.getElementById('badgeAdminRequests').style.display = pendingCount > 0 ? 'inline-block' : 'none';
             if (!allRequests.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:24px;">Nenhuma solicitação.</td></tr>'; return; }
             tbody.innerHTML = allRequests.map(r => {
                 let sb = '<span class="badge badge-warning">Pendente</span>';
                 if (r.status === 'in_progress') sb = '<span class="badge badge-info">Andamento</span>';
                 if (r.status === 'completed') sb = '<span class="badge badge-success">Realizado</span>';
-                return `<tr><td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td><td><strong>${r.clientName||'Cliente'}</strong></td><td><div class="req-msg">${r.message}</div></td><td>${sb}</td><td><button class="btn btn-secondary btn-sm" onclick="openUpdateStatusModal('${r.id}')"><i class="fas fa-pen"></i></button></td></tr>`;
+                return `<tr><td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td><td><strong>${r.clientName||'Cliente'}</strong></td><td>${r.message}</td><td>${sb}</td><td><button class="btn btn-secondary btn-sm" onclick="openUpdateStatusModal('${r.id}')"><i class="fas fa-pen"></i></button></td></tr>`;
             }).join('');
         }
 
         function renderClientDashboard() {
             if (!clientData) return;
-            document.getElementById('clientViewSiteName').textContent = clientData.siteName || 'Site';
+            document.getElementById('clientViewSiteName').textContent = clientData.siteName || '---';
             document.getElementById('clientViewPlanType').textContent = getPlanLabel(clientData.planType);
-            document.getElementById('clientViewValue').textContent = `R$${parseFloat(clientData.monthlyValue||150).toFixed(2)}`;
+            document.getElementById('clientViewValue').textContent = 'R$' + parseFloat(clientData.monthlyValue||150).toFixed(2);
             document.getElementById('clientViewDueDate').textContent = clientData.dueDate ? new Date(clientData.dueDate+'T00:00:00').toLocaleDateString('pt-BR') : '---';
-            const status = getClientStatus(clientData.dueDate);
+            const s = getClientStatus(clientData.dueDate);
             const df = clientData.dueDate ? new Date(clientData.dueDate+'T00:00:00').toLocaleDateString('pt-BR') : '---';
             const ac = document.getElementById('clientPlanAlert');
-            if (status.status === 'expired') ac.innerHTML = `<div class="alert-banner danger"><i class="fas fa-exclamation-circle"></i><div><strong>VENCIDO</strong> desde ${df}</div></div>`;
-            else if (status.status === 'dueToday') ac.innerHTML = `<div class="alert-banner warning"><i class="fas fa-exclamation-triangle"></i><div><strong>Vence HOJE!</strong></div></div>`;
-            else if (status.status === 'dueSoon') ac.innerHTML = `<div class="alert-banner info"><i class="fas fa-info-circle"></i><div>Vence em breve (${df})</div></div>`;
-            else ac.innerHTML = `<div class="alert-banner success"><i class="fas fa-check-circle"></i><div><strong>ATIVO</strong> - Vence: ${df}</div></div>`;
+            if (s.status === 'expired') ac.innerHTML = `<div class="alert-banner danger"><strong>VENCIDO</strong> desde ${df}</div>`;
+            else if (s.status === 'dueToday') ac.innerHTML = `<div class="alert-banner warning"><strong>Vence HOJE!</strong></div>`;
+            else if (s.status === 'dueSoon') ac.innerHTML = `<div class="alert-banner info">Vence em breve (${df})</div>`;
+            else ac.innerHTML = `<div class="alert-banner success"><strong>ATIVO</strong> - Vence: ${df}</div>`;
         }
 
         function renderClientRequests() {
             const tbody = document.getElementById('clientRequestsTableBody');
-            const myReqs = allRequests.filter(r => r.clientUid === currentUser.uid);
+            const myReqs = allRequests.filter(r => r.clientUid === currentUser?.uid);
             if (!myReqs.length) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#94a3b8;padding:24px;">Nenhuma solicitação.</td></tr>'; return; }
             tbody.innerHTML = myReqs.map(r => {
                 let sb = '<span class="badge badge-warning">🟡 Pendente</span>';
                 if (r.status === 'in_progress') sb = '<span class="badge badge-info">🔵 Andamento</span>';
                 if (r.status === 'completed') sb = '<span class="badge badge-success">🟢 Realizado</span>';
-                return `<tr><td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td><td><div class="req-msg">${r.message}</div></td><td>${sb}</td></tr>`;
+                return `<tr><td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td><td>${r.message}</td><td>${sb}</td></tr>`;
             }).join('');
         }
 
@@ -1020,7 +816,6 @@
             document.getElementById('modalTitle').textContent = 'Novo Cliente';
             document.getElementById('clientForm').reset();
             document.getElementById('clientId').value = '';
-            document.getElementById('activationDate').value = 'Gerada ao salvar';
             document.getElementById('clientModal').style.display = 'flex';
         };
         window.closeClientModal = () => { document.getElementById('clientModal').style.display = 'none'; };
@@ -1037,44 +832,39 @@
             const dueDate = document.getElementById('dueDate').value;
             
             if (!name || !monthlyValue || !dueDate) { showToast('Preencha os campos obrigatórios!', 'error'); return; }
-            if (password.length < 6) { showToast('Senha deve ter no mínimo 6 caracteres.', 'error'); return; }
+            if (password.length < 6) { showToast('Senha: mínimo 6 caracteres.', 'error'); return; }
             
             const btn = document.getElementById('btnSaveClient');
             btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
             
             try {
                 if (id) {
-                    // Editar cliente existente
-                    const updates = { name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate };
-                    await db.ref('clients/' + id).update(updates);
+                    // Editar existente
+                    await db.ref('clients/' + id).update({ name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate });
+                    showToast('Cliente atualizado!', 'success');
                 } else {
-                    // Criar novo cliente
-                    await createFirebaseUser(loginEmail || email, password, 'client', {
-                        name, email, siteName, monthlyValue, planType, dueDate
-                    });
+                    // Criar novo - esta função cria no Auth + DB
+                    await createFirebaseUser(loginEmail || email, password, 'client', { name, email, siteName, monthlyValue, planType, dueDate });
+                    showToast('Cliente criado com sucesso!', 'success');
                 }
                 closeClientModal();
-                showToast('Cliente salvo!', 'success');
             } catch (error) {
                 console.error('Erro ao salvar:', error);
                 if (error.code === 'auth/email-already-in-use') {
-                    showToast('Email já cadastrado no sistema.', 'error');
-                } else if (error.message?.includes('Permission denied')) {
-                    showToast('Erro de permissão. Verifique as regras do Firebase.', 'error');
+                    showToast('Este email já está cadastrado no sistema.', 'error');
                 } else {
                     showToast('Erro: ' + (error.message || 'Desconhecido'), 'error');
                 }
-            } finally { 
-                btn.disabled = false; 
-                btn.classList.remove('btn-loading'); 
-                hideLoading(); 
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('btn-loading');
+                hideLoading();
             }
         };
 
         window.openEditClientModal = (id) => {
             const client = clients.find(c => c.id === id);
             if (!client) return;
-            
             document.getElementById('modalTitle').textContent = 'Editar Cliente';
             document.getElementById('clientId').value = client.id;
             document.getElementById('clientName').value = client.name || '';
@@ -1085,22 +875,15 @@
             document.getElementById('monthlyValue').value = client.monthlyValue || '';
             document.getElementById('planType').value = client.planType || 'monthly';
             document.getElementById('dueDate').value = client.dueDate || '';
-            document.getElementById('activationDate').value = client.createdAt ? new Date(client.createdAt).toLocaleDateString('pt-BR') : '---';
-            
             document.getElementById('clientModal').style.display = 'flex';
         };
 
         window.deleteClient = async (id) => {
-            if (!confirm('Excluir este cliente? Esta ação não pode ser desfeita.')) return;
+            if (!confirm('Excluir este cliente?')) return;
             showLoading();
-            try { 
-                await db.ref('clients/' + id).remove(); 
-                showToast('Cliente excluído.', 'success'); 
-            } catch (error) { 
-                showToast('Erro ao excluir: ' + error.message, 'error'); 
-            } finally { 
-                hideLoading(); 
-            }
+            try { await db.ref('clients/' + id).remove(); showToast('Cliente excluído.', 'success'); }
+            catch (e) { showToast('Erro: ' + e.message, 'error'); }
+            finally { hideLoading(); }
         };
 
         window.submitClientRequest = async () => {
@@ -1114,44 +897,23 @@
                     status: 'pending', createdAt: firebase.database.ServerValue.TIMESTAMP
                 });
                 document.getElementById('newRequestText').value = '';
-                await createNotification('request', `${clientData?.name || 'Cliente'} solicitou uma alteração`, clientData?.name || 'Cliente');
-                showToast('Solicitação enviada! Prazo: 5 a 7 dias úteis.', 'success');
-            } catch (error) { 
-                showToast('Erro ao enviar: ' + error.message, 'error'); 
-            } finally { 
-                hideLoading(); 
-            }
+                showToast('Solicitação enviada!', 'success');
+            } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+            finally { hideLoading(); }
         };
 
         window.openUpdateStatusModal = (reqId) => {
             const req = allRequests.find(r => r.id === reqId);
             if (!req) return;
-            document.getElementById('editReqId').value = req.id;
-            document.getElementById('newReqStatus').value = req.status;
-            document.getElementById('viewReqClientName').textContent = req.clientName || 'Cliente';
-            document.getElementById('viewReqDate').textContent = new Date(req.createdAt).toLocaleDateString('pt-BR');
-            document.getElementById('viewReqMessage').textContent = req.message;
-            document.getElementById('updateRequestModal').style.display = 'flex';
+            // Implementação simplificada - apenas muda status
+            const newStatus = req.status === 'pending' ? 'in_progress' : (req.status === 'in_progress' ? 'completed' : 'pending');
+            db.ref('requests/' + reqId).update({ status: newStatus });
+            showToast('Status atualizado!', 'success');
         };
 
-        window.saveRequestStatus = async () => {
-            const reqId = document.getElementById('editReqId').value;
-            const newStatus = document.getElementById('newReqStatus').value;
-            showLoading();
-            try { 
-                await db.ref('requests/' + reqId).update({ status: newStatus }); 
-                document.getElementById('updateRequestModal').style.display = 'none'; 
-                showToast('Status atualizado!', 'success'); 
-            } catch (error) { 
-                showToast('Erro: ' + error.message, 'error'); 
-            } finally { 
-                hideLoading(); 
-            }
-        };
-
-        window.openChangePasswordModal = () => { 
-            document.getElementById('newClientPassword').value = ''; 
-            document.getElementById('changePasswordModal').style.display = 'flex'; 
+        window.openChangePasswordModal = () => {
+            document.getElementById('newClientPassword').value = '';
+            document.getElementById('changePasswordModal').style.display = 'flex';
         };
 
         window.saveNewClientPassword = async () => {
@@ -1160,80 +922,42 @@
             showLoading();
             try {
                 await auth.currentUser.updatePassword(newPass);
-                
-                // Atualiza no Realtime Database
-                if (clientData?.id) {
-                    await db.ref('clients/' + clientData.id).update({ password: newPass });
-                    clientData.password = newPass;
-                    document.getElementById('sidebarUserPassDisplay').innerHTML = 'Senha: <span style="font-weight:600;">' + newPass + '</span>';
-                }
-                
-                // Notifica admin
-                await createNotification('password_change', `${clientData?.name || currentUser.email} alterou a senha`, clientData?.name || '');
-                
+                if (clientData?.id) await db.ref('clients/' + clientData.id).update({ password: newPass });
                 document.getElementById('changePasswordModal').style.display = 'none';
-                showToast('Senha alterada com sucesso!', 'success');
-            } catch (error) {
-                if (error.code === 'auth/requires-recent-login') {
-                    showToast('Por segurança, faça logout e login novamente para alterar a senha.', 'error');
-                } else {
-                    showToast('Erro: ' + error.message, 'error');
-                }
-            } finally { 
-                hideLoading(); 
-            }
+                showToast('Senha alterada!', 'success');
+            } catch (e) {
+                showToast(e.code === 'auth/requires-recent-login' ? 'Faça logout e login novamente.' : 'Erro: ' + e.message, 'error');
+            } finally { hideLoading(); }
         };
 
-        window.setFilter = (filter, el) => { 
-            currentFilter = filter; 
-            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active')); 
-            if (el) el.classList.add('active'); 
-            renderClientsTable(); 
-        };
-        
-        window.handleSearch = () => { 
-            searchTerm = document.getElementById('globalSearch').value.toLowerCase(); 
-            renderClientsTable(); 
+        window.setFilter = (f, el) => {
+            currentFilter = f;
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderClientsTable();
         };
 
-        async function checkDueDates() {
-            if (userRole !== 'admin') return;
-            const today = new Date(); today.setHours(0, 0, 0, 0);
-            clients.forEach(async (c) => {
-                if (!c.dueDate) return;
-                const dueDate = new Date(c.dueDate + 'T00:00:00');
-                const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-                const existingNotif = notifications.find(n => n.type === 'due' && n.clientName === c.name && n.createdAt > Date.now() - 86400000);
-                if (!existingNotif) {
-                    if (diffDays === 0) await createNotification('due', `${c.name} - Plano vence HOJE!`, c.name, c.id);
-                    else if (diffDays === 1) await createNotification('due', `${c.name} - Plano vence AMANHÃ`, c.name, c.id);
-                }
-            });
-        }
+        window.handleSearch = () => {
+            searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+            renderClientsTable();
+        };
 
         // ============================================
         // FORMULÁRIOS
         // ============================================
-        
         document.getElementById('formAdminAuth').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmailAdmin').value.trim();
             const password = document.getElementById('authPasswordAdmin').value.trim();
-            if (!email || !password) { showToast('Preencha todos os campos.', 'error'); return; }
-            
+            if (!email || !password) return;
             const btn = document.getElementById('btnAdminLogin');
             btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
-            
             try {
-                const result = await loginAdminUser(email, password);
-                currentUser = result.user; userRole = 'admin';
-                showAppScreen(); showToast('Login de administrador efetuado!', 'success');
-            } catch (error) {
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    showToast('Email ou senha inválidos.', 'error');
-                } else {
-                    showToast(error.message || 'Erro no login.', 'error');
-                }
+                const r = await loginAdminUser(email, password);
+                currentUser = r.user; userRole = 'admin';
+                showAppScreen(); showToast('Login efetuado!', 'success');
+            } catch (err) {
+                showToast(err.code === 'auth/wrong-password' ? 'Senha inválida.' : (err.message || 'Erro'), 'error');
             } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
@@ -1241,31 +965,19 @@
             e.preventDefault();
             const email = document.getElementById('authLoginClient').value.trim();
             const password = document.getElementById('authPasswordClient').value.trim();
-            if (!email || !password) { showToast('Preencha todos os campos.', 'error'); return; }
-            
-            if (email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) {
-                showToast('Este email pertence ao administrador. Use a área de admin.', 'error');
-                return;
-            }
-            
+            if (!email || !password) return;
+            if (email.toLowerCase() === MASTER_ADMIN_EMAIL) { showToast('Use a área de admin.', 'error'); return; }
             const btn = document.getElementById('btnClientLogin');
             btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
-            
             try {
-                const result = await loginClientUser(email, password);
-                currentUser = result.user; userRole = 'client';
-                
+                const r = await loginClientUser(email, password);
+                currentUser = r.user; userRole = 'client';
                 const cs = await db.ref('clients').orderByChild('uid').equalTo(currentUser.uid).once('value');
                 const cd = cs.val();
                 if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
-                
                 showAppScreen(); showToast('Login efetuado!', 'success');
-            } catch (error) {
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    showToast('Email ou senha inválidos.', 'error');
-                } else {
-                    showToast(error.message || 'Erro no login.', 'error');
-                }
+            } catch (err) {
+                showToast(err.code === 'auth/wrong-password' ? 'Senha inválida.' : (err.message || 'Erro'), 'error');
             } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
@@ -1274,58 +986,34 @@
             const name = document.getElementById('bfName').value.trim();
             const email = document.getElementById('bfEmail').value.trim();
             const segment = document.getElementById('bfSegment').value.trim();
-            const colors = document.getElementById('bfColors').value.trim();
-            const features = Array.from(document.querySelectorAll('input[name="bfFeatures"]:checked')).map(cb => cb.value);
-            const purposeCb = document.querySelector('input[name="bfPurpose"]:checked');
-            const purpose = purposeCb ? purposeCb.value : '';
-            const extraInfo = document.getElementById('bfExtraInfo').value.trim();
-            
             if (!name || !email || !segment) { showToast('Preencha os campos obrigatórios.', 'error'); return; }
-            if (email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) {
-                showToast('Este email é reservado para o administrador.', 'error');
-                return;
-            }
-            
+            if (email.toLowerCase() === MASTER_ADMIN_EMAIL) { showToast('Email reservado.', 'error'); return; }
             const btn = document.getElementById('btnSubmitBriefing');
             btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
-            
             try {
-                const futureDate = new Date(Date.now() + 30*86400000);
-                await createFirebaseUser(email, '123456', 'client', {
-                    name, email, siteName: segment, monthlyValue: '150.00',
-                    planType: 'monthly', dueDate: futureDate.toISOString().split('T')[0],
-                    features, purpose, colors, extraInfo
-                });
-                
-                const result = await loginClientUser(email, '123456');
-                currentUser = result.user; userRole = 'client';
-                
+                const futureDate = new Date(Date.now() + 30*86400000).toISOString().split('T')[0];
+                await createFirebaseUser(email, '123456', 'client', { name, email, siteName: segment, monthlyValue: '150.00', planType: 'monthly', dueDate: futureDate });
+                const r = await loginClientUser(email, '123456');
+                currentUser = r.user; userRole = 'client';
                 const cs = await db.ref('clients').orderByChild('uid').equalTo(currentUser.uid).once('value');
                 const cd = cs.val();
                 if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
-                
-                document.getElementById('successMessageText').innerHTML = `<p style="margin-bottom:10px;"><strong>${name}</strong>, seu segmento <strong>${segment}</strong> tem grande potencial.</p><p style="margin-bottom:10px;">Vamos criar o melhor site profissional para você. 🚀🎯</p><p style="font-weight:700;color:#3b82f6;">Vamos para cima! 🚀🎯✅</p>`;
+                document.getElementById('successMessageText').innerHTML = `<p><strong>${name}</strong>, seu site <strong>${segment}</strong> está sendo criado! 🚀</p><p>Sua senha inicial é: <strong>123456</strong></p>`;
                 document.getElementById('briefingScreen').style.display = 'none';
                 document.getElementById('successBriefingScreen').style.display = 'flex';
-                showToast('Cadastro realizado! Sua senha inicial é: 123456', 'success');
-            } catch (error) {
-                if (error.code === 'auth/email-already-in-use') {
-                    showToast('Email já cadastrado. Faça login na Área do Cliente.', 'error');
-                } else {
-                    showToast('Erro: ' + error.message, 'error');
-                }
+            } catch (err) {
+                showToast(err.code === 'auth/email-already-in-use' ? 'Email já cadastrado.' : 'Erro: ' + err.message, 'error');
             } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
         // ============================================
-        // INICIALIZAÇÃO
+        // INIT
         // ============================================
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
                 const us = await db.ref('users/' + user.uid).once('value');
                 const ud = us.val();
-                
                 if (ud) {
                     userRole = ud.role;
                     if (userRole === 'client') {
@@ -1334,29 +1022,18 @@
                         if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
                     }
                     showAppScreen();
+                } else if (user.email === MASTER_ADMIN_EMAIL) {
+                    await db.ref('users/' + user.uid).set({ email: user.email, role: 'admin', name: 'Admin', createdAt: Date.now() });
+                    userRole = 'admin';
+                    showAppScreen();
                 } else {
-                    if (user.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) {
-                        await db.ref('users/' + user.uid).set({
-                            email: user.email, role: 'admin', name: 'Will',
-                            createdAt: firebase.database.ServerValue.TIMESTAMP
-                        });
-                        userRole = 'admin';
-                        showAppScreen();
-                    } else {
-                        await auth.signOut();
-                        showBriefingScreen();
-                    }
+                    await auth.signOut();
+                    showBriefingScreen();
                 }
             } else {
                 showBriefingScreen();
             }
         });
-
-        window.onload = () => {
-            setInterval(() => { if (userRole === 'admin') checkDueDates(); }, 3600000);
-        };
-
-        document.addEventListener('gesturestart', (e) => { e.preventDefault(); });
     </script>
 </body>
 </html>
