@@ -631,6 +631,10 @@
                                 <label class="form-label">Vencimento *</label>
                                 <input type="date" class="form-input" id="dueDate" required>
                             </div>
+                            <div class="form-group">
+                                <label class="form-label">Data de Ativação</label>
+                                <input type="text" class="form-input" id="activationDate" readonly style="background-color: #f1f5f9; color: #64748b; cursor: not-allowed; font-weight: 500;" placeholder="Gerada ao salvar">
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -1097,6 +1101,7 @@
             document.getElementById('modalTitle').textContent = 'Novo Cliente';
             document.getElementById('clientForm').reset();
             document.getElementById('clientId').value = '';
+            document.getElementById('activationDate').value = 'Sera gerada ao salvar';
             document.getElementById('clientModal').style.display = 'flex';
         };
 
@@ -1126,7 +1131,7 @@
                     clients[idx] = { ...clients[idx], name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate };
                 }
             } else {
-                clients.push({ id: 'c_' + Date.now(), name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate });
+                clients.push({ id: 'c_' + Date.now(), name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate, createdAt: new Date().toISOString() });
             }
 
             saveDB();
@@ -1217,6 +1222,14 @@
             document.getElementById('monthlyValue').value = client.monthlyValue || '';
             document.getElementById('planType').value = client.planType || 'monthly';
             document.getElementById('dueDate').value = client.dueDate || '';
+            
+            let actDateStr = 'Não registrada (Antigo)';
+            if(client.createdAt) {
+                const d = new Date(client.createdAt);
+                actDateStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            }
+            document.getElementById('activationDate').value = actDateStr;
+            
             document.getElementById('clientModal').style.display = 'flex';
         };
 
