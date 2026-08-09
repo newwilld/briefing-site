@@ -233,9 +233,8 @@
             <div class="auth-logo" style="margin-bottom: 32px;">
                 <div class="auth-logo-icon"><i class="fas fa-rocket"></i></div>
                 <h1 class="auth-title">Briefing de Marca</h1>
-                <!-- Link secreto para o admin ao clicar em "algo incrível." -->
                 <p class="auth-subtitle" style="font-weight: 500; color: #3b82f6; margin-top: 8px;">
-                    Ajude-nos a entender a sua visão para criarmos <span onclick="showAuthScreen()" title="Acesso Administrativo" style="cursor: pointer; text-decoration: underline; text-decoration-style: dotted;">algo incrível.</span>
+                    Ajude-nos a entender a sua visão para criarmos <span onclick="showAdminAuthScreen()" title="Acesso Administrativo" style="cursor: pointer; text-decoration: underline; text-decoration-style: dotted;">algo incrível.</span>
                 </p>
             </div>
 
@@ -291,7 +290,7 @@
                     <i class="fas fa-paper-plane"></i> Enviar Informações e Acessar Painel
                 </button>
 
-                <button type="button" class="btn" onclick="showAuthClientDirectly()" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 10px; background: #1d4ed8; color: white;">
+                <button type="button" class="btn" onclick="showClientAuthScreen()" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 10px; background: #1d4ed8; color: white;">
                     <i class="fas fa-user-circle"></i> Área do Cliente
                 </button>
             </form>
@@ -318,8 +317,47 @@
         </div>
     </div>
 
-    <!-- Tela de Autenticação (Admin / Login Manual Client) -->
-    <div id="authScreen" class="auth-screen" style="display: none;">
+    <!-- Tela de Autenticação do ADMIN (acesso via link secreto) -->
+    <div id="adminAuthScreen" class="auth-screen" style="display: none;">
+        <div class="auth-card">
+            <button onclick="showBriefingScreen()" style="background:none; border:none; color: #64748b; font-size: 12px; cursor: pointer; margin-bottom: 16px;"><i class="fas fa-arrow-left"></i> Voltar ao site</button>
+            
+            <div class="auth-logo">
+                <div class="auth-logo-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fas fa-shield-alt"></i></div>
+                <h1 class="auth-title">Área do Administrador</h1>
+                <p class="auth-subtitle" style="color: #ef4444; font-weight: 600;">Acesso restrito à equipe</p>
+            </div>
+
+            <div class="alert-banner info" style="margin-bottom: 20px;">
+                <i class="fas fa-info-circle"></i>
+                <div><strong>Atenção:</strong> Esta área é exclusiva para administradores. Clientes não podem acessar por aqui.</div>
+            </div>
+
+            <form id="formAdminAuth" class="auth-form">
+                <div id="nameFieldAdmin" style="display: none;">
+                    <label class="form-label">Nome</label>
+                    <input type="text" id="authNameAdmin" class="form-input" placeholder="Seu nome">
+                </div>
+                <div>
+                    <label class="form-label">Email do Administrador</label>
+                    <input type="email" id="authEmailAdmin" class="form-input" placeholder="admin@clientflow.com" required>
+                </div>
+                <div>
+                    <label class="form-label">Senha</label>
+                    <input type="password" id="authPasswordAdmin" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; background: #ef4444;">
+                    <i class="fas fa-sign-in-alt"></i> <span id="authSubmitTextAdmin">Entrar como Admin</span>
+                </button>
+                <div style="text-align: center; margin-top: 8px; font-size: 13px; color: #64748b;" id="authToggleTextAdmin">
+                    Não tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Criar conta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tela de Autenticação do CLIENTE -->
+    <div id="clientAuthScreen" class="auth-screen" style="display: none;">
         <div class="auth-card">
             <button onclick="showBriefingScreen()" style="background:none; border:none; color: #64748b; font-size: 12px; cursor: pointer; margin-bottom: 16px;"><i class="fas fa-arrow-left"></i> Voltar ao site</button>
             
@@ -329,8 +367,12 @@
                 <p class="auth-subtitle">Acesse o portal da sua assessoria</p>
             </div>
 
-            <!-- Formulário Cliente -->
-            <form id="formClientAuth" class="auth-form view-section active">
+            <div class="alert-banner info" style="margin-bottom: 20px;">
+                <i class="fas fa-info-circle"></i>
+                <div><strong>Atenção:</strong> Esta área é exclusiva para clientes. Se você é administrador, acesse pelo link secreto no site.</div>
+            </div>
+
+            <form id="formClientAuth" class="auth-form">
                 <div>
                     <label class="form-label">Email de Acesso</label>
                     <input type="email" id="authLoginClient" required class="form-input" placeholder="seuemail@exemplo.com">
@@ -340,23 +382,6 @@
                     <input type="password" id="authPasswordClient" required class="form-input" placeholder="••••••••">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fas fa-user"></i> Entrar no Painel</button>
-            </form>
-
-            <!-- Formulário Admin (Apenas acessível via link secreto "algo incrível.") -->
-            <form id="formAdminAuth" class="auth-form view-section" style="display: none;">
-                <div id="nameFieldAdmin" style="display: none;">
-                    <label class="form-label">Nome</label>
-                    <input type="text" id="authNameAdmin" class="form-input" placeholder="Seu nome">
-                </div>
-                <div>
-                    <label class="form-label">Email do Administrador</label>
-                    <input type="email" id="authEmailAdmin" class="form-input" placeholder="admin@clientflow.com">
-                </div>
-                <div>
-                    <label class="form-label">Senha</label>
-                    <input type="password" id="authPasswordAdmin" class="form-input" placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-sign-in-alt"></i> <span id="authSubmitTextAdmin">Entrar como Admin</span></button>
             </form>
         </div>
     </div>
@@ -400,11 +425,11 @@
                         <div style="overflow: hidden;">
                             <div style="font-size: 13px; font-weight: 600; color: #0f172a; text-overflow: ellipsis; white-space: nowrap;" id="sidebarUserName">Usuário</div>
                             <div style="font-size: 11px; color: #64748b; text-overflow: ellipsis; white-space: nowrap;" id="sidebarUserEmailDisplay">email@exemplo.com</div>
-                            <div style="font-size: 11px; color: #94a3b8;">Senha: <span id="sidebarUserPassDisplay">123456</span></div>
+                            <div style="font-size: 11px; color: #94a3b8;" id="sidebarUserPassDisplay" style="display:none;">Senha: <span>123456</span></div>
                         </div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 8px; font-size: 12px;">
-                        <button onclick="openChangePasswordModal()" style="color: #3b82f6; background: none; border: none; cursor: pointer; font-weight: 600; padding: 0;">Alterar senha</button>
+                        <button onclick="openChangePasswordModal()" style="color: #3b82f6; background: none; border: none; cursor: pointer; font-weight: 600; padding: 0;" id="btnChangePassword">Alterar senha</button>
                         <button onclick="handleLogout()" style="color: #ef4444; background: none; border: none; cursor: pointer; padding: 0;">Sair</button>
                     </div>
                 </div>
@@ -738,7 +763,7 @@
                 siteName: 'www.exemplo.com.br', 
                 monthlyValue: '150.00', 
                 planType: 'monthly', 
-                dueDate: new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0], // 3 dias no futuro para teste
+                dueDate: new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0],
                 createdAt: new Date().toISOString()
             }
         ];
@@ -746,20 +771,23 @@
             { id: 'r1', clientEmail: 'cliente@exemplo.com', clientName: 'Empresa Exemplo', message: 'Alterar banner principal para promoção de inverno.', status: 'pending', createdAt: Date.now() - 86400000 }
         ];
 
+        // Admin padrão (se não existir)
+        if (!localStorage.getItem('cf_admin')) {
+            localStorage.setItem('cf_admin', JSON.stringify({ 
+                name: 'Administrador', 
+                email: 'admin@clientflow.com', 
+                password: 'admin123' 
+            }));
+        }
+
         let currentFilter = 'all';
         let searchTerm = '';
-        let authMode = 'admin';
         let isAdminRegisterMode = false;
 
         // ============================================
         // FUNÇÕES UTILITÁRIAS DE DATA E STATUS
         // ============================================
         
-        /**
-         * Retorna o status do cliente baseado na data de vencimento
-         * @param {string} dueDateStr - Data de vencimento no formato YYYY-MM-DD
-         * @returns {object} - { status: 'active'|'dueToday'|'dueSoon'|'expired', label: string, color: string, icon: string }
-         */
         function getClientStatus(dueDateStr) {
             if (!dueDateStr) {
                 return { status: 'unknown', label: 'Sem data', color: 'gray', icon: '❓' };
@@ -770,28 +798,20 @@
             
             const dueDate = new Date(dueDateStr + 'T00:00:00');
             
-            // Calcula a diferença em dias
             const diffTime = dueDate - today;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             
             if (diffDays < 0) {
-                // Vencido
                 return { status: 'expired', label: 'Vencido', color: 'red', icon: '🔴' };
             } else if (diffDays === 0) {
-                // Vence hoje
                 return { status: 'dueToday', label: 'Vence Hoje', color: 'red', icon: '🔴' };
             } else if (diffDays <= 5) {
-                // Vence em breve (até 5 dias)
                 return { status: 'dueSoon', label: 'Vence em Breve', color: 'yellow', icon: '🟡' };
             } else {
-                // Ativo
                 return { status: 'active', label: 'Ativo', color: 'green', icon: '✅' };
             }
         }
 
-        /**
-         * Retorna o badge HTML para o status do cliente
-         */
         function getStatusBadge(dueDateStr) {
             const status = getClientStatus(dueDateStr);
             
@@ -809,9 +829,6 @@
             }
         }
 
-        /**
-         * Retorna o ícone de lembrete para exibir ao lado do nome do cliente
-         */
         function getReminderIcon(dueDateStr) {
             const status = getClientStatus(dueDateStr);
             
@@ -823,6 +840,16 @@
             return '';
         }
 
+        function getPlanLabel(planType) {
+            const labels = {
+                'monthly': 'Mensal',
+                'quarterly': 'Trimestral',
+                'semiannual': 'Semestral',
+                'annual': 'Anual'
+            };
+            return labels[planType] || planType || 'Mensal';
+        }
+
         // ============================================
         // FUNÇÕES DE PERSISTÊNCIA
         // ============================================
@@ -832,7 +859,6 @@
         }
 
         function syncSessionClientData() {
-            // Sincroniza os dados do cliente logado com o array clients
             if (session.type === 'client' && session.data) {
                 const clientEmail = session.data.email || session.data.loginEmail;
                 const clientIndex = clients.findIndex(c => 
@@ -848,36 +874,39 @@
         }
 
         // ============================================
-        // FUNÇÕES DE AUTENTICAÇÃO E NAVEGAÇÃO
+        // FUNÇÕES DE NAVEGAÇÃO ENTRE TELAS
         // ============================================
-        window.switchAuthType = (type) => {
-            authMode = type;
-            const isClient = type === 'client';
-            document.getElementById('formAdminAuth').style.display = isClient ? 'none' : 'block';
-            document.getElementById('formClientAuth').style.display = isClient ? 'block' : 'none';
-        };
-
-        window.showAuthScreen = () => {
+        
+        function hideAllScreens() {
             document.getElementById('briefingScreen').style.display = 'none';
             document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('adminAuthScreen').style.display = 'none';
+            document.getElementById('clientAuthScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'none';
-            document.getElementById('authScreen').style.display = 'flex';
-            switchAuthType('admin');
-        };
-
-        window.showAuthClientDirectly = () => {
-            document.getElementById('briefingScreen').style.display = 'none';
-            document.getElementById('successBriefingScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'none';
-            document.getElementById('authScreen').style.display = 'flex';
-            switchAuthType('client');
-        };
+        }
 
         window.showBriefingScreen = () => {
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('successBriefingScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'none';
+            hideAllScreens();
             document.getElementById('briefingScreen').style.display = 'flex';
+        };
+
+        window.showAdminAuthScreen = () => {
+            hideAllScreens();
+            document.getElementById('adminAuthScreen').style.display = 'flex';
+            isAdminRegisterMode = false;
+            document.getElementById('nameFieldAdmin').style.display = 'none';
+            document.getElementById('authSubmitTextAdmin').textContent = 'Entrar como Admin';
+            document.getElementById('authToggleTextAdmin').innerHTML = 'Não tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Criar conta</button>';
+        };
+
+        window.showClientAuthScreen = () => {
+            hideAllScreens();
+            document.getElementById('clientAuthScreen').style.display = 'flex';
+        };
+
+        window.goToClientPanel = () => {
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            initSession();
         };
 
         window.toggleAdminRegister = () => {
@@ -885,9 +914,11 @@
             if(isAdminRegisterMode) {
                 document.getElementById('nameFieldAdmin').style.display = 'block';
                 document.getElementById('authSubmitTextAdmin').textContent = 'Criar Conta';
+                document.getElementById('authToggleTextAdmin').innerHTML = 'Já tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Fazer login</button>';
             } else {
                 document.getElementById('nameFieldAdmin').style.display = 'none';
-                document.getElementById('authSubmitTextAdmin').textContent = 'Entrar';
+                document.getElementById('authSubmitTextAdmin').textContent = 'Entrar como Admin';
+                document.getElementById('authToggleTextAdmin').innerHTML = 'Não tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Criar conta</button>';
             }
         };
 
@@ -896,11 +927,6 @@
             session = { type: null, data: null };
             showBriefingScreen();
             showToast('Sessão encerrada.', 'info');
-        };
-
-        window.goToClientPanel = () => {
-            document.getElementById('successBriefingScreen').style.display = 'none';
-            initSession();
         };
 
         // ============================================
@@ -912,12 +938,9 @@
                 return;
             }
 
-            // Sincroniza dados do cliente com o array clients
             syncSessionClientData();
 
-            document.getElementById('briefingScreen').style.display = 'none';
-            document.getElementById('successBriefingScreen').style.display = 'none';
-            document.getElementById('authScreen').style.display = 'none';
+            hideAllScreens();
             document.getElementById('appScreen').style.display = 'flex';
 
             if(session.type === 'admin') {
@@ -926,12 +949,13 @@
                 document.getElementById('btnNewClient').style.display = 'inline-flex';
                 document.getElementById('adminSearchBox').style.display = 'flex';
                 document.getElementById('clientWelcomeText').style.display = 'none';
+                document.getElementById('btnChangePassword').style.display = 'none';
                 
                 const adminInfo = JSON.parse(localStorage.getItem('cf_admin')) || { email: session.data.email };
-                document.getElementById('sidebarUserName').textContent = adminInfo.name || adminInfo.email;
-                document.getElementById('sidebarUserInitials').textContent = (adminInfo.name || adminInfo.email).substring(0,2).toUpperCase();
+                document.getElementById('sidebarUserName').textContent = adminInfo.name || 'Admin';
+                document.getElementById('sidebarUserInitials').textContent = (adminInfo.name || 'AD').substring(0,2).toUpperCase();
                 document.getElementById('sidebarUserEmailDisplay').textContent = adminInfo.email || '';
-                document.getElementById('sidebarUserPassDisplay').textContent = '••••••';
+                document.getElementById('sidebarUserPassDisplay').style.display = 'none';
 
                 renderAdminDashboard();
                 renderClientsTable();
@@ -943,12 +967,14 @@
                 document.getElementById('btnNewClient').style.display = 'none';
                 document.getElementById('adminSearchBox').style.display = 'none';
                 document.getElementById('clientWelcomeText').style.display = 'block';
+                document.getElementById('btnChangePassword').style.display = 'inline';
 
                 const client = session.data;
                 document.getElementById('sidebarUserName').textContent = client.name;
                 document.getElementById('sidebarUserInitials').textContent = client.name.substring(0,2).toUpperCase();
                 document.getElementById('sidebarUserEmailDisplay').textContent = client.email || client.loginEmail || 'email@exemplo.com';
-                document.getElementById('sidebarUserPassDisplay').textContent = client.password || '123456';
+                document.getElementById('sidebarUserPassDisplay').style.display = 'block';
+                document.getElementById('sidebarUserPassDisplay').innerHTML = 'Senha: <span>' + (client.password || '123456') + '</span>';
 
                 renderClientDashboard();
                 renderClientRequests();
@@ -968,7 +994,6 @@
                 btn.classList.toggle('active', btn.dataset.view === viewId);
             });
 
-            // Atualiza views quando navegar
             if (viewId === 'adminDashboard') renderAdminDashboard();
             if (viewId === 'adminClients') renderClientsTable();
             if (viewId === 'adminAssessoria') renderAdminRequests();
@@ -989,33 +1014,19 @@
         function renderAdminDashboard() {
             document.getElementById('statTotalClients').textContent = clients.length;
             
-            // Contagem de status
             let activeCount = 0;
             let dueTodayCount = 0;
-            let dueSoonCount = 0;
-            let expiredCount = 0;
-            
             const alertsHTML = [];
             
             clients.forEach(c => {
                 const status = getClientStatus(c.dueDate);
                 if (status.status === 'active') activeCount++;
-                if (status.status === 'dueToday') {
-                    dueTodayCount++;
+                if (status.status === 'dueToday') dueTodayCount++;
+                if (status.status === 'dueToday' || status.status === 'expired') {
                     alertsHTML.push(`
-                        <div class="alert-banner danger">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <div><strong>${c.name}</strong> - Plano vence <strong>HOJE</strong> (${new Date(c.dueDate + 'T00:00:00').toLocaleDateString('pt-BR')})</div>
-                        </div>
-                    `);
-                }
-                if (status.status === 'dueSoon') dueSoonCount++;
-                if (status.status === 'expired') {
-                    expiredCount++;
-                    alertsHTML.push(`
-                        <div class="alert-banner warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <div><strong>${c.name}</strong> - Plano <strong>VENCIDO</strong> desde ${new Date(c.dueDate + 'T00:00:00').toLocaleDateString('pt-BR')}</div>
+                        <div class="alert-banner ${status.status === 'dueToday' ? 'danger' : 'warning'}">
+                            <i class="fas fa-exclamation-${status.status === 'dueToday' ? 'circle' : 'triangle'}"></i>
+                            <div><strong>${c.name}</strong> - ${status.label} ${status.status === 'expired' ? 'desde ' + new Date(c.dueDate + 'T00:00:00').toLocaleDateString('pt-BR') : ''}</div>
                         </div>
                     `);
                 }
@@ -1027,7 +1038,6 @@
             const revenue = clients.reduce((acc, c) => acc + parseFloat(c.monthlyValue || 0), 0);
             document.getElementById('statMonthlyRevenue').textContent = `R$ ${revenue.toFixed(2)}`;
             
-            // Renderiza alertas
             const alertsContainer = document.getElementById('adminAlertsContainer');
             if (alertsContainer) {
                 alertsContainer.innerHTML = alertsHTML.join('');
@@ -1038,7 +1048,6 @@
             const tbody = document.getElementById('clientsTableBody');
             let filtered = [...clients];
             
-            // Aplica filtro
             if(currentFilter === 'active') {
                 filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'active');
             } else if(currentFilter === 'dueToday') {
@@ -1049,7 +1058,6 @@
                 filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'expired');
             }
 
-            // Aplica busca
             if(searchTerm) {
                 filtered = filtered.filter(c => 
                     c.name.toLowerCase().includes(searchTerm) || 
@@ -1067,8 +1075,7 @@
                 const reminderIcon = getReminderIcon(c.dueDate);
                 const statusBadge = getStatusBadge(c.dueDate);
                 
-                // Cores de avatar baseado no status
-                let avatarColor = '#3b82f6'; // azul padrão
+                let avatarColor = '#3b82f6';
                 if (status.status === 'expired' || status.status === 'dueToday') avatarColor = '#ef4444';
                 else if (status.status === 'dueSoon') avatarColor = '#f59e0b';
                 
@@ -1099,16 +1106,6 @@
                 </tr>
                 `;
             }).join('');
-        }
-
-        function getPlanLabel(planType) {
-            const labels = {
-                'monthly': 'Mensal',
-                'quarterly': 'Trimestral',
-                'semiannual': 'Semestral',
-                'annual': 'Anual'
-            };
-            return labels[planType] || planType || 'Mensal';
         }
 
         function renderAdminRequests() {
@@ -1164,7 +1161,6 @@
             const dueDateFormatted = client.dueDate ? new Date(client.dueDate + 'T00:00:00').toLocaleDateString('pt-BR') : 'Não definida';
             document.getElementById('clientViewDueDate').textContent = dueDateFormatted;
             
-            // Renderiza alerta de status do plano
             const status = getClientStatus(client.dueDate);
             const alertContainer = document.getElementById('clientPlanAlert');
             
@@ -1287,22 +1283,13 @@
             }
 
             if(id) {
-                // Editar cliente existente
                 const idx = clients.findIndex(c => c.id === id);
                 if(idx !== -1) {
                     clients[idx] = { 
                         ...clients[idx], 
-                        name, 
-                        email, 
-                        loginEmail, 
-                        password, 
-                        siteName, 
-                        monthlyValue, 
-                        planType, 
-                        dueDate 
+                        name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate 
                     };
                     
-                    // Se o cliente editado é o que está logado, atualiza a sessão
                     if (session.type === 'client' && 
                         (session.data.email === clients[idx].email || 
                          session.data.loginEmail === clients[idx].loginEmail)) {
@@ -1311,17 +1298,9 @@
                     }
                 }
             } else {
-                // Novo cliente
                 clients.push({ 
                     id: 'c_' + Date.now(), 
-                    name, 
-                    email, 
-                    loginEmail, 
-                    password, 
-                    siteName, 
-                    monthlyValue, 
-                    planType, 
-                    dueDate, 
+                    name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate, 
                     createdAt: new Date().toISOString() 
                 });
             }
@@ -1331,7 +1310,6 @@
             renderAdminDashboard();
             closeClientModal();
             
-            // Atualiza dashboard do cliente se necessário
             if (session.type === 'client') {
                 renderClientDashboard();
             }
@@ -1431,7 +1409,7 @@
                 session.data.password = newPass;
                 saveDB();
                 localStorage.setItem('cf_session', JSON.stringify(session));
-                document.getElementById('sidebarUserPassDisplay').textContent = newPass;
+                document.getElementById('sidebarUserPassDisplay').innerHTML = 'Senha: <span>' + newPass + '</span>';
                 document.getElementById('changePasswordModal').style.display = 'none';
                 showToast('Senha alterada com sucesso!', 'success');
             } else {
@@ -1473,18 +1451,43 @@
         // EVENT LISTENERS DOS FORMULÁRIOS
         // ============================================
         
-        // Form Admin Auth
+        // Form Admin Auth (TELA SEPARADA)
         document.getElementById('formAdminAuth').addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('authEmailAdmin').value;
-            const password = document.getElementById('authPasswordAdmin').value;
+            const email = document.getElementById('authEmailAdmin').value.trim().toLowerCase();
+            const password = document.getElementById('authPasswordAdmin').value.trim();
+            
+            const adminData = JSON.parse(localStorage.getItem('cf_admin'));
             
             if(isAdminRegisterMode) {
-                const name = document.getElementById('authNameAdmin').value;
+                // Registro de novo admin
+                const name = document.getElementById('authNameAdmin').value.trim();
+                if (!name) {
+                    showToast('Preencha o nome do administrador.', 'error');
+                    return;
+                }
+                
+                // Verifica se já existe admin com este email
+                if (adminData && adminData.email.toLowerCase() === email) {
+                    showToast('Já existe um administrador com este email.', 'error');
+                    return;
+                }
+                
                 localStorage.setItem('cf_admin', JSON.stringify({ name, email, password }));
                 showToast('Administrador cadastrado com sucesso!', 'success');
                 toggleAdminRegister();
             } else {
+                // Login admin
+                if (!adminData) {
+                    showToast('Nenhum administrador cadastrado. Crie uma conta primeiro.', 'error');
+                    return;
+                }
+                
+                if (adminData.email.toLowerCase() !== email || adminData.password !== password) {
+                    showToast('Email ou senha de administrador inválidos! Esta área é exclusiva para administradores.', 'error');
+                    return;
+                }
+                
                 session = { type: 'admin', data: { email } };
                 localStorage.setItem('cf_session', JSON.stringify(session));
                 initSession();
@@ -1492,12 +1495,20 @@
             }
         });
 
-        // Form Client Auth
+        // Form Client Auth (TELA SEPARADA)
         document.getElementById('formClientAuth').addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('authLoginClient').value.trim().toLowerCase();
             const password = document.getElementById('authPasswordClient').value.trim();
 
+            // Verifica se é admin tentando logar como cliente
+            const adminData = JSON.parse(localStorage.getItem('cf_admin'));
+            if (adminData && adminData.email.toLowerCase() === email) {
+                showToast('Você é um administrador. Para acessar o painel admin, clique em "algo incrível" no site principal.', 'error');
+                return;
+            }
+
+            // Busca o cliente
             const foundClient = clients.find(c => 
                 (c.email && c.email.toLowerCase() === email || 
                  c.loginEmail && c.loginEmail.toLowerCase() === email) && 
@@ -1510,7 +1521,7 @@
                 initSession();
                 showToast('Login de Cliente efetuado com sucesso!', 'success');
             } else {
-                showToast('Email ou senha inválidos!', 'error');
+                showToast('Email ou senha de cliente inválidos! Se você é administrador, acesse pelo link secreto no site.', 'error');
             }
         });
 
@@ -1527,8 +1538,6 @@
             const purpose = purposeCb ? purposeCb.value : '';
             const extraInfo = document.getElementById('bfExtraInfo').value.trim();
 
-            // Criar registro do cliente com senha automática '123456'
-            // Data de vencimento para 30 dias no futuro
             const futureDate = new Date(Date.now() + 30 * 86400000);
             const newClient = {
                 id: 'c_' + Date.now(),
@@ -1553,7 +1562,6 @@
             session = { type: 'client', data: { ...newClient } };
             localStorage.setItem('cf_session', JSON.stringify(session));
 
-            // Exibir Tela de Sucesso
             const successMsg = `
                 <p style="margin-bottom: 12px;">Com base em nossa experiência desde 2010 criando mais de 1 mil marcas, <strong>${name}</strong>, entendemos que o seu segmento de <strong>${segment}</strong> possui grande potencial.</p>
                 <p style="margin-bottom: 12px;">Vamos realizar a melhor versão do seu novo site profissional com carregamento em alta velocidade para transmitir profissionalismo, receber mais clientes e vender mais. 🚀🎯</p>
@@ -1573,7 +1581,6 @@
             initSession();
         };
 
-        // Atualiza views periodicamente (a cada 30 segundos) para manter status atualizados
         setInterval(() => {
             if (session.type === 'admin') {
                 renderAdminDashboard();
