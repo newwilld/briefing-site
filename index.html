@@ -204,6 +204,18 @@
         .toast.error { border-left: 4px solid #ef4444; } .toast.error i { color: #ef4444; }
         .toast.info { border-left: 4px solid #3b82f6; } .toast.info i { color: #3b82f6; }
 
+        /* Status indicators for client rows */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .reminder-icon {
+            font-size: 14px;
+        }
+        .reminder-icon.red { color: #ef4444; }
+        .reminder-icon.yellow { color: #f59e0b; }
+
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
@@ -450,6 +462,9 @@
                             <div class="stat-card-label">Receita Estimada</div>
                         </div>
                     </div>
+                    
+                    <!-- Alertas de vencimento -->
+                    <div id="adminAlertsContainer"></div>
                 </div>
 
                 <!-- Admin Clientes -->
@@ -524,6 +539,9 @@
                             <div class="stat-card-label">Próximo Vencimento</div>
                         </div>
                     </div>
+                    
+                    <!-- Alerta de status do plano -->
+                    <div id="clientPlanAlert"></div>
                 </div>
 
                 <!-- Client Assessoria -->
@@ -706,10 +724,23 @@
     </div>
 
     <script>
-        // Estado Global (LocalStorage-backed para evitar falhas de permissão de DB externo)
+        // ============================================
+        // ESTADO GLOBAL E PERSISTÊNCIA
+        // ============================================
         let session = JSON.parse(localStorage.getItem('cf_session')) || { type: null, data: null };
         let clients = JSON.parse(localStorage.getItem('cf_clients')) || [
-            { id: '1', name: 'Empresa Exemplo', email: 'cliente@exemplo.com', loginEmail: 'cliente@exemplo.com', password: '123456', siteName: 'www.exemplo.com.br', monthlyValue: '150.00', planType: 'monthly', dueDate: '2026-06-30' }
+            { 
+                id: '1', 
+                name: 'Empresa Exemplo', 
+                email: 'cliente@exemplo.com', 
+                loginEmail: 'cliente@exemplo.com', 
+                password: '123456', 
+                siteName: 'www.exemplo.com.br', 
+                monthlyValue: '150.00', 
+                planType: 'monthly', 
+                dueDate: new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0], // 3 dias no futuro para teste
+                createdAt: new Date().toISOString()
+            }
         ];
         let allRequests = JSON.parse(localStorage.getItem('cf_requests')) || [
             { id: 'r1', clientEmail: 'cliente@exemplo.com', clientName: 'Empresa Exemplo', message: 'Alterar banner principal para promoção de inverno.', status: 'pending', createdAt: Date.now() - 86400000 }
@@ -720,33 +751,110 @@
         let authMode = 'admin';
         let isAdminRegisterMode = false;
 
-        // Funções utilitárias de persistência
+        // ============================================
+        // FUNÇÕES UTILITÁRIAS DE DATA E STATUS
+        // ============================================
+        
+        /**
+         * Retorna o status do cliente baseado na data de vencimento
+         * @param {string} dueDateStr - Data de vencimento no formato YYYY-MM-DD
+         * @returns {object} - { status: 'active'|'dueToday'|'dueSoon'|'expired', label: string, color: string, icon: string }
+         */
+        function getClientStatus(dueDateStr) {
+            if (!dueDateStr) {
+                return { status: 'unknown', label: 'Sem data', color: 'gray', icon: '❓' };
+            }
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const dueDate = new Date(dueDateStr + 'T00:00:00');
+            
+            // Calcula a diferença em dias
+            const diffTime = dueDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 0) {
+                // Vencido
+                return { status: 'expired', label: 'Vencido', color: 'red', icon: '🔴' };
+            } else if (diffDays === 0) {
+                // Vence hoje
+                return { status: 'dueToday', label: 'Vence Hoje', color: 'red', icon: '🔴' };
+            } else if (diffDays <= 5) {
+                // Vence em breve (até 5 dias)
+                return { status: 'dueSoon', label: 'Vence em Breve', color: 'yellow', icon: '🟡' };
+            } else {
+                // Ativo
+                return { status: 'active', label: 'Ativo', color: 'green', icon: '✅' };
+            }
+        }
+
+        /**
+         * Retorna o badge HTML para o status do cliente
+         */
+        function getStatusBadge(dueDateStr) {
+            const status = getClientStatus(dueDateStr);
+            
+            switch(status.status) {
+                case 'active':
+                    return `<span class="badge badge-success"><span class="badge-dot green"></span>${status.label}</span>`;
+                case 'dueSoon':
+                    return `<span class="badge badge-warning"><span class="badge-dot yellow"></span>${status.label}</span>`;
+                case 'dueToday':
+                    return `<span class="badge badge-danger"><span class="badge-dot red"></span>${status.label}</span>`;
+                case 'expired':
+                    return `<span class="badge badge-danger"><span class="badge-dot red"></span>${status.label}</span>`;
+                default:
+                    return `<span class="badge badge-info">${status.label}</span>`;
+            }
+        }
+
+        /**
+         * Retorna o ícone de lembrete para exibir ao lado do nome do cliente
+         */
+        function getReminderIcon(dueDateStr) {
+            const status = getClientStatus(dueDateStr);
+            
+            if (status.status === 'dueToday' || status.status === 'expired') {
+                return '<i class="fas fa-exclamation-circle reminder-icon red" title="' + status.label + '"></i>';
+            } else if (status.status === 'dueSoon') {
+                return '<i class="fas fa-exclamation-triangle reminder-icon yellow" title="' + status.label + '"></i>';
+            }
+            return '';
+        }
+
+        // ============================================
+        // FUNÇÕES DE PERSISTÊNCIA
+        // ============================================
         function saveDB() {
             localStorage.setItem('cf_clients', JSON.stringify(clients));
             localStorage.setItem('cf_requests', JSON.stringify(allRequests));
         }
 
+        function syncSessionClientData() {
+            // Sincroniza os dados do cliente logado com o array clients
+            if (session.type === 'client' && session.data) {
+                const clientEmail = session.data.email || session.data.loginEmail;
+                const clientIndex = clients.findIndex(c => 
+                    (c.email && c.email.toLowerCase() === clientEmail?.toLowerCase()) || 
+                    (c.loginEmail && c.loginEmail.toLowerCase() === clientEmail?.toLowerCase())
+                );
+                
+                if (clientIndex !== -1) {
+                    session.data = { ...clients[clientIndex] };
+                    localStorage.setItem('cf_session', JSON.stringify(session));
+                }
+            }
+        }
+
+        // ============================================
+        // FUNÇÕES DE AUTENTICAÇÃO E NAVEGAÇÃO
+        // ============================================
         window.switchAuthType = (type) => {
             authMode = type;
             const isClient = type === 'client';
             document.getElementById('formAdminAuth').style.display = isClient ? 'none' : 'block';
             document.getElementById('formClientAuth').style.display = isClient ? 'block' : 'none';
-        };
-
-        window.showAuthScreen = () => {
-            document.getElementById('briefingScreen').style.display = 'none';
-            document.getElementById('successBriefingScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'none';
-            document.getElementById('authScreen').style.display = 'flex';
-            switchAuthType('admin'); // Mantém isolado para admin apenas pelo link secreto
-        };
-
-        window.showAuthClientDirectly = () => {
-            document.getElementById('briefingScreen').style.display = 'none';
-            document.getElementById('successBriefingScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'none';
-            document.getElementById('authScreen').style.display = 'flex';
-            switchAuthType('client'); // Exibe exclusivamente a Área do Cliente
         };
 
         window.showAuthScreen = () => {
@@ -777,104 +885,10 @@
             if(isAdminRegisterMode) {
                 document.getElementById('nameFieldAdmin').style.display = 'block';
                 document.getElementById('authSubmitTextAdmin').textContent = 'Criar Conta';
-                document.getElementById('authToggleTextAdmin').innerHTML = 'Já tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Fazer login</button>';
             } else {
                 document.getElementById('nameFieldAdmin').style.display = 'none';
                 document.getElementById('authSubmitTextAdmin').textContent = 'Entrar';
-                document.getElementById('authToggleTextAdmin').innerHTML = 'Não tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Criar conta</button>';
             }
-        };
-
-        // Form Admin Auth
-        document.getElementById('formAdminAuth').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('authEmailAdmin').value;
-            const password = document.getElementById('authPasswordAdmin').value;
-            
-            if(isAdminRegisterMode) {
-                const name = document.getElementById('authNameAdmin').value;
-                localStorage.setItem('cf_admin', JSON.stringify({ name, email, password }));
-                showToast('Administrador cadastrado com sucesso!', 'success');
-                toggleAdminRegister();
-            } else {
-                session = { type: 'admin', data: { email } };
-                localStorage.setItem('cf_session', JSON.stringify(session));
-                initSession();
-                showToast('Login de Administrador efetuado!', 'success');
-            }
-        });
-
-        // Form Client Auth
-        document.getElementById('formClientAuth').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('authLoginClient').value.trim().toLowerCase();
-            const password = document.getElementById('authPasswordClient').value.trim();
-
-            const foundClient = clients.find(c => (c.email && c.email.toLowerCase() === email || c.loginEmail && c.loginEmail.toLowerCase() === email) && (c.password === password || password === '123456'));
-            
-            if(foundClient) {
-                session = { type: 'client', data: foundClient };
-                localStorage.setItem('cf_session', JSON.stringify(session));
-                initSession();
-                showToast('Login de Cliente efetuado com sucesso!', 'success');
-            } else {
-                showToast('Email ou senha inválidos!', 'error');
-            }
-        });
-
-        // Briefing Form Submission
-        document.getElementById('formBriefing').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('bfName').value.trim();
-            const email = document.getElementById('bfEmail').value.trim();
-            const segment = document.getElementById('bfSegment').value.trim();
-            const colors = document.getElementById('bfColors').value.trim();
-            const features = [];
-            document.querySelectorAll('input[name="bfFeatures"]:checked').forEach(cb => features.push(cb.value));
-            const purposeCb = document.querySelector('input[name="bfPurpose"]:checked');
-            const purpose = purposeCb ? purposeCb.value : '';
-            const extraInfo = document.getElementById('bfExtraInfo').value.trim();
-
-            // Criar registro do cliente com senha automática '123456'
-            const newClient = {
-                id: 'c_' + Date.now(),
-                name,
-                email,
-                loginEmail: email,
-                password: '123456',
-                siteName: segment,
-                monthlyValue: '150.00',
-                planType: 'monthly',
-                dueDate: new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
-                features,
-                purpose,
-                colors,
-                extraInfo,
-                createdAt: new Date().toISOString()
-            };
-
-            clients.push(newClient);
-            saveDB();
-
-            session = { type: 'client', data: newClient };
-            localStorage.setItem('cf_session', JSON.stringify(session));
-
-            // Exibir Tela de Sucesso
-            const successMsg = `
-                <p style="margin-bottom: 12px;">Com base em nossa experiência desde 2010 criando mais de 1 mil marcas, <strong>${name}</strong>, entendemos que o seu segmento de <strong>${segment}</strong> possui grande potencial.</p>
-                <p style="margin-bottom: 12px;">Vamos realizar a melhor versão do seu novo site profissional com carregamento em alta velocidade para transmitir profissionalismo, receber mais clientes e vender mais. 🚀🎯</p>
-                <p style="margin-bottom: 12px;">🧑🏼‍🎨🖼️ Assim que finalizar te enviamos atualizações. 🚀🎯</p>
-                <p style="margin-bottom: 12px;">Desejamos que a sua marca continue crescendo por muitos anos sem parar.</p>
-                <p style="font-weight: 700; color: #3b82f6;">Vamos para cima. 🚀🎯✅</p>
-            `;
-            document.getElementById('successMessageText').innerHTML = successMsg;
-            document.getElementById('briefingScreen').style.display = 'none';
-            document.getElementById('successBriefingScreen').style.display = 'flex';
-        });
-
-        window.goToClientPanel = () => {
-            document.getElementById('successBriefingScreen').style.display = 'none';
-            initSession();
         };
 
         window.handleLogout = () => {
@@ -884,12 +898,22 @@
             showToast('Sessão encerrada.', 'info');
         };
 
-        // Inicialização de Sessão
+        window.goToClientPanel = () => {
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            initSession();
+        };
+
+        // ============================================
+        // INICIALIZAÇÃO DE SESSÃO
+        // ============================================
         function initSession() {
             if(!session.type) {
                 showBriefingScreen();
                 return;
             }
+
+            // Sincroniza dados do cliente com o array clients
+            syncSessionClientData();
 
             document.getElementById('briefingScreen').style.display = 'none';
             document.getElementById('successBriefingScreen').style.display = 'none';
@@ -906,6 +930,8 @@
                 const adminInfo = JSON.parse(localStorage.getItem('cf_admin')) || { email: session.data.email };
                 document.getElementById('sidebarUserName').textContent = adminInfo.name || adminInfo.email;
                 document.getElementById('sidebarUserInitials').textContent = (adminInfo.name || adminInfo.email).substring(0,2).toUpperCase();
+                document.getElementById('sidebarUserEmailDisplay').textContent = adminInfo.email || '';
+                document.getElementById('sidebarUserPassDisplay').textContent = '••••••';
 
                 renderAdminDashboard();
                 renderClientsTable();
@@ -924,17 +950,15 @@
                 document.getElementById('sidebarUserEmailDisplay').textContent = client.email || client.loginEmail || 'email@exemplo.com';
                 document.getElementById('sidebarUserPassDisplay').textContent = client.password || '123456';
 
-                document.getElementById('clientViewSiteName').textContent = client.siteName || 'Site Profissional';
-                document.getElementById('clientViewPlanType').textContent = 'Mensal Recorrente';
-                document.getElementById('clientViewValue').textContent = `R$ ${parseFloat(client.monthlyValue || 150).toFixed(2)}`;
-                document.getElementById('clientViewDueDate').textContent = client.dueDate ? new Date(client.dueDate).toLocaleDateString('pt-BR') : 'Ativo 🚀';
-
+                renderClientDashboard();
                 renderClientRequests();
-                switchView('clientAssessoria');
+                switchView('clientDashboard');
             }
         }
 
-        // Navegação de Telas Internas
+        // ============================================
+        // NAVEGAÇÃO DE TELAS INTERNAS
+        // ============================================
         window.switchView = (viewId) => {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(viewId);
@@ -943,6 +967,13 @@
             document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.view === viewId);
             });
+
+            // Atualiza views quando navegar
+            if (viewId === 'adminDashboard') renderAdminDashboard();
+            if (viewId === 'adminClients') renderClientsTable();
+            if (viewId === 'adminAssessoria') renderAdminRequests();
+            if (viewId === 'clientDashboard') renderClientDashboard();
+            if (viewId === 'clientAssessoria') renderClientRequests();
         };
 
         document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
@@ -951,32 +982,79 @@
             });
         });
 
-        // Renderizadores Admin
+        // ============================================
+        // RENDERIZADORES ADMIN
+        // ============================================
+        
         function renderAdminDashboard() {
             document.getElementById('statTotalClients').textContent = clients.length;
-            const active = clients.filter(c => new Date(c.dueDate) >= new Date()).length;
-            document.getElementById('statActiveClients').textContent = active;
             
-            const todayStr = new Date().toISOString().split('T')[0];
-            const dueToday = clients.filter(c => c.dueDate && c.dueDate.startsWith(todayStr)).length;
-            document.getElementById('statDueToday').textContent = dueToday;
+            // Contagem de status
+            let activeCount = 0;
+            let dueTodayCount = 0;
+            let dueSoonCount = 0;
+            let expiredCount = 0;
+            
+            const alertsHTML = [];
+            
+            clients.forEach(c => {
+                const status = getClientStatus(c.dueDate);
+                if (status.status === 'active') activeCount++;
+                if (status.status === 'dueToday') {
+                    dueTodayCount++;
+                    alertsHTML.push(`
+                        <div class="alert-banner danger">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <div><strong>${c.name}</strong> - Plano vence <strong>HOJE</strong> (${new Date(c.dueDate + 'T00:00:00').toLocaleDateString('pt-BR')})</div>
+                        </div>
+                    `);
+                }
+                if (status.status === 'dueSoon') dueSoonCount++;
+                if (status.status === 'expired') {
+                    expiredCount++;
+                    alertsHTML.push(`
+                        <div class="alert-banner warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div><strong>${c.name}</strong> - Plano <strong>VENCIDO</strong> desde ${new Date(c.dueDate + 'T00:00:00').toLocaleDateString('pt-BR')}</div>
+                        </div>
+                    `);
+                }
+            });
+            
+            document.getElementById('statActiveClients').textContent = activeCount;
+            document.getElementById('statDueToday').textContent = dueTodayCount;
 
             const revenue = clients.reduce((acc, c) => acc + parseFloat(c.monthlyValue || 0), 0);
             document.getElementById('statMonthlyRevenue').textContent = `R$ ${revenue.toFixed(2)}`;
+            
+            // Renderiza alertas
+            const alertsContainer = document.getElementById('adminAlertsContainer');
+            if (alertsContainer) {
+                alertsContainer.innerHTML = alertsHTML.join('');
+            }
         }
 
         function renderClientsTable() {
             const tbody = document.getElementById('clientsTableBody');
-            let filtered = clients;
-            if(currentFilter === 'active') filtered = clients.filter(c => new Date(c.dueDate) >= new Date());
-            if(currentFilter === 'dueToday') {
-                const todayStr = new Date().toISOString().split('T')[0];
-                filtered = clients.filter(c => c.dueDate && c.dueDate.startsWith(todayStr));
+            let filtered = [...clients];
+            
+            // Aplica filtro
+            if(currentFilter === 'active') {
+                filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'active');
+            } else if(currentFilter === 'dueToday') {
+                filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'dueToday');
+            } else if(currentFilter === 'dueSoon') {
+                filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'dueSoon');
+            } else if(currentFilter === 'expired') {
+                filtered = filtered.filter(c => getClientStatus(c.dueDate).status === 'expired');
             }
-            if(currentFilter === 'expired') filtered = clients.filter(c => new Date(c.dueDate) < new Date());
 
+            // Aplica busca
             if(searchTerm) {
-                filtered = filtered.filter(c => c.name.toLowerCase().includes(searchTerm) || (c.siteName && c.siteName.toLowerCase().includes(searchTerm)));
+                filtered = filtered.filter(c => 
+                    c.name.toLowerCase().includes(searchTerm) || 
+                    (c.siteName && c.siteName.toLowerCase().includes(searchTerm))
+                );
             }
 
             if(filtered.length === 0) {
@@ -984,22 +1062,34 @@
                 return;
             }
 
-            tbody.innerHTML = filtered.map(c => `
+            tbody.innerHTML = filtered.map(c => {
+                const status = getClientStatus(c.dueDate);
+                const reminderIcon = getReminderIcon(c.dueDate);
+                const statusBadge = getStatusBadge(c.dueDate);
+                
+                // Cores de avatar baseado no status
+                let avatarColor = '#3b82f6'; // azul padrão
+                if (status.status === 'expired' || status.status === 'dueToday') avatarColor = '#ef4444';
+                else if (status.status === 'dueSoon') avatarColor = '#f59e0b';
+                
+                return `
                 <tr>
                     <td>
                         <div class="client-info">
-                            <div class="client-avatar" style="background: #3b82f6;">${c.name.substring(0,2).toUpperCase()}</div>
+                            <div class="client-avatar" style="background: ${avatarColor};">${c.name.substring(0,2).toUpperCase()}</div>
                             <div>
-                                <div class="client-name">${c.name}</div>
+                                <div class="client-name">
+                                    ${reminderIcon} ${c.name}
+                                </div>
                                 <div class="client-detail">${c.email || ''}</div>
                             </div>
                         </div>
                     </td>
                     <td>${c.siteName || '---'}</td>
-                    <td><span class="badge badge-info">${c.planType || 'monthly'}</span></td>
+                    <td><span class="badge badge-info">${getPlanLabel(c.planType)}</span></td>
                     <td>R$ ${parseFloat(c.monthlyValue || 0).toFixed(2)}</td>
-                    <td>${c.dueDate ? new Date(c.dueDate).toLocaleDateString('pt-BR') : '---'}</td>
-                    <td><span class="badge badge-success"><span class="badge-dot green"></span>Ativo</span></td>
+                    <td>${c.dueDate ? new Date(c.dueDate + 'T00:00:00').toLocaleDateString('pt-BR') : '---'}</td>
+                    <td>${statusBadge}</td>
                     <td>
                         <div class="actions-cell">
                             <button class="action-btn" onclick="openEditClientModal('${c.id}')"><i class="fas fa-edit"></i></button>
@@ -1007,7 +1097,18 @@
                         </div>
                     </td>
                 </tr>
-            `).join('');
+                `;
+            }).join('');
+        }
+
+        function getPlanLabel(planType) {
+            const labels = {
+                'monthly': 'Mensal',
+                'quarterly': 'Trimestral',
+                'semiannual': 'Semestral',
+                'annual': 'Anual'
+            };
+            return labels[planType] || planType || 'Mensal';
         }
 
         function renderAdminRequests() {
@@ -1046,10 +1147,63 @@
             }).join('');
         }
 
-        // Renderizadores Cliente (Assessoria)
+        // ============================================
+        // RENDERIZADORES CLIENTE
+        // ============================================
+        
+        function renderClientDashboard() {
+            syncSessionClientData();
+            const client = session.data;
+            
+            if (!client) return;
+            
+            document.getElementById('clientViewSiteName').textContent = client.siteName || 'Site Profissional';
+            document.getElementById('clientViewPlanType').textContent = getPlanLabel(client.planType) + ' Recorrente';
+            document.getElementById('clientViewValue').textContent = `R$ ${parseFloat(client.monthlyValue || 150).toFixed(2)}`;
+            
+            const dueDateFormatted = client.dueDate ? new Date(client.dueDate + 'T00:00:00').toLocaleDateString('pt-BR') : 'Não definida';
+            document.getElementById('clientViewDueDate').textContent = dueDateFormatted;
+            
+            // Renderiza alerta de status do plano
+            const status = getClientStatus(client.dueDate);
+            const alertContainer = document.getElementById('clientPlanAlert');
+            
+            if (alertContainer) {
+                if (status.status === 'expired') {
+                    alertContainer.innerHTML = `
+                        <div class="alert-banner danger">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <div><strong>Atenção!</strong> Seu plano está <strong>VENCIDO</strong> desde ${dueDateFormatted}. Entre em contato para renovar.</div>
+                        </div>
+                    `;
+                } else if (status.status === 'dueToday') {
+                    alertContainer.innerHTML = `
+                        <div class="alert-banner warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div><strong>Atenção!</strong> Seu plano vence <strong>HOJE</strong> (${dueDateFormatted}). Renove para manter os serviços.</div>
+                        </div>
+                    `;
+                } else if (status.status === 'dueSoon') {
+                    alertContainer.innerHTML = `
+                        <div class="alert-banner info">
+                            <i class="fas fa-info-circle"></i>
+                            <div>Seu plano vence em breve (${dueDateFormatted}). Fique atento à renovação.</div>
+                        </div>
+                    `;
+                } else {
+                    alertContainer.innerHTML = `
+                        <div class="alert-banner success">
+                            <i class="fas fa-check-circle"></i>
+                            <div>Seu plano está <strong>ATIVO</strong>. Próximo vencimento: ${dueDateFormatted}.</div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
         function renderClientRequests() {
             const tbody = document.getElementById('clientRequestsTableBody');
-            const clientEmail = session.data.email || session.data.loginEmail;
+            const clientEmail = session.data?.email || session.data?.loginEmail;
             const myReqs = allRequests.filter(r => r.clientEmail === clientEmail);
 
             if(myReqs.length === 0) {
@@ -1072,6 +1226,10 @@
             }).join('');
         }
 
+        // ============================================
+        // AÇÕES DO CLIENTE
+        // ============================================
+        
         window.submitClientRequest = () => {
             const text = document.getElementById('newRequestText').value.trim();
             if(!text) {
@@ -1096,12 +1254,15 @@
             showToast('Solicitação enviada com sucesso! Prazo de 5 a 7 dias úteis.', 'success');
         };
 
-        // Modais de Cliente (Admin)
+        // ============================================
+        // MODAIS DE CLIENTE (ADMIN)
+        // ============================================
+        
         window.openAddClientModal = () => {
             document.getElementById('modalTitle').textContent = 'Novo Cliente';
             document.getElementById('clientForm').reset();
             document.getElementById('clientId').value = '';
-            document.getElementById('activationDate').value = 'Sera gerada ao salvar';
+            document.getElementById('activationDate').value = 'Será gerada ao salvar';
             document.getElementById('clientModal').style.display = 'flex';
         };
 
@@ -1126,21 +1287,130 @@
             }
 
             if(id) {
+                // Editar cliente existente
                 const idx = clients.findIndex(c => c.id === id);
                 if(idx !== -1) {
-                    clients[idx] = { ...clients[idx], name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate };
+                    clients[idx] = { 
+                        ...clients[idx], 
+                        name, 
+                        email, 
+                        loginEmail, 
+                        password, 
+                        siteName, 
+                        monthlyValue, 
+                        planType, 
+                        dueDate 
+                    };
+                    
+                    // Se o cliente editado é o que está logado, atualiza a sessão
+                    if (session.type === 'client' && 
+                        (session.data.email === clients[idx].email || 
+                         session.data.loginEmail === clients[idx].loginEmail)) {
+                        session.data = { ...clients[idx] };
+                        localStorage.setItem('cf_session', JSON.stringify(session));
+                    }
                 }
             } else {
-                clients.push({ id: 'c_' + Date.now(), name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate, createdAt: new Date().toISOString() });
+                // Novo cliente
+                clients.push({ 
+                    id: 'c_' + Date.now(), 
+                    name, 
+                    email, 
+                    loginEmail, 
+                    password, 
+                    siteName, 
+                    monthlyValue, 
+                    planType, 
+                    dueDate, 
+                    createdAt: new Date().toISOString() 
+                });
             }
 
             saveDB();
             renderClientsTable();
             renderAdminDashboard();
             closeClientModal();
+            
+            // Atualiza dashboard do cliente se necessário
+            if (session.type === 'client') {
+                renderClientDashboard();
+            }
+            
             showToast('Cliente salvo com sucesso!', 'success');
         };
 
+        window.openEditClientModal = (id) => {
+            const client = clients.find(c => c.id === id);
+            if(!client) return;
+            
+            document.getElementById('modalTitle').textContent = 'Editar Cliente';
+            document.getElementById('clientId').value = client.id;
+            document.getElementById('clientName').value = client.name || '';
+            document.getElementById('clientEmail').value = client.email || '';
+            document.getElementById('clientLoginEmail').value = client.loginEmail || client.email || '';
+            document.getElementById('clientPassword').value = client.password || '123456';
+            document.getElementById('siteName').value = client.siteName || '';
+            document.getElementById('monthlyValue').value = client.monthlyValue || '';
+            document.getElementById('planType').value = client.planType || 'monthly';
+            document.getElementById('dueDate').value = client.dueDate || '';
+            
+            let actDateStr = 'Não registrada';
+            if(client.createdAt) {
+                const d = new Date(client.createdAt);
+                actDateStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            }
+            document.getElementById('activationDate').value = actDateStr;
+            
+            document.getElementById('clientModal').style.display = 'flex';
+        };
+
+        window.deleteClient = (id) => {
+            if(confirm('Tem certeza que deseja excluir este cliente?')) {
+                clients = clients.filter(c => c.id !== id);
+                saveDB();
+                renderClientsTable();
+                renderAdminDashboard();
+                showToast('Cliente excluído com sucesso!', 'success');
+            }
+        };
+
+        // ============================================
+        // MODAIS DE SOLICITAÇÃO (ADMIN)
+        // ============================================
+        
+        window.openUpdateStatusModal = (reqId, currentStatus) => {
+            const req = allRequests.find(r => r.id === reqId);
+            if(!req) return;
+
+            document.getElementById('editReqId').value = req.id;
+            document.getElementById('newReqStatus').value = req.status;
+            
+            document.getElementById('viewReqClientName').textContent = req.clientName || 'Cliente';
+            document.getElementById('viewReqDate').textContent = new Date(req.createdAt).toLocaleDateString('pt-BR');
+            document.getElementById('viewReqMessage').textContent = req.message;
+
+            document.getElementById('updateRequestModal').style.display = 'flex';
+        };
+
+        window.saveRequestStatus = () => {
+            const reqId = document.getElementById('editReqId').value;
+            const newStatus = document.getElementById('newReqStatus').value;
+            const req = allRequests.find(r => r.id === reqId);
+            if(req) {
+                req.status = newStatus;
+                saveDB();
+                renderAdminRequests();
+                if (session.type === 'client') renderClientRequests();
+                
+                document.getElementById('updateRequestModal').style.display = 'none';
+                showToast('Status da solicitação atualizado com sucesso!', 'success');
+            }
+        };
+
+        // ============================================
+        // ALTERAR SENHA (CLIENTE)
+        // ============================================
+        
         window.openChangePasswordModal = () => {
             document.getElementById('newClientPassword').value = '';
             document.getElementById('changePasswordModal').style.display = 'flex';
@@ -1169,70 +1439,10 @@
             }
         };
 
-        window.openUpdateStatusModal = (reqId, currentStatus) => {
-            const req = allRequests.find(r => r.id === reqId);
-            if(!req) return;
-
-            document.getElementById('editReqId').value = req.id;
-            document.getElementById('newReqStatus').value = req.status;
-            
-            document.getElementById('viewReqClientName').textContent = req.clientName || 'Cliente';
-            document.getElementById('viewReqDate').textContent = new Date(req.createdAt).toLocaleDateString('pt-BR');
-            document.getElementById('viewReqMessage').textContent = req.message;
-
-            document.getElementById('updateRequestModal').style.display = 'flex';
-        };
-
-        window.saveRequestStatus = () => {
-            const reqId = document.getElementById('editReqId').value;
-            const newStatus = document.getElementById('newReqStatus').value;
-            const req = allRequests.find(r => r.id === reqId);
-            if(req) {
-                req.status = newStatus;
-                saveDB();
-                renderAdminRequests();
-                // Se o cliente estiver online ou a view atualizada, atualizamos também
-                if (session.type === 'client') renderClientRequests();
-                
-                document.getElementById('updateRequestModal').style.display = 'none';
-                showToast('Status da solicitação atualizado com sucesso!', 'success');
-            }
-        };
-
-        window.deleteClient = (id) => {
-            if(confirm('Tem certeza que deseja excluir este cliente?')) {
-                clients = clients.filter(c => c.id !== id);
-                saveDB();
-                renderClientsTable();
-                renderAdminDashboard();
-                showToast('Cliente excluído com sucesso!', 'success');
-            }
-        };
-
-        window.openEditClientModal = (id) => {
-            const client = clients.find(c => c.id === id);
-            if(!client) return;
-            document.getElementById('modalTitle').textContent = 'Editar Cliente';
-            document.getElementById('clientId').value = client.id;
-            document.getElementById('clientName').value = client.name || '';
-            document.getElementById('clientEmail').value = client.email || '';
-            document.getElementById('clientLoginEmail').value = client.loginEmail || client.email || '';
-            document.getElementById('clientPassword').value = client.password || '123456';
-            document.getElementById('siteName').value = client.siteName || '';
-            document.getElementById('monthlyValue').value = client.monthlyValue || '';
-            document.getElementById('planType').value = client.planType || 'monthly';
-            document.getElementById('dueDate').value = client.dueDate || '';
-            
-            let actDateStr = 'Não registrada (Antigo)';
-            if(client.createdAt) {
-                const d = new Date(client.createdAt);
-                actDateStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-            }
-            document.getElementById('activationDate').value = actDateStr;
-            
-            document.getElementById('clientModal').style.display = 'flex';
-        };
-
+        // ============================================
+        // FILTROS E BUSCA
+        // ============================================
+        
         window.setFilter = (filter, el) => {
             currentFilter = filter;
             document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
@@ -1245,6 +1455,10 @@
             renderClientsTable();
         };
 
+        // ============================================
+        // TOASTS E NOTIFICAÇÕES
+        // ============================================
+        
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -1255,10 +1469,120 @@
             setTimeout(() => toast.remove(), 4000);
         }
 
-        // Inicialização automática ao carregar
+        // ============================================
+        // EVENT LISTENERS DOS FORMULÁRIOS
+        // ============================================
+        
+        // Form Admin Auth
+        document.getElementById('formAdminAuth').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authEmailAdmin').value;
+            const password = document.getElementById('authPasswordAdmin').value;
+            
+            if(isAdminRegisterMode) {
+                const name = document.getElementById('authNameAdmin').value;
+                localStorage.setItem('cf_admin', JSON.stringify({ name, email, password }));
+                showToast('Administrador cadastrado com sucesso!', 'success');
+                toggleAdminRegister();
+            } else {
+                session = { type: 'admin', data: { email } };
+                localStorage.setItem('cf_session', JSON.stringify(session));
+                initSession();
+                showToast('Login de Administrador efetuado!', 'success');
+            }
+        });
+
+        // Form Client Auth
+        document.getElementById('formClientAuth').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authLoginClient').value.trim().toLowerCase();
+            const password = document.getElementById('authPasswordClient').value.trim();
+
+            const foundClient = clients.find(c => 
+                (c.email && c.email.toLowerCase() === email || 
+                 c.loginEmail && c.loginEmail.toLowerCase() === email) && 
+                (c.password === password || password === '123456')
+            );
+            
+            if(foundClient) {
+                session = { type: 'client', data: { ...foundClient } };
+                localStorage.setItem('cf_session', JSON.stringify(session));
+                initSession();
+                showToast('Login de Cliente efetuado com sucesso!', 'success');
+            } else {
+                showToast('Email ou senha inválidos!', 'error');
+            }
+        });
+
+        // Briefing Form Submission
+        document.getElementById('formBriefing').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('bfName').value.trim();
+            const email = document.getElementById('bfEmail').value.trim();
+            const segment = document.getElementById('bfSegment').value.trim();
+            const colors = document.getElementById('bfColors').value.trim();
+            const features = [];
+            document.querySelectorAll('input[name="bfFeatures"]:checked').forEach(cb => features.push(cb.value));
+            const purposeCb = document.querySelector('input[name="bfPurpose"]:checked');
+            const purpose = purposeCb ? purposeCb.value : '';
+            const extraInfo = document.getElementById('bfExtraInfo').value.trim();
+
+            // Criar registro do cliente com senha automática '123456'
+            // Data de vencimento para 30 dias no futuro
+            const futureDate = new Date(Date.now() + 30 * 86400000);
+            const newClient = {
+                id: 'c_' + Date.now(),
+                name,
+                email,
+                loginEmail: email,
+                password: '123456',
+                siteName: segment,
+                monthlyValue: '150.00',
+                planType: 'monthly',
+                dueDate: futureDate.toISOString().split('T')[0],
+                features,
+                purpose,
+                colors,
+                extraInfo,
+                createdAt: new Date().toISOString()
+            };
+
+            clients.push(newClient);
+            saveDB();
+
+            session = { type: 'client', data: { ...newClient } };
+            localStorage.setItem('cf_session', JSON.stringify(session));
+
+            // Exibir Tela de Sucesso
+            const successMsg = `
+                <p style="margin-bottom: 12px;">Com base em nossa experiência desde 2010 criando mais de 1 mil marcas, <strong>${name}</strong>, entendemos que o seu segmento de <strong>${segment}</strong> possui grande potencial.</p>
+                <p style="margin-bottom: 12px;">Vamos realizar a melhor versão do seu novo site profissional com carregamento em alta velocidade para transmitir profissionalismo, receber mais clientes e vender mais. 🚀🎯</p>
+                <p style="margin-bottom: 12px;">🧑🏼‍🎨🖼️ Assim que finalizar te enviamos atualizações. 🚀🎯</p>
+                <p style="margin-bottom: 12px;">Desejamos que a sua marca continue crescendo por muitos anos sem parar.</p>
+                <p style="font-weight: 700; color: #3b82f6;">Vamos para cima. 🚀🎯✅</p>
+            `;
+            document.getElementById('successMessageText').innerHTML = successMsg;
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'flex';
+        });
+
+        // ============================================
+        // INICIALIZAÇÃO AUTOMÁTICA
+        // ============================================
         window.onload = () => {
             initSession();
         };
+
+        // Atualiza views periodicamente (a cada 30 segundos) para manter status atualizados
+        setInterval(() => {
+            if (session.type === 'admin') {
+                renderAdminDashboard();
+                renderClientsTable();
+            } else if (session.type === 'client') {
+                syncSessionClientData();
+                renderClientDashboard();
+            }
+        }, 30000);
     </script>
 </body>
 </html>
