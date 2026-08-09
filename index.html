@@ -1128,6 +1128,32 @@
             }
         };
 
+        window.deleteClient = (id) => {
+            if(confirm('Tem certeza que deseja excluir este cliente?')) {
+                clients = clients.filter(c => c.id !== id);
+                saveDB();
+                renderClientsTable();
+                renderAdminDashboard();
+                showToast('Cliente excluído com sucesso!', 'success');
+            }
+        };
+
+        window.openEditClientModal = (id) => {
+            const client = clients.find(c => c.id === id);
+            if(!client) return;
+            document.getElementById('modalTitle').textContent = 'Editar Cliente';
+            document.getElementById('clientId').value = client.id;
+            document.getElementById('clientName').value = client.name || '';
+            document.getElementById('clientEmail').value = client.email || '';
+            document.getElementById('clientLoginEmail').value = client.loginEmail || client.email || '';
+            document.getElementById('clientPassword').value = client.password || '123456';
+            document.getElementById('siteName').value = client.siteName || '';
+            document.getElementById('monthlyValue').value = client.monthlyValue || '';
+            document.getElementById('planType').value = client.planType || 'monthly';
+            document.getElementById('dueDate').value = client.dueDate || '';
+            document.getElementById('clientModal').style.display = 'flex';
+        };
+
         window.setFilter = (filter, el) => {
             currentFilter = filter;
             document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
