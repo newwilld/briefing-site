@@ -644,8 +644,43 @@
 
     <!-- Modal Update Status Request (Admin) -->
     <div class="modal-overlay" id="updateRequestModal" style="display: none;">
-        <div class="modal" style="max-width: 400px;">
+        <div class="modal" style="max-width: 500px;">
             <div class="modal-header">
+                <h2 class="modal-title">Detalhes da Solicitação</h2>
+                <button class="btn-ghost btn-icon" onclick="document.getElementById('updateRequestModal').style.display='none'"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editReqId">
+                
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Cliente</div>
+                    <div style="font-size: 15px; font-weight: 600; color: #0f172a;" id="viewReqClientName">---</div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="viewReqDate">---</div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 6px;">Mensagem da Solicitação</div>
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; font-size: 14px; color: #334155; white-space: pre-wrap; max-height: 200px; overflow-y: auto;" id="viewReqMessage">
+                        ---
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Atualizar Status</label>
+                    <select id="newReqStatus" class="form-select">
+                        <option value="pending">🟡 Pendente (Prazo 5-7 dias)</option>
+                        <option value="in_progress">🔵 Realizando (Em Andamento)</option>
+                        <option value="completed">🟢 Feita (Concluída)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('updateRequestModal').style.display='none'">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveRequestStatus()"><i class="fas fa-save"></i> Salvar Status</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Alterar Senha (Cliente) -->
     <div class="modal-overlay" id="changePasswordModal" style="display: none;">
         <div class="modal" style="max-width: 380px;">
@@ -1130,8 +1165,16 @@
         };
 
         window.openUpdateStatusModal = (reqId, currentStatus) => {
-            document.getElementById('editReqId').value = reqId;
-            document.getElementById('newReqStatus').value = currentStatus;
+            const req = allRequests.find(r => r.id === reqId);
+            if(!req) return;
+
+            document.getElementById('editReqId').value = req.id;
+            document.getElementById('newReqStatus').value = req.status;
+            
+            document.getElementById('viewReqClientName').textContent = req.clientName || 'Cliente';
+            document.getElementById('viewReqDate').textContent = new Date(req.createdAt).toLocaleDateString('pt-BR');
+            document.getElementById('viewReqMessage').textContent = req.message;
+
             document.getElementById('updateRequestModal').style.display = 'flex';
         };
 
@@ -1143,8 +1186,11 @@
                 req.status = newStatus;
                 saveDB();
                 renderAdminRequests();
+                // Se o cliente estiver online ou a view atualizada, atualizamos também
+                if (session.type === 'client') renderClientRequests();
+                
                 document.getElementById('updateRequestModal').style.display = 'none';
-                showToast('Status atualizado com sucesso!', 'success');
+                showToast('Status da solicitação atualizado com sucesso!', 'success');
             }
         };
 
