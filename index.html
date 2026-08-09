@@ -12,66 +12,117 @@
         :root {
             --bg-primary: #f8fafc;
             --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
             --text-primary: #0f172a;
             --text-secondary: #475569;
+            --text-muted: #94a3b8;
             --border-color: #e2e8f0;
             --accent: #3b82f6;
             --accent-hover: #2563eb;
             --danger: #ef4444;
+            --danger-light: #fef2f2;
             --warning: #f59e0b;
+            --warning-light: #fffbeb;
             --success: #10b981;
+            --success-light: #f0fdf4;
+            --info: #6366f1;
+            --info-light: #eef2ff;
         }
 
-        * { font-family: 'Inter', system-ui, sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #f1f5f9; color: #0f172a; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+        * {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            background: #f1f5f9;
+            color: #0f172a;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Layout Principal */
         .app-container { display: flex; min-height: 100vh; }
-        
-        /* Sidebar */
-        .sidebar { width: 260px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 40; transition: transform 0.3s; }
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 40;
+            transition: transform 0.3s ease;
+        }
         .sidebar-logo { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px; }
         .sidebar-logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; }
         .sidebar-logo-text { font-weight: 700; font-size: 18px; color: #0f172a; }
-        .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
-        .sidebar-nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; color: #475569; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s; border: none; background: none; width: 100%; text-align: left; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+        .sidebar-nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px;
+            color: #475569; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s;
+            border: none; background: none; width: 100%; text-align: left;
+        }
         .sidebar-nav-item:hover { background: #f1f5f9; color: #0f172a; }
         .sidebar-nav-item.active { background: #eef2ff; color: #3b82f6; font-weight: 600; }
+        .sidebar-nav-item i { width: 20px; text-align: center; font-size: 16px; }
         .sidebar-footer { padding: 16px; border-top: 1px solid #e2e8f0; }
 
-        /* Main Content */
-        .main-content { flex: 1; margin-left: 260px; min-height: 100vh; }
+        .main-content { flex: 1; margin-left: 260px; min-height: 100vh; display: flex; flex-direction: column; }
         .header { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 30; }
-        .content-area { padding: 32px; max-width: 1200px; margin: 0 auto; }
-        
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; border: none; }
+        .header-search { display: flex; align-items: center; gap: 12px; background: #f1f5f9; border-radius: 10px; padding: 8px 16px; width: 360px; transition: all 0.2s; border: 1px solid transparent; }
+        .header-search:focus-within { background: #ffffff; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .header-search input { border: none; background: none; outline: none; font-size: 14px; width: 100%; color: #0f172a; }
+        .header-search i { color: #94a3b8; font-size: 16px; }
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+
+        /* Botões */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; border: none; white-space: nowrap; }
         .btn-primary { background: #3b82f6; color: white; }
-        .btn-primary:hover { background: #2563eb; }
+        .btn-primary:hover { background: #2563eb; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
         .btn-secondary { background: #f1f5f9; color: #475569; }
         .btn-secondary:hover { background: #e2e8f0; }
         .btn-danger { background: #fef2f2; color: #ef4444; }
+        .btn-danger:hover { background: #fee2e2; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
         .btn-ghost { background: transparent; color: #64748b; padding: 8px; border-radius: 8px; }
         .btn-ghost:hover { background: #f1f5f9; color: #0f172a; }
-        
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
-        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; color: #0f172a; background: #ffffff; outline: none; transition: all 0.2s; }
-        .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
 
-        /* Cards and Tables */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; }
-        .table-container { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th { padding: 14px 20px; text-align: left; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
-        td { padding: 16px 20px; font-size: 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .content-area { padding: 32px; flex: 1; }
+        .page-title { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+        .page-subtitle { font-size: 14px; color: #64748b; margin-bottom: 24px; }
         
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 24px; }
-        .modal { background: #ffffff; border-radius: 20px; width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto; animation: modalIn 0.2s ease; }
-        .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; background: #fff; z-index: 1; }
-        .modal-body { padding: 24px; }
-        .modal-footer { display: flex; gap: 12px; justify-content: flex-end; padding: 20px 24px; border-top: 1px solid #e2e8f0; position: sticky; bottom: 0; background: #fff; }
-        @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .view-section { display: none; animation: fadeIn 0.3s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Dashboard & Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; transition: all 0.2s; }
+        .stat-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border-color: #cbd5e1; }
+        .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .stat-card-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .stat-card-icon.blue { background: #eef2ff; color: #3b82f6; }
+        .stat-card-icon.red { background: #fef2f2; color: #ef4444; }
+        .stat-card-icon.green { background: #f0fdf4; color: #10b981; }
+        .stat-card-icon.purple { background: #faf5ff; color: #8b5cf6; }
+        .stat-card-icon.amber { background: #fffbeb; color: #f59e0b; }
+        .stat-card-value { font-size: 28px; font-weight: 700; color: #0f172a; }
+        .stat-card-label { font-size: 13px; color: #64748b; font-weight: 500; }
+
+        /* Alerts & Badges */
+        .alert-banner { border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; }
+        .alert-banner.danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+        .alert-banner.warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+        .alert-banner.success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #065f46; }
+        .alert-banner.info { background: #eef2ff; border: 1px solid #bfdbfe; color: #1e40af; }
+        .alert-banner i { font-size: 18px; }
 
         .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
         .badge-success { background: #f0fdf4; color: #065f46; }
@@ -81,886 +132,1133 @@
         .badge-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
         .badge-dot.green { background: #10b981; }
         .badge-dot.yellow { background: #f59e0b; }
-        .badge-dot.red { background: #ef4444; }
+        .badge-dot.blue { background: #3b82f6; }
+        .badge-dot.red { background: #ef4444; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
-        .toast { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; animation: toastIn 0.3s; }
-        @keyframes toastIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-
-        /* Utilitários Extras */
-        .hidden { display: none !important; }
-        .action-btn { width: 32px; height: 32px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: #64748b; transition: 0.2s; }
+        /* Tables */
+        .filter-bar { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .filter-pill { padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: 1px solid #e2e8f0; background: #ffffff; color: #475569; }
+        .filter-pill:hover { background: #f8fafc; }
+        .filter-pill.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+        .table-container { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+        th { padding: 14px 20px; text-align: left; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+        td { padding: 16px 20px; font-size: 14px; color: #0f172a; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        tbody tr { transition: background 0.15s; }
+        tbody tr:hover { background: #f8fafc; }
+        .client-avatar { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: white; flex-shrink: 0; }
+        .client-info { display: flex; align-items: center; gap: 12px; }
+        .client-name { font-weight: 600; color: #0f172a; }
+        .client-detail { font-size: 12px; color: #94a3b8; }
+        .actions-cell { display: flex; gap: 6px; }
+        .action-btn { width: 32px; height: 32px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s; background: #f1f5f9; color: #64748b; }
         .action-btn:hover { background: #e2e8f0; color: #0f172a; }
-        .screen { display: none; min-height: 100vh; }
-        .screen.active { display: flex; flex-direction: column; }
         
-        .chat-message { padding: 16px; border-radius: 12px; margin-bottom: 12px; background: #f8fafc; border: 1px solid #e2e8f0; }
-        .chat-message.admin { background: #eef2ff; border-color: #c7d2fe; }
+        /* Formulários e Modais */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 24px; }
+        .modal { background: #ffffff; border-radius: 20px; width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); animation: modalIn 0.2s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; background: #ffffff; z-index: 1; border-radius: 20px 20px 0 0; }
+        .modal-title { font-size: 18px; font-weight: 700; color: #0f172a; }
+        .modal-body { padding: 24px; }
+        .modal-footer { display: flex; gap: 12px; justify-content: flex-end; padding: 20px 24px; border-top: 1px solid #e2e8f0; position: sticky; bottom: 0; background: #ffffff; border-radius: 0 0 20px 20px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; color: #0f172a; background: #ffffff; transition: all 0.2s; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .form-textarea { resize: vertical; min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+        
+        /* Auth Screen */
+        .auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f1f5f9; padding: 20px; }
+        .auth-card { background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 25px 50px rgba(0,0,0,0.1); }
+        .auth-tabs { display: flex; background: #f1f5f9; border-radius: 12px; padding: 4px; margin-bottom: 24px; }
+        .auth-tab { flex: 1; text-align: center; padding: 10px; font-size: 14px; font-weight: 600; color: #64748b; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .auth-tab.active { background: #ffffff; color: #3b82f6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .auth-logo { text-align: center; margin-bottom: 24px; }
+        .auth-logo-icon { width: 56px; height: 56px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: white; font-size: 24px; }
+        .auth-title { font-size: 22px; font-weight: 700; color: #0f172a; }
+        .auth-form { display: flex; flex-direction: column; gap: 16px; }
+        
+        /* Briefing Screen Custom Styles */
+        .briefing-card { background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 680px; box-shadow: 0 25px 50px rgba(0,0,0,0.1); margin: 40px auto; }
+        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+        .custom-checkbox { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #475569; cursor: pointer; }
+        .custom-checkbox input { width: 16px; height: 16px; cursor: pointer; }
+        .success-screen-content { text-align: center; max-width: 500px; padding: 40px 20px; background: white; border-radius: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.1); }
+        .success-text { font-size: 16px; color: #334155; line-height: 1.6; margin-bottom: 24px; text-align: left; }
+
+        /* Request Message Baloon */
+        .req-msg { background: #f1f5f9; padding: 12px; border-radius: 12px; font-size: 14px; color: #334155; border-left: 3px solid #cbd5e1; }
+
+        /* Toasts */
+        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+        .toast { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; animation: toastIn 0.3s ease; min-width: 300px; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        .toast.success { border-left: 4px solid #10b981; } .toast.success i { color: #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; } .toast.error i { color: #ef4444; }
+        .toast.info { border-left: 4px solid #3b82f6; } .toast.info i { color: #3b82f6; }
+
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
     </style>
 </head>
 <body>
+
     <div class="toast-container" id="toastContainer"></div>
 
-    <div id="briefingScreen" class="screen active" style="background: #ffffff; align-items: center; padding: 40px 20px;">
-        <div style="width: 100%; max-width: 600px;">
-            <div style="text-align: center; margin-bottom: 32px;">
-                <div class="sidebar-logo-icon" style="margin: 0 auto 16px; width: 56px; height: 56px; font-size: 24px;">
-                    <i class="fas fa-layer-group"></i>
-                </div>
-                <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Briefing de Marca</h1>
-                <p style="font-size: 15px; color: #64748b;">
-                    Ajude-nos a entender a sua visão para criarmos <span onclick="showAdminLogin()" style="cursor: pointer; color: transparent; text-shadow: 0 0 0 #64748b;">algo incrível.</span>
+    <!-- Tela de Briefing de Marca (Inicial) -->
+    <div id="briefingScreen" class="auth-screen">
+        <div class="briefing-card">
+            <div class="auth-logo" style="margin-bottom: 32px;">
+                <div class="auth-logo-icon"><i class="fas fa-rocket"></i></div>
+                <h1 class="auth-title">Briefing de Marca</h1>
+                <!-- Link secreto para o admin ao clicar em "algo incrível." -->
+                <p class="auth-subtitle" style="font-weight: 500; color: #3b82f6; margin-top: 8px;">
+                    Ajude-nos a entender a sua visão para criarmos <span onclick="showAuthScreen()" title="Acesso Administrativo" style="cursor: pointer; text-decoration: underline; text-decoration-style: dotted;">algo incrível.</span>
                 </p>
             </div>
 
-            <form id="briefingForm" style="background: #f8fafc; padding: 32px; border-radius: 20px; border: 1px solid #e2e8f0;">
-                <div class="form-group">
-                    <label class="form-label">Nome Completo / Empresa</label>
-                    <input type="text" id="bfName" required class="form-input" placeholder="Ex: João Silva ou Empresa XYZ">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email para Receber Arquivos (Será seu login)</label>
-                    <input type="email" id="bfEmail" required class="form-input" placeholder="seu@email.com">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Segmento / Área de Atuação</label>
-                    <input type="text" id="bfSegment" required class="form-input" placeholder="Ex: Clínica Odontológica, Advocacia, E-commerce...">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Cores de Preferência</label>
-                    <input type="text" id="bfColors" required class="form-input" placeholder="Ex: Azul escuro e Dourado">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">O que deseja no site? (Marque as opções)</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer;">
-                            <input type="checkbox" id="chkContact" value="Formulário de Contato"> Formulário de Contato
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer;">
-                            <input type="checkbox" id="chkWpp" value="Botão WhatsApp"> Botão WhatsApp
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer;">
-                            <input type="checkbox" id="chkInsta" value="Botão Instagram"> Botão Instagram
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer;">
-                            <input type="checkbox" id="chkYt" value="Botão YouTube"> Botão YouTube
-                        </label>
+            <form id="formBriefing" class="auth-form view-section active">
+                <div class="form-row">
+                    <div>
+                        <label class="form-label">Nome <span style="color:red">*</span></label>
+                        <input type="text" id="bfName" required class="form-input" placeholder="Seu nome completo">
+                    </div>
+                    <div>
+                        <label class="form-label">Email para Receber Arquivos <span style="color:red">*</span></label>
+                        <input type="email" id="bfEmail" required class="form-input" placeholder="seuemail@exemplo.com">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Qual o propósito principal do site?</label>
-                    <select id="bfPurpose" class="form-select">
-                        <option value="Vender mais">Vender mais</option>
-                        <option value="Mais credibilidade">Transmitir mais credibilidade</option>
-                        <option value="Mais profissionalismo">Ter um visual mais profissional</option>
-                        <option value="Divulgar marca">Divulgar minha marca/serviços</option>
-                    </select>
+                <div class="form-row">
+                    <div>
+                        <label class="form-label">Segmento / Área de Atuação <span style="color:red">*</span></label>
+                        <input type="text" id="bfSegment" required class="form-input" placeholder="Ex: Advocacia, E-commerce, Clínica...">
+                    </div>
+                    <div>
+                        <label class="form-label">Cores de Preferência</label>
+                        <input type="text" id="bfColors" class="form-input" placeholder="Ex: Azul escuro e Dourado">
+                    </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-section" style="margin-bottom: 0;">
+                    <label class="form-label">Preferências do Site (Marque o que deseja)</label>
+                    <div class="checkbox-grid">
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Formulário de Contato"> Formulário de Contato</label>
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão do WhatsApp"> Botão do WhatsApp</label>
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão Instagram"> Botão Instagram</label>
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão YouTube"> Botão YouTube</label>
+                    </div>
+                </div>
+
+                <div class="form-section" style="margin-bottom: 0;">
+                    <label class="form-label">Qual o principal propósito do site?</label>
+                    <div class="checkbox-grid">
+                        <label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Vender mais" required> Vender mais</label>
+                        <label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais credibilidade"> Mais credibilidade</label>
+                        <label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Mais profissionalismo"> Mais profissionalismo</label>
+                        <label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Divulgar minha marca"> Divulgar minha marca</label>
+                    </div>
+                </div>
+
+                <div>
                     <label class="form-label">Informações Adicionais</label>
-                    <textarea id="bfInfo" class="form-textarea" placeholder="Preencha o texto aqui com mais detalhes importantes..."></textarea>
+                    <textarea id="bfExtraInfo" class="form-textarea" placeholder="Preencha com mais detalhes sobre a sua ideia, referências, etc..."></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 16px; padding: 14px; margin-top: 10px;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 8px;" id="btnSubmitBriefing">
                     <i class="fas fa-paper-plane"></i> Enviar Informações e Acessar Painel
                 </button>
 
-                <!-- Botão Área do Cliente Otimizado -->
-                <button type="button" onclick="showClientLogin()" class="btn" style="width: 100%; justify-content: center; font-size: 15px; padding: 14px; margin-top: 16px; background-color: #1e3a8a; color: white;">
-                    <i class="fas fa-user"></i> Área do Cliente
+                <button type="button" class="btn" onclick="showAuthClientDirectly()" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 10px; background: #1d4ed8; color: white;">
+                    <i class="fas fa-user-circle"></i> Área do Cliente
                 </button>
             </form>
         </div>
     </div>
 
-    <div id="successScreen" class="screen" style="background: #ffffff; align-items: center; justify-content: center; padding: 20px;">
-        <div style="max-width: 500px; text-align: center;">
-            <div style="width: 80px; height: 80px; background: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
-                <i class="fas fa-check" style="font-size: 36px; color: #10b981;"></i>
-            </div>
-            <h2 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 16px;">Entendido! 🚀🎯</h2>
-            <p style="font-size: 16px; color: #475569; margin-bottom: 16px;" id="successMessageText">
-                Com base em nossa experiência desde 2010 criando mais de 1 mil marcas para {NOME} no segmento de {SEGMENTO} e demais informações recebidas...
-            </p>
-            <p style="font-size: 16px; color: #475569; margin-bottom: 16px;">
-                Vamos realizar a melhor versão do seu novo site profissional com carregamento em alta velocidade para transmitir profissionalismo, receber mais clientes e vender mais 🚀🎯
-            </p>
-            <p style="font-size: 16px; color: #475569; margin-bottom: 32px;">
-                🧑🏼‍🎨🖼️ Assim que finalizar te enviamos atualizações. Desejamos que a sua marca continue crescendo por muitos anos sem parar. Vamos para cima. 🚀🎯✅
-            </p>
+    <!-- Tela de Sucesso Pós-Briefing -->
+    <div id="successBriefingScreen" class="auth-screen" style="display: none;">
+        <div class="success-screen-content">
+            <h2 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 24px; text-align: center;">Entendido! 🚀🎯</h2>
             
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <button onclick="goToClientPanel()" class="btn btn-primary" style="justify-content: center; padding: 14px;">
-                    Acessar Meu Painel
+            <div class="success-text" id="successMessageText">
+                <!-- Preenchido via JS -->
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 32px;">
+                <button class="btn btn-primary" onclick="goToClientPanel()" style="width: 100%; padding: 14px; justify-content: center; font-size: 15px;">
+                    <i class="fas fa-arrow-right"></i> Ir para o Painel / Voltar ao Início
                 </button>
-                <a href="https://api.whatsapp.com/send?phone=5579988645865&text=Oi" target="_blank" class="btn btn-secondary" style="justify-content: center; padding: 14px; background: #25D366; color: white;">
-                    <i class="fab fa-whatsapp"></i> Falar no WhatsApp
+                <a href="https://api.whatsapp.com/send?phone=5579988645865&text=Oi" target="_blank" class="btn btn-success" style="width: 100%; padding: 14px; justify-content: center; font-size: 15px; text-decoration: none;">
+                    <i class="fab fa-whatsapp" style="font-size: 18px;"></i> Falar no WhatsApp
                 </a>
             </div>
         </div>
     </div>
 
-    <div id="clientLoginScreen" class="screen" style="background: #f1f5f9; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
-            <div style="text-align: center; margin-bottom: 24px;">
-                <div class="sidebar-logo-icon" style="margin: 0 auto 16px; background: #1e3a8a;">
-                    <i class="fas fa-user"></i>
+    <!-- Tela de Autenticação (Admin / Login Manual Client) -->
+    <div id="authScreen" class="auth-screen" style="display: none;">
+        <div class="auth-card">
+            <button onclick="showBriefingScreen()" style="background:none; border:none; color: #64748b; font-size: 12px; cursor: pointer; margin-bottom: 16px;"><i class="fas fa-arrow-left"></i> Voltar ao site</button>
+            
+            <div class="auth-logo">
+                <div class="auth-logo-icon"><i class="fas fa-user-circle"></i></div>
+                <h1 class="auth-title">Área do Cliente</h1>
+                <p class="auth-subtitle">Acesse o portal da sua assessoria</p>
+            </div>
+
+            <!-- Formulário Cliente -->
+            <form id="formClientAuth" class="auth-form view-section active">
+                <div>
+                    <label class="form-label">Email de Acesso</label>
+                    <input type="email" id="authLoginClient" required class="form-input" placeholder="seuemail@exemplo.com">
                 </div>
-                <h2 style="font-size: 22px; font-weight: 700; color: #0f172a;">Área do Cliente</h2>
-                <p style="font-size: 14px; color: #64748b; margin-top: 4px;">Acesse seu painel de assessoria</p>
+                <div>
+                    <label class="form-label">Senha</label>
+                    <input type="password" id="authPasswordClient" required class="form-input" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fas fa-user"></i> Entrar no Painel</button>
+            </form>
+
+            <!-- Formulário Admin (Apenas acessível via link secreto "algo incrível.") -->
+            <form id="formAdminAuth" class="auth-form view-section" style="display: none;">
+                <div id="nameFieldAdmin" style="display: none;">
+                    <label class="form-label">Nome</label>
+                    <input type="text" id="authNameAdmin" class="form-input" placeholder="Seu nome">
+                </div>
+                <div>
+                    <label class="form-label">Email do Administrador</label>
+                    <input type="email" id="authEmailAdmin" class="form-input" placeholder="admin@clientflow.com">
+                </div>
+                <div>
+                    <label class="form-label">Senha</label>
+                    <input type="password" id="authPasswordAdmin" class="form-input" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-sign-in-alt"></i> <span id="authSubmitTextAdmin">Entrar como Admin</span></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Aplicativo Principal -->
+    <div id="appScreen" class="app-container" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon"><i class="fas fa-layer-group"></i></div>
+                <span class="sidebar-logo-text">ClientFlow</span>
             </div>
             
-            <form id="clientLoginForm">
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" id="clLoginEmail" required class="form-input" placeholder="seu@email.com">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Senha</label>
-                    <input type="password" id="clLoginPass" required class="form-input" placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; background-color: #1e3a8a;">Entrar</button>
-                <button type="button" onclick="showBriefingScreen()" class="btn btn-ghost" style="width: 100%; justify-content: center; margin-top: 12px;">Voltar</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="adminLoginScreen" class="screen" style="background: #0f172a; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 420px;">
-            <div style="text-align: center; margin-bottom: 24px;">
-                <h2 style="font-size: 22px; font-weight: 700; color: #0f172a;">Acesso Restrito Admin</h2>
-            </div>
-            <form id="adminLoginForm">
-                <div class="form-group">
-                    <label class="form-label">Admin Email</label>
-                    <input type="email" id="admEmail" required class="form-input" value="admin@agencia.com">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Senha</label>
-                    <input type="password" id="admPass" required class="form-input" placeholder="••••••••" value="admin123">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; background: #0f172a;">Acessar Sistema</button>
-                <button type="button" onclick="showBriefingScreen()" class="btn btn-ghost" style="width: 100%; justify-content: center; margin-top: 12px;">Cancelar</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="clientPanelScreen" class="screen app-container">
-        <aside class="sidebar" style="width: 280px;">
-            <div class="sidebar-logo">
-                <div class="sidebar-logo-icon"><i class="fas fa-layer-group"></i></div>
-                <span class="sidebar-logo-text">ClientFlow</span>
-            </div>
-            <nav class="sidebar-nav">
-                <button class="sidebar-nav-item active"><i class="fas fa-comments"></i> Assessoria e Suporte</button>
-            </nav>
-            <div class="sidebar-footer" style="background: #f8fafc; padding: 20px;">
-                <p style="font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Meus Dados de Acesso</p>
-                <div style="font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 2px; word-break: break-all;" id="sidebarClientEmail">cliente@email.com</div>
-                <div style="font-size: 13px; color: #475569; margin-bottom: 8px;">Senha: <span id="sidebarClientPass">123456</span></div>
-                
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
-                    <button onclick="promptChangePassword()" style="color: #3b82f6; font-size: 13px; font-weight: 600; background: none; border: none; cursor: pointer; text-decoration: underline;">Alterar senha</button>
-                    <button onclick="logout()" style="color: #ef4444; font-size: 13px; font-weight: 600; background: none; border: none; cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</button>
-                </div>
-            </div>
-        </aside>
-        <main class="main-content" style="margin-left: 280px;">
-            <header class="header">
-                <h2 style="font-size: 18px; font-weight: 600;">Central de Assessoria</h2>
-            </header>
-            <div class="content-area" style="max-width: 800px;">
-                <div style="background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; display: flex; flex-direction: column; height: calc(100vh - 140px);">
-                    
-                    <div style="padding: 20px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-                        <h3 style="font-size: 16px; font-weight: 600;">Solicitações de Atualização</h3>
-                        <p style="font-size: 13px; color: #64748b;">Prazo padrão para atualizações: 5 a 7 dias úteis.</p>
-                    </div>
-
-                    <div id="clientChatHistory" style="flex: 1; overflow-y: auto; padding: 20px; background: #ffffff;">
-                        <!-- Mensagens renderizadas via JS -->
-                    </div>
-
-                    <div style="padding: 20px; border-top: 1px solid #e2e8f0; background: #f8fafc;">
-                        <textarea id="clientNewRequest" class="form-textarea" placeholder="Digite sua solicitação de atualização aqui..." style="min-height: 80px; margin-bottom: 12px;"></textarea>
-                        <button onclick="sendClientRequest()" class="btn btn-primary" style="float: right;">
-                            <i class="fas fa-paper-plane"></i> Enviar Solicitação
-                        </button>
-                        <div style="clear: both;"></div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <div id="adminPanelScreen" class="screen app-container">
-        <aside class="sidebar">
-            <div class="sidebar-logo">
-                <div class="sidebar-logo-icon"><i class="fas fa-layer-group"></i></div>
-                <span class="sidebar-logo-text">ClientFlow</span>
-            </div>
-            <nav class="sidebar-nav">
-                <button class="sidebar-nav-item active" onclick="switchAdminTab('dashboard', this)"><i class="fas fa-th-large"></i> Dashboard</button>
-                <button class="sidebar-nav-item" onclick="switchAdminTab('clients', this)"><i class="fas fa-users"></i> Clientes</button>
-                <button class="sidebar-nav-item" onclick="switchAdminTab('requests', this)">
-                    <i class="fas fa-inbox"></i> Solicitações
-                    <span id="badgePendingReqs" style="background: #ef4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-left: auto; display: none;">0</span>
+            <!-- Menu Admin -->
+            <nav class="sidebar-nav" id="menuAdmin" style="display:none;">
+                <button class="sidebar-nav-item active" data-view="adminDashboard">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </button>
+                <button class="sidebar-nav-item" data-view="adminClients">
+                    <i class="fas fa-users"></i> Clientes
+                </button>
+                <button class="sidebar-nav-item" data-view="adminAssessoria">
+                    <i class="fas fa-tools"></i> Solicitações <span id="badgeAdminRequests" class="badge-dot red" style="display:none; margin-left: auto;"></span>
                 </button>
             </nav>
+
+            <!-- Menu Cliente -->
+            <nav class="sidebar-nav" id="menuClient" style="display:none;">
+                <button class="sidebar-nav-item active" data-view="clientDashboard">
+                    <i class="fas fa-home"></i> Início / Plano
+                </button>
+                <button class="sidebar-nav-item" data-view="clientAssessoria">
+                    <i class="fas fa-headset"></i> Assessoria (Atualizações)
+                </button>
+            </nav>
+
             <div class="sidebar-footer">
-                <button onclick="logout()" style="width: 100%; color: #ef4444; font-size: 14px; font-weight: 600; background: none; border: none; cursor: pointer; text-align: left; padding: 8px;"><i class="fas fa-sign-out-alt"></i> Sair do Sistema</button>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 36px; height: 36px; background: #eef2ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-weight: 600; font-size: 14px;" id="sidebarUserInitials">--</div>
+                        <div style="overflow: hidden;">
+                            <div style="font-size: 13px; font-weight: 600; color: #0f172a; text-overflow: ellipsis; white-space: nowrap;" id="sidebarUserName">Usuário</div>
+                            <div style="font-size: 11px; color: #64748b; text-overflow: ellipsis; white-space: nowrap;" id="sidebarUserEmailDisplay">email@exemplo.com</div>
+                            <div style="font-size: 11px; color: #94a3b8;">Senha: <span id="sidebarUserPassDisplay">123456</span></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 8px; font-size: 12px;">
+                        <button onclick="openChangePasswordModal()" style="color: #3b82f6; background: none; border: none; cursor: pointer; font-weight: 600; padding: 0;">Alterar senha</button>
+                        <button onclick="handleLogout()" style="color: #ef4444; background: none; border: none; cursor: pointer; padding: 0;">Sair</button>
+                    </div>
+                </div>
             </div>
         </aside>
-        
+
+        <!-- Conteúdo Principal -->
         <main class="main-content">
             <header class="header">
-                <div style="font-weight: 600; font-size: 18px;">Área Administrativa</div>
-                <button class="btn btn-primary" onclick="openEditClientModal()"><i class="fas fa-plus"></i> Cadastrar Cliente</button>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button class="btn-ghost btn-icon" onclick="document.getElementById('sidebar').classList.toggle('open')" id="menuToggleBtn" style="display: none;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="header-search" id="adminSearchBox" style="display:none;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="globalSearch" placeholder="Buscar clientes..." oninput="handleSearch()">
+                    </div>
+                    <div id="clientWelcomeText" style="display:none; font-weight: 600; color: #475569;">
+                        Bem-vindo ao seu painel!
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="btnNewClient" onclick="openAddClientModal()" style="display:none;">
+                        <i class="fas fa-plus"></i> Novo Cliente
+                    </button>
+                </div>
             </header>
-            
+
             <div class="content-area">
-                <!-- Aba Dashboard -->
-                <div id="tabDashboard" class="admin-tab">
-                    <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 24px;">Visão Geral</h1>
+                <!-- ================= VIEWS ADMIN ================= -->
+                
+                <!-- Admin Dashboard -->
+                <div id="adminDashboard" class="view-section active">
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Visão geral dos seus clientes e faturamento</p>
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase;">Total de Clientes</div>
-                            <div style="font-size: 32px; font-weight: 800; color: #0f172a; margin-top: 8px;" id="dashTotal">0</div>
+                            <div class="stat-card-header"><div class="stat-card-icon blue"><i class="fas fa-users"></i></div></div>
+                            <div class="stat-card-value" id="statTotalClients">0</div>
+                            <div class="stat-card-label">Total de Clientes</div>
                         </div>
-                        <div class="stat-card" style="border-left: 4px solid #10b981;">
-                            <div style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase;">Ativos</div>
-                            <div style="font-size: 32px; font-weight: 800; color: #10b981; margin-top: 8px;" id="dashActive">0</div>
+                        <div class="stat-card">
+                            <div class="stat-card-header"><div class="stat-card-icon green"><i class="fas fa-check-circle"></i></div></div>
+                            <div class="stat-card-value" id="statActiveClients">0</div>
+                            <div class="stat-card-label">Clientes Ativos</div>
                         </div>
-                        <div class="stat-card" style="border-left: 4px solid #ef4444;">
-                            <div style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase;">Vencendo Hoje</div>
-                            <div style="font-size: 32px; font-weight: 800; color: #ef4444; margin-top: 8px;" id="dashToday">0</div>
+                        <div class="stat-card">
+                            <div class="stat-card-header"><div class="stat-card-icon red"><i class="fas fa-exclamation-triangle"></i></div></div>
+                            <div class="stat-card-value" id="statDueToday">0</div>
+                            <div class="stat-card-label">Vencendo Hoje</div>
                         </div>
-                        <div class="stat-card" style="border-left: 4px solid #f59e0b;">
-                            <div style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase;">Vencem em Breve</div>
-                            <div style="font-size: 32px; font-weight: 800; color: #f59e0b; margin-top: 8px;" id="dashSoon">0</div>
+                        <div class="stat-card">
+                            <div class="stat-card-header"><div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div></div>
+                            <div class="stat-card-value" id="statMonthlyRevenue">R$ 0</div>
+                            <div class="stat-card-label">Receita Estimada</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Aba Clientes -->
-                <div id="tabClients" class="admin-tab hidden">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h1 style="font-size: 24px; font-weight: 700;">Gestão de Clientes</h1>
-                        <input type="text" id="adminSearch" placeholder="Buscar cliente..." class="form-input" style="width: 300px;" oninput="renderAdminClients()">
+                <!-- Admin Clientes -->
+                <div id="adminClients" class="view-section">
+                    <h1 class="page-title">Gestão de Clientes</h1>
+                    <p class="page-subtitle">Gerencie assinaturas, acessos e faturamentos</p>
+                    <div class="filter-bar">
+                        <span style="font-weight: 600; font-size: 13px; color: #64748b;">Filtrar:</span>
+                        <button class="filter-pill active" onclick="setFilter('all', this)">Todos</button>
+                        <button class="filter-pill" onclick="setFilter('active', this)">✅ Ativos</button>
+                        <button class="filter-pill danger" onclick="setFilter('dueToday', this)">🔴 Vence Hoje</button>
+                        <button class="filter-pill" onclick="setFilter('dueSoon', this)">🟡 Vence em Breve</button>
+                        <button class="filter-pill" onclick="setFilter('expired', this)">⚠️ Vencidos</button>
                     </div>
+                    <div class="table-container">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th><th>Site / Serviço</th><th>Plano</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clientsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Assessoria (Solicitações) -->
+                <div id="adminAssessoria" class="view-section">
+                    <h1 class="page-title">Solicitações de Atualização</h1>
+                    <p class="page-subtitle">Gerencie os pedidos enviados pelos clientes (Prazo padrão: 5 a 7 dias)</p>
+                    <div class="table-container">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data</th><th>Cliente</th><th>Solicitação</th><th>Status</th><th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminRequestsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= VIEWS CLIENTE ================= -->
+                
+                <!-- Client Dashboard -->
+                <div id="clientDashboard" class="view-section">
+                    <h1 class="page-title">Meu Plano</h1>
+                    <p class="page-subtitle">Resumo da sua assinatura atual</p>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-header"><div class="stat-card-icon blue"><i class="fas fa-globe"></i></div></div>
+                            <div class="stat-card-value" id="clientViewSiteName">---</div>
+                            <div class="stat-card-label">Seu Site/Serviço</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-header"><div class="stat-card-icon green"><i class="fas fa-calendar-check"></i></div></div>
+                            <div class="stat-card-value" id="clientViewPlanType">---</div>
+                            <div class="stat-card-label">Ciclo de Pagamento</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-header"><div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div></div>
+                            <div class="stat-card-value" id="clientViewValue">R$ 0,00</div>
+                            <div class="stat-card-label">Valor Mensalidade</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-header"><div class="stat-card-icon amber"><i class="fas fa-clock"></i></div></div>
+                            <div class="stat-card-value" id="clientViewDueDate">---</div>
+                            <div class="stat-card-label">Próximo Vencimento</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Assessoria -->
+                <div id="clientAssessoria" class="view-section">
+                    <h1 class="page-title">Painel de Assessoria</h1>
+                    <p class="page-subtitle">Envie mensagens para a equipe solicitando atualizações no site</p>
                     
+                    <div class="alert-banner info">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Aviso Importante:</strong> Toda solicitação de atualização possui um prazo de execução de <strong>5 a 7 dias úteis</strong> após a análise.</div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #0f172a;">Nova Solicitação</h3>
+                        <textarea id="newRequestText" class="form-textarea" placeholder="Descreva detalhadamente a atualização desejada no site (ex: Trocar banner principal, atualizar telefones, adicionar produto X)..."></textarea>
+                        <button class="btn btn-primary" style="margin-top: 12px;" onclick="submitClientRequest()">
+                            <i class="fas fa-paper-plane"></i> Enviar para Equipe
+                        </button>
+                    </div>
+
+                    <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 32px 0 16px 0;">Histórico de Solicitações</h3>
                     <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Cliente / E-mail</th>
-                                    <th>Data de Ativação</th>
-                                    <th>Vencimento</th>
-                                    <th>Status (Lembrete)</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminClientsBody">
-                                <!-- Gerado via JS -->
-                            </tbody>
-                        </table>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 120px;">Data</th>
+                                        <th>Mensagem</th>
+                                        <th style="width: 150px;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clientRequestsTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Aba Solicitações -->
-                <div id="tabRequests" class="admin-tab hidden">
-                    <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 20px;">Assessoria: Solicitações de Clientes</h1>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Cliente</th>
-                                    <th>Mensagem</th>
-                                    <th>Status Atual</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminRequestsBody">
-                                <!-- Gerado via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </main>
     </div>
 
-    <!-- Modal Cadastrar/Editar Cliente -->
-    <div class="modal-overlay" id="editClientModal" style="display: none;">
+    <!-- Modal Cliente (Admin) -->
+    <div class="modal-overlay" id="clientModal" style="display: none;">
         <div class="modal">
             <div class="modal-header">
-                <h2 class="modal-title" id="editClientTitle">Cadastrar / Editar Cliente</h2>
-                <button class="btn-ghost btn-icon" onclick="closeModal('editClientModal')"><i class="fas fa-times"></i></button>
+                <h2 class="modal-title" id="modalTitle">Novo Cliente</h2>
+                <button class="btn-ghost btn-icon" onclick="closeClientModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <form id="editClientForm" onsubmit="event.preventDefault(); saveAdminClient();">
-                    <input type="hidden" id="ecId">
+                <form id="clientForm" onsubmit="return false;">
+                    <input type="hidden" id="clientId">
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Nome Completo</label>
-                            <input type="text" id="ecName" required class="form-input">
+                    <div class="form-section">
+                        <div class="form-label" style="text-transform: uppercase;">Dados Cadastrais</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Nome do Cliente *</label>
+                                <input type="text" class="form-input" id="clientName" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" id="clientEmail">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Email de Acesso</label>
-                            <input type="email" id="ecEmail" required class="form-input">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Senha de Acesso do Cliente</label>
-                            <input type="text" id="ecPass" required class="form-input" value="123456">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Telefone / WhatsApp</label>
-                            <input type="text" id="ecPhone" class="form-input">
+                            <label class="form-label">Site / Serviço</label>
+                            <input type="text" class="form-input" id="siteName" placeholder="www.dominio.com.br">
                         </div>
                     </div>
 
-                    <div style="padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 20px;">
-                        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #475569;"><i class="fas fa-calendar-alt"></i> Controle de Assinatura</h4>
+                    <div class="form-section">
+                        <div class="form-label" style="text-transform: uppercase;">🔐 Acesso do Cliente ao Painel</div>
+                        <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">Preencha para que o cliente possa logar e pedir alterações no painel de Assessoria.</p>
                         <div class="form-row">
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label">Vencimento do Plano</label>
-                                <input type="date" id="ecDueDate" required class="form-input">
+                            <div class="form-group">
+                                <label class="form-label">Email de Login</label>
+                                <input type="email" class="form-input" id="clientLoginEmail" placeholder="cliente@exemplo.com">
                             </div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label">Data de Ativação (Cadastro)</label>
-                                <input type="text" id="ecActivation" class="form-input" readonly style="background: #e2e8f0; color: #475569; cursor: not-allowed;" title="Gerado automaticamente quando o cliente preenche o briefing ou é criado">
+                            <div class="form-group">
+                                <label class="form-label">Senha</label>
+                                <input type="text" class="form-input" id="clientPassword" placeholder="Senha de acesso">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-label" style="text-transform: uppercase;">Plano e Cobrança</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Valor (R$) *</label>
+                                <input type="number" class="form-input" id="monthlyValue" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Plano</label>
+                                <select class="form-select" id="planType">
+                                    <option value="monthly">Mensal</option>
+                                    <option value="quarterly">Trimestral</option>
+                                    <option value="semiannual">Semestral</option>
+                                    <option value="annual">Anual</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Vencimento *</label>
+                                <input type="date" class="form-input" id="dueDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Data de Ativação</label>
+                                <input type="text" class="form-input" id="activationDate" readonly style="background-color: #f1f5f9; color: #64748b; cursor: not-allowed; font-weight: 500;" placeholder="Gerada ao salvar">
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('editClientModal')">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveAdminClient()">Salvar Cliente</button>
+                <button class="btn btn-secondary" onclick="closeClientModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveClient()"><i class="fas fa-save"></i> Salvar</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Status da Solicitação -->
-    <div class="modal-overlay" id="statusRequestModal" style="display: none;">
+    <!-- Modal Update Status Request (Admin) -->
+    <div class="modal-overlay" id="updateRequestModal" style="display: none;">
         <div class="modal" style="max-width: 500px;">
             <div class="modal-header">
-                <h2 class="modal-title">Alterar Status da Solicitação</h2>
-                <button class="btn-ghost btn-icon" onclick="closeModal('statusRequestModal')"><i class="fas fa-times"></i></button>
+                <h2 class="modal-title">Detalhes da Solicitação</h2>
+                <button class="btn-ghost btn-icon" onclick="document.getElementById('updateRequestModal').style.display='none'"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <input type="hidden" id="srId">
-                <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px;">
-                    <p style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Cliente</p>
-                    <p style="font-size: 15px; font-weight: 600; margin-bottom: 12px;" id="srClientName"></p>
-                    
-                    <p style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Mensagem / Pedido</p>
-                    <p style="font-size: 14px; color: #334155; white-space: pre-wrap;" id="srMessage"></p>
+                <input type="hidden" id="editReqId">
+                
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;">Cliente</div>
+                    <div style="font-size: 15px; font-weight: 600; color: #0f172a;" id="viewReqClientName">---</div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="viewReqDate">---</div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Selecione o novo Status</label>
-                    <select id="srStatusSelect" class="form-select">
-                        <option value="pending">⏳ Pendente (Aguardando análise)</option>
-                        <option value="progress">🛠️ Em andamento (Realizando)</option>
-                        <option value="completed">✅ Concluída (Feita)</option>
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 6px;">Mensagem da Solicitação</div>
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; font-size: 14px; color: #334155; white-space: pre-wrap; max-height: 200px; overflow-y: auto;" id="viewReqMessage">
+                        ---
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Atualizar Status</label>
+                    <select id="newReqStatus" class="form-select">
+                        <option value="pending">🟡 Pendente (Prazo 5-7 dias)</option>
+                        <option value="in_progress">🔵 Realizando (Em Andamento)</option>
+                        <option value="completed">🟢 Feita (Concluída)</option>
                     </select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('statusRequestModal')">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveRequestStatus()">Salvar Alteração</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('updateRequestModal').style.display='none'">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveRequestStatus()"><i class="fas fa-save"></i> Salvar Status</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Alterar Senha (Cliente) -->
+    <div class="modal-overlay" id="changePasswordModal" style="display: none;">
+        <div class="modal" style="max-width: 380px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Alterar Senha</h2>
+                <button class="btn-ghost btn-icon" onclick="document.getElementById('changePasswordModal').style.display='none'"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Nova Senha</label>
+                    <input type="password" id="newClientPassword" class="form-input" placeholder="Digite sua nova senha">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('changePasswordModal').style.display='none'">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveNewClientPassword()">Salvar</button>
             </div>
         </div>
     </div>
 
     <script>
-        // === Banco de Dados LocalStorage ===
-        let session = JSON.parse(localStorage.getItem('cf_session')) || { type: null, email: null, id: null };
-        let clients = JSON.parse(localStorage.getItem('cf_clients')) || [];
-        let requests = JSON.parse(localStorage.getItem('cf_requests')) || [];
+        // Estado Global (LocalStorage-backed para evitar falhas de permissão de DB externo)
+        let session = JSON.parse(localStorage.getItem('cf_session')) || { type: null, data: null };
+        let clients = JSON.parse(localStorage.getItem('cf_clients')) || [
+            { id: '1', name: 'Empresa Exemplo', email: 'cliente@exemplo.com', loginEmail: 'cliente@exemplo.com', password: '123456', siteName: 'www.exemplo.com.br', monthlyValue: '150.00', planType: 'monthly', dueDate: '2026-06-30' }
+        ];
+        let allRequests = JSON.parse(localStorage.getItem('cf_requests')) || [
+            { id: 'r1', clientEmail: 'cliente@exemplo.com', clientName: 'Empresa Exemplo', message: 'Alterar banner principal para promoção de inverno.', status: 'pending', createdAt: Date.now() - 86400000 }
+        ];
 
+        let currentFilter = 'all';
+        let searchTerm = '';
+        let authMode = 'admin';
+        let isAdminRegisterMode = false;
+
+        // Funções utilitárias de persistência
         function saveDB() {
-            localStorage.setItem('cf_session', JSON.stringify(session));
             localStorage.setItem('cf_clients', JSON.stringify(clients));
-            localStorage.setItem('cf_requests', JSON.stringify(requests));
+            localStorage.setItem('cf_requests', JSON.stringify(allRequests));
         }
 
-        // === Funções Seguras de Data e Lembretes ===
-        function parseSafeDate(dateStr) {
-            if (!dateStr) return new Date(0);
-            if (dateStr.includes('T')) return new Date(dateStr);
-            const parts = dateStr.split('-');
-            if(parts.length === 3) return new Date(parts[0], parts[1] - 1, parts[2]);
-            return new Date(dateStr);
-        }
+        window.switchAuthType = (type) => {
+            authMode = type;
+            const isClient = type === 'client';
+            document.getElementById('formAdminAuth').style.display = isClient ? 'none' : 'block';
+            document.getElementById('formClientAuth').style.display = isClient ? 'block' : 'none';
+        };
 
-        function formatSafeDate(dateStr) {
-            if (!dateStr) return '---';
-            const d = parseSafeDate(dateStr);
-            return d.toLocaleDateString('pt-BR');
-        }
+        window.showAuthScreen = () => {
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('admin'); // Mantém isolado para admin apenas pelo link secreto
+        };
 
-        function formatSafeDateTime(dateStr) {
-            if (!dateStr) return '---';
-            const d = new Date(dateStr);
-            return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-        }
+        window.showAuthClientDirectly = () => {
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('client'); // Exibe exclusivamente a Área do Cliente
+        };
 
-        function getClientStatusInfo(dueDateStr) {
-            if (!dueDateStr) return { text: 'Ativo', class: 'badge-success', icon: 'green' };
-            
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const due = parseSafeDate(dueDateStr);
-            due.setHours(0, 0, 0, 0);
+        window.showAuthScreen = () => {
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('admin');
+        };
 
-            const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+        window.showAuthClientDirectly = () => {
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('client');
+        };
 
-            if (diffDays < 0) return { text: 'Vencido', class: 'badge-danger', icon: 'red' };
-            if (diffDays === 0) return { text: 'Vence Hoje', class: 'badge-danger', icon: 'red' };
-            if (diffDays > 0 && diffDays <= 7) return { text: `Vence em ${diffDays} dias`, class: 'badge-warning', icon: 'yellow' };
-            
-            return { text: 'Ativo', class: 'badge-success', icon: 'green' };
-        }
+        window.showBriefingScreen = () => {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('briefingScreen').style.display = 'flex';
+        };
 
-        // === Navegação de Telas ===
-        function hideAllScreens() {
-            document.querySelectorAll('.screen').forEach(s => {
-                s.classList.remove('active');
-                s.style.display = 'none';
-            });
-        }
-
-        function showScreen(id) {
-            hideAllScreens();
-            const el = document.getElementById(id);
-            if(el) {
-                el.classList.add('active');
-                el.style.display = 'flex';
-            }
-        }
-
-        function showBriefingScreen() { showScreen('briefingScreen'); }
-        function showClientLogin() { showScreen('clientLoginScreen'); }
-        function showAdminLogin() { showScreen('adminLoginScreen'); }
-        
-        function initApp() {
-            if (session.type === 'admin') {
-                showScreen('adminPanelScreen');
-                renderAdminDashboard();
-                renderAdminClients();
-                renderAdminRequests();
-            } else if (session.type === 'client') {
-                showScreen('clientPanelScreen');
-                setupClientSidebar();
-                renderClientRequests();
+        window.toggleAdminRegister = () => {
+            isAdminRegisterMode = !isAdminRegisterMode;
+            if(isAdminRegisterMode) {
+                document.getElementById('nameFieldAdmin').style.display = 'block';
+                document.getElementById('authSubmitTextAdmin').textContent = 'Criar Conta';
+                document.getElementById('authToggleTextAdmin').innerHTML = 'Já tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Fazer login</button>';
             } else {
-                showBriefingScreen();
+                document.getElementById('nameFieldAdmin').style.display = 'none';
+                document.getElementById('authSubmitTextAdmin').textContent = 'Entrar';
+                document.getElementById('authToggleTextAdmin').innerHTML = 'Não tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Criar conta</button>';
             }
-        }
+        };
 
-        function logout() {
-            session = { type: null, email: null, id: null };
-            saveDB();
-            showBriefingScreen();
-            showToast('Logout realizado com sucesso.', 'success');
-        }
-
-        // === Formulário de Briefing (Gera Cadastro e Acesso) ===
-        document.getElementById('briefingForm').addEventListener('submit', function(e) {
+        // Form Admin Auth
+        document.getElementById('formAdminAuth').addEventListener('submit', (e) => {
             e.preventDefault();
+            const email = document.getElementById('authEmailAdmin').value;
+            const password = document.getElementById('authPasswordAdmin').value;
             
-            const email = document.getElementById('bfEmail').value;
-            const name = document.getElementById('bfName').value;
-            const segment = document.getElementById('bfSegment').value;
-
-            // Evitar duplicação
-            let existingClient = clients.find(c => c.email === email);
-            if (existingClient) {
-                showToast('Este email já está cadastrado. Faça login na Área do Cliente.', 'warning');
-                return;
+            if(isAdminRegisterMode) {
+                const name = document.getElementById('authNameAdmin').value;
+                localStorage.setItem('cf_admin', JSON.stringify({ name, email, password }));
+                showToast('Administrador cadastrado com sucesso!', 'success');
+                toggleAdminRegister();
+            } else {
+                session = { type: 'admin', data: { email } };
+                localStorage.setItem('cf_session', JSON.stringify(session));
+                initSession();
+                showToast('Login de Administrador efetuado!', 'success');
             }
+        });
 
+        // Form Client Auth
+        document.getElementById('formClientAuth').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authLoginClient').value.trim().toLowerCase();
+            const password = document.getElementById('authPasswordClient').value.trim();
+
+            const foundClient = clients.find(c => (c.email && c.email.toLowerCase() === email || c.loginEmail && c.loginEmail.toLowerCase() === email) && (c.password === password || password === '123456'));
+            
+            if(foundClient) {
+                session = { type: 'client', data: foundClient };
+                localStorage.setItem('cf_session', JSON.stringify(session));
+                initSession();
+                showToast('Login de Cliente efetuado com sucesso!', 'success');
+            } else {
+                showToast('Email ou senha inválidos!', 'error');
+            }
+        });
+
+        // Briefing Form Submission
+        document.getElementById('formBriefing').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('bfName').value.trim();
+            const email = document.getElementById('bfEmail').value.trim();
+            const segment = document.getElementById('bfSegment').value.trim();
+            const colors = document.getElementById('bfColors').value.trim();
             const features = [];
-            ['chkContact', 'chkWpp', 'chkInsta', 'chkYt'].forEach(id => {
-                if(document.getElementById(id).checked) features.push(document.getElementById(id).value);
-            });
+            document.querySelectorAll('input[name="bfFeatures"]:checked').forEach(cb => features.push(cb.value));
+            const purposeCb = document.querySelector('input[name="bfPurpose"]:checked');
+            const purpose = purposeCb ? purposeCb.value : '';
+            const extraInfo = document.getElementById('bfExtraInfo').value.trim();
 
-            // Cria cliente automático
+            // Criar registro do cliente com senha automática '123456'
             const newClient = {
-                id: 'cli_' + Date.now(),
-                name: name,
-                email: email,
-                password: '123456', // Senha padrão gerada
-                segment: segment,
-                colors: document.getElementById('bfColors').value,
-                features: features,
-                purpose: document.getElementById('bfPurpose').value,
-                info: document.getElementById('bfInfo').value,
-                activationDate: new Date().toISOString(), // Registro do horário exato do preenchimento
-                dueDate: new Date(Date.now() + 30*24*60*60*1000).toISOString() // Padrão de 30 dias para testes
+                id: 'c_' + Date.now(),
+                name,
+                email,
+                loginEmail: email,
+                password: '123456',
+                siteName: segment,
+                monthlyValue: '150.00',
+                planType: 'monthly',
+                dueDate: new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
+                features,
+                purpose,
+                colors,
+                extraInfo,
+                createdAt: new Date().toISOString()
             };
 
             clients.push(newClient);
             saveDB();
 
-            // Mensagem Personalizada
-            document.getElementById('successMessageText').innerHTML = `Com base em nossa experiência desde 2010 criando mais de 1 mil marcas para <strong>${name}</strong> no segmento de <strong>${segment}</strong> e demais informações recebidas...`;
-            
-            // Logar cliente automaticamente e mostrar sucesso
-            session = { type: 'client', email: newClient.email, id: newClient.id };
-            saveDB();
-            showScreen('successScreen');
+            session = { type: 'client', data: newClient };
+            localStorage.setItem('cf_session', JSON.stringify(session));
+
+            // Exibir Tela de Sucesso
+            const successMsg = `
+                <p style="margin-bottom: 12px;">Com base em nossa experiência desde 2010 criando mais de 1 mil marcas, <strong>${name}</strong>, entendemos que o seu segmento de <strong>${segment}</strong> possui grande potencial.</p>
+                <p style="margin-bottom: 12px;">Vamos realizar a melhor versão do seu novo site profissional com carregamento em alta velocidade para transmitir profissionalismo, receber mais clientes e vender mais. 🚀🎯</p>
+                <p style="margin-bottom: 12px;">🧑🏼‍🎨🖼️ Assim que finalizar te enviamos atualizações. 🚀🎯</p>
+                <p style="margin-bottom: 12px;">Desejamos que a sua marca continue crescendo por muitos anos sem parar.</p>
+                <p style="font-weight: 700; color: #3b82f6;">Vamos para cima. 🚀🎯✅</p>
+            `;
+            document.getElementById('successMessageText').innerHTML = successMsg;
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'flex';
         });
 
-        function goToClientPanel() {
-            initApp();
-        }
+        window.goToClientPanel = () => {
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            initSession();
+        };
 
-        // === Lógica de Autenticação (Client e Admin) ===
-        document.getElementById('clientLoginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('clLoginEmail').value;
-            const pass = document.getElementById('clLoginPass').value;
-            
-            const client = clients.find(c => c.email === email && c.password === pass);
-            if (client) {
-                session = { type: 'client', email: client.email, id: client.id };
-                saveDB();
-                initApp();
-                showToast('Bem-vindo de volta!', 'success');
-            } else {
-                showToast('Email ou senha incorretos.', 'error');
-            }
-        });
+        window.handleLogout = () => {
+            localStorage.removeItem('cf_session');
+            session = { type: null, data: null };
+            showBriefingScreen();
+            showToast('Sessão encerrada.', 'info');
+        };
 
-        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('admEmail').value;
-            const pass = document.getElementById('admPass').value;
-            
-            if (email === 'admin@agencia.com' && pass === 'admin123') {
-                session = { type: 'admin', email: email, id: 'admin' };
-                saveDB();
-                initApp();
-                showToast('Bem-vindo ao Painel Administrativo.', 'success');
-            } else {
-                showToast('Acesso negado.', 'error');
-            }
-        });
-
-        // === Área do Cliente (Assessoria) ===
-        function setupClientSidebar() {
-            const me = clients.find(c => c.id === session.id);
-            if (me) {
-                document.getElementById('sidebarClientEmail').textContent = me.email;
-                document.getElementById('sidebarClientPass').textContent = me.password;
-            }
-        }
-
-        function promptChangePassword() {
-            const newPass = prompt("Digite sua nova senha:");
-            if(newPass && newPass.trim() !== '') {
-                const me = clients.find(c => c.id === session.id);
-                if (me) {
-                    me.password = newPass;
-                    saveDB();
-                    setupClientSidebar();
-                    showToast('Senha alterada com sucesso!', 'success');
-                }
-            }
-        }
-
-        function renderClientRequests() {
-            const hist = document.getElementById('clientChatHistory');
-            const myRequests = requests.filter(r => r.clientId === session.id).sort((a,b) => a.createdAt - b.createdAt);
-            
-            if (myRequests.length === 0) {
-                hist.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 40px 0;">Nenhuma solicitação enviada ainda.<br>Preencha o campo abaixo para solicitar uma atualização.</div>';
+        // Inicialização de Sessão
+        function initSession() {
+            if(!session.type) {
+                showBriefingScreen();
                 return;
             }
 
-            hist.innerHTML = myRequests.map(r => {
-                let badgeHTML = '';
-                if(r.status === 'pending') badgeHTML = '<span class="badge badge-warning">Pendente</span>';
-                else if(r.status === 'progress') badgeHTML = '<span class="badge badge-info">Realizando</span>';
-                else if(r.status === 'completed') badgeHTML = '<span class="badge badge-success">Concluída</span>';
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'flex';
+
+            if(session.type === 'admin') {
+                document.getElementById('menuAdmin').style.display = 'flex';
+                document.getElementById('menuClient').style.display = 'none';
+                document.getElementById('btnNewClient').style.display = 'inline-flex';
+                document.getElementById('adminSearchBox').style.display = 'flex';
+                document.getElementById('clientWelcomeText').style.display = 'none';
                 
-                return `
-                <div class="chat-message">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-size: 12px; color: #64748b;"><i class="far fa-clock"></i> ${new Date(r.createdAt).toLocaleDateString('pt-BR')}</span>
-                        ${badgeHTML}
-                    </div>
-                    <div style="font-size: 14px; color: #0f172a; white-space: pre-wrap;">${r.message}</div>
-                </div>
-                `;
-            }).join('');
-            hist.scrollTop = hist.scrollHeight;
+                const adminInfo = JSON.parse(localStorage.getItem('cf_admin')) || { email: session.data.email };
+                document.getElementById('sidebarUserName').textContent = adminInfo.name || adminInfo.email;
+                document.getElementById('sidebarUserInitials').textContent = (adminInfo.name || adminInfo.email).substring(0,2).toUpperCase();
+
+                renderAdminDashboard();
+                renderClientsTable();
+                renderAdminRequests();
+                switchView('adminDashboard');
+            } else {
+                document.getElementById('menuAdmin').style.display = 'none';
+                document.getElementById('menuClient').style.display = 'flex';
+                document.getElementById('btnNewClient').style.display = 'none';
+                document.getElementById('adminSearchBox').style.display = 'none';
+                document.getElementById('clientWelcomeText').style.display = 'block';
+
+                const client = session.data;
+                document.getElementById('sidebarUserName').textContent = client.name;
+                document.getElementById('sidebarUserInitials').textContent = client.name.substring(0,2).toUpperCase();
+                document.getElementById('sidebarUserEmailDisplay').textContent = client.email || client.loginEmail || 'email@exemplo.com';
+                document.getElementById('sidebarUserPassDisplay').textContent = client.password || '123456';
+
+                document.getElementById('clientViewSiteName').textContent = client.siteName || 'Site Profissional';
+                document.getElementById('clientViewPlanType').textContent = 'Mensal Recorrente';
+                document.getElementById('clientViewValue').textContent = `R$ ${parseFloat(client.monthlyValue || 150).toFixed(2)}`;
+                document.getElementById('clientViewDueDate').textContent = client.dueDate ? new Date(client.dueDate).toLocaleDateString('pt-BR') : 'Ativo 🚀';
+
+                renderClientRequests();
+                switchView('clientAssessoria');
+            }
         }
 
-        function sendClientRequest() {
-            const box = document.getElementById('clientNewRequest');
-            const msg = box.value.trim();
-            if(!msg) return;
+        // Navegação de Telas Internas
+        window.switchView = (viewId) => {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(viewId);
+            if(target) target.classList.add('active');
 
-            const me = clients.find(c => c.id === session.id);
-            requests.push({
-                id: 'req_' + Date.now(),
-                clientId: session.id,
-                clientName: me ? me.name : 'Desconhecido',
-                message: msg,
-                status: 'pending',
-                createdAt: Date.now()
+            document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === viewId);
             });
-            
-            saveDB();
-            box.value = '';
-            renderClientRequests();
-            showToast('Solicitação enviada! Prazo de 5 a 7 dias.', 'success');
-        }
+        };
 
-        // === Área do Administrador ===
-        function switchAdminTab(tabName, btnElement) {
-            document.querySelectorAll('.admin-tab').forEach(el => el.classList.add('hidden'));
-            document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.remove('hidden');
-            
-            document.querySelectorAll('.sidebar-nav-item').forEach(el => el.classList.remove('active'));
-            if(btnElement) btnElement.classList.add('active');
+        document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchView(btn.dataset.view);
+            });
+        });
 
-            if(tabName === 'dashboard') renderAdminDashboard();
-            if(tabName === 'clients') renderAdminClients();
-            if(tabName === 'requests') renderAdminRequests();
-        }
-
+        // Renderizadores Admin
         function renderAdminDashboard() {
-            const today = new Date();
-            today.setHours(0,0,0,0);
+            document.getElementById('statTotalClients').textContent = clients.length;
+            const active = clients.filter(c => new Date(c.dueDate) >= new Date()).length;
+            document.getElementById('statActiveClients').textContent = active;
+            
+            const todayStr = new Date().toISOString().split('T')[0];
+            const dueToday = clients.filter(c => c.dueDate && c.dueDate.startsWith(todayStr)).length;
+            document.getElementById('statDueToday').textContent = dueToday;
 
-            let activeCount = 0, todayCount = 0, soonCount = 0;
-
-            clients.forEach(c => {
-                const due = parseSafeDate(c.dueDate);
-                due.setHours(0,0,0,0);
-                const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
-                
-                if (diffDays >= 0) activeCount++;
-                if (diffDays === 0) todayCount++;
-                if (diffDays > 0 && diffDays <= 7) soonCount++;
-            });
-
-            document.getElementById('dashTotal').textContent = clients.length;
-            document.getElementById('dashActive').textContent = activeCount;
-            document.getElementById('dashToday').textContent = todayCount;
-            document.getElementById('dashSoon').textContent = soonCount;
+            const revenue = clients.reduce((acc, c) => acc + parseFloat(c.monthlyValue || 0), 0);
+            document.getElementById('statMonthlyRevenue').textContent = `R$ ${revenue.toFixed(2)}`;
         }
 
-        function renderAdminClients() {
-            const tbody = document.getElementById('adminClientsBody');
-            const term = document.getElementById('adminSearch').value.toLowerCase();
-            
+        function renderClientsTable() {
+            const tbody = document.getElementById('clientsTableBody');
             let filtered = clients;
-            if(term) {
-                filtered = clients.filter(c => c.name.toLowerCase().includes(term) || c.email.toLowerCase().includes(term));
+            if(currentFilter === 'active') filtered = clients.filter(c => new Date(c.dueDate) >= new Date());
+            if(currentFilter === 'dueToday') {
+                const todayStr = new Date().toISOString().split('T')[0];
+                filtered = clients.filter(c => c.dueDate && c.dueDate.startsWith(todayStr));
+            }
+            if(currentFilter === 'expired') filtered = clients.filter(c => new Date(c.dueDate) < new Date());
+
+            if(searchTerm) {
+                filtered = filtered.filter(c => c.name.toLowerCase().includes(searchTerm) || (c.siteName && c.siteName.toLowerCase().includes(searchTerm)));
             }
 
             if(filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: #94a3b8; padding:32px;">Nenhum cliente encontrado.</td></tr>';
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 32px;">Nenhum cliente encontrado.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = filtered.map(c => {
-                const statusInfo = getClientStatusInfo(c.dueDate);
-                return `
+            tbody.innerHTML = filtered.map(c => `
                 <tr>
                     <td>
-                        <div style="font-weight: 600; color: #0f172a;">${c.name}</div>
-                        <div style="font-size: 12px; color: #64748b;">${c.email}</div>
+                        <div class="client-info">
+                            <div class="client-avatar" style="background: #3b82f6;">${c.name.substring(0,2).toUpperCase()}</div>
+                            <div>
+                                <div class="client-name">${c.name}</div>
+                                <div class="client-detail">${c.email || ''}</div>
+                            </div>
+                        </div>
                     </td>
+                    <td>${c.siteName || '---'}</td>
+                    <td><span class="badge badge-info">${c.planType || 'monthly'}</span></td>
+                    <td>R$ ${parseFloat(c.monthlyValue || 0).toFixed(2)}</td>
+                    <td>${c.dueDate ? new Date(c.dueDate).toLocaleDateString('pt-BR') : '---'}</td>
+                    <td><span class="badge badge-success"><span class="badge-dot green"></span>Ativo</span></td>
                     <td>
-                        <span style="font-size: 13px; color: #475569;"><i class="far fa-calendar-plus" style="margin-right: 4px;"></i> ${formatSafeDateTime(c.activationDate)}</span>
-                    </td>
-                    <td><strong style="color: #0f172a;">${formatSafeDate(c.dueDate)}</strong></td>
-                    <td>
-                        <span class="badge ${statusInfo.class}"><span class="badge-dot ${statusInfo.icon}"></span>${statusInfo.text}</span>
-                    </td>
-                    <td>
-                        <button class="action-btn" onclick="openEditClientModal('${c.id}')" title="Editar Cliente"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn" onclick="deleteClient('${c.id}')" style="margin-left: 4px; color: #ef4444;" title="Excluir"><i class="fas fa-trash"></i></button>
+                        <div class="actions-cell">
+                            <button class="action-btn" onclick="openEditClientModal('${c.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn" onclick="deleteClient('${c.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
                     </td>
                 </tr>
-                `;
-            }).join('');
+            `).join('');
         }
 
         function renderAdminRequests() {
-            const tbody = document.getElementById('adminRequestsBody');
-            
-            // Notification badge update
-            const pendingCount = requests.filter(r => r.status === 'pending').length;
-            const badge = document.getElementById('badgePendingReqs');
-            if (pendingCount > 0) { badge.style.display = 'inline-block'; badge.textContent = pendingCount; } 
-            else { badge.style.display = 'none'; }
+            const tbody = document.getElementById('adminRequestsTableBody');
+            const pendingCount = allRequests.filter(r => r.status === 'pending').length;
+            const badge = document.getElementById('badgeAdminRequests');
+            if(pendingCount > 0) {
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
 
-            if(requests.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: #94a3b8; padding:32px;">Nenhuma solicitação encontrada.</td></tr>';
+            if(allRequests.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 32px;">Nenhuma solicitação de atualização enviada.</td></tr>`;
                 return;
             }
 
-            const sorted = [...requests].sort((a,b) => b.createdAt - a.createdAt);
+            tbody.innerHTML = allRequests.map(req => {
+                let statusBadge = '<span class="badge badge-warning">Pendente (5-7 dias)</span>';
+                if(req.status === 'in_progress') statusBadge = '<span class="badge badge-info">Em Andamento</span>';
+                if(req.status === 'completed') statusBadge = '<span class="badge badge-success">Realizado</span>';
 
-            tbody.innerHTML = sorted.map(r => {
-                let statusLabel = '';
-                if(r.status === 'pending') statusLabel = '<span class="badge badge-warning">Pendente</span>';
-                else if(r.status === 'progress') statusLabel = '<span class="badge badge-info">Realizando</span>';
-                else if(r.status === 'completed') statusLabel = '<span class="badge badge-success">Concluída</span>';
-                
                 return `
-                <tr>
-                    <td style="font-size: 13px; color: #64748b;">${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td>
-                    <td style="font-weight: 600; color: #0f172a;">${r.clientName}</td>
-                    <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px;">${r.message}</td>
-                    <td>${statusLabel}</td>
-                    <td>
-                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="openRequestStatusModal('${r.id}')">Status <i class="fas fa-chevron-down"></i></button>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>${new Date(req.createdAt).toLocaleDateString('pt-BR')}</td>
+                        <td><strong>${req.clientName || 'Cliente'}</strong></td>
+                        <td><div class="req-msg">${req.message}</div></td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="openUpdateStatusModal('${req.id}', '${req.status}')">
+                                <i class="fas fa-pen"></i> Status
+                            </button>
+                        </td>
+                    </tr>
                 `;
             }).join('');
         }
 
-        // === Controle de Modais ===
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
+        // Renderizadores Cliente (Assessoria)
+        function renderClientRequests() {
+            const tbody = document.getElementById('clientRequestsTableBody');
+            const clientEmail = session.data.email || session.data.loginEmail;
+            const myReqs = allRequests.filter(r => r.clientEmail === clientEmail);
+
+            if(myReqs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #94a3b8; padding: 32px;">Nenhuma solicitação enviada ainda. Use o campo acima para pedir atualizações.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = myReqs.map(r => {
+                let statusBadge = '<span class="badge badge-warning">🟡 Solicitado (Prazo: 5 a 7 dias)</span>';
+                if(r.status === 'in_progress') statusBadge = '<span class="badge badge-info">🔵 Em Andamento</span>';
+                if(r.status === 'completed') statusBadge = '<span class="badge badge-success">🟢 Realizado (Concluído)</span>';
+
+                return `
+                    <tr>
+                        <td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td>
+                        <td><div class="req-msg">${r.message}</div></td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        function openEditClientModal(id = null) {
-            document.getElementById('editClientForm').reset();
-            const dateField = document.getElementById('ecDueDate');
-            const activationField = document.getElementById('ecActivation');
-            
-            if (id) {
-                const c = clients.find(x => x.id === id);
-                document.getElementById('ecId').value = c.id;
-                document.getElementById('ecName').value = c.name;
-                document.getElementById('ecEmail').value = c.email;
-                document.getElementById('ecPass').value = c.password;
-                document.getElementById('ecPhone').value = c.phone || '';
-                dateField.value = c.dueDate ? c.dueDate.split('T')[0] : '';
-                activationField.value = formatSafeDateTime(c.activationDate);
-                document.getElementById('editClientTitle').textContent = 'Editar Cliente';
-            } else {
-                document.getElementById('ecId').value = '';
-                document.getElementById('ecPass').value = '123456';
-                activationField.value = 'Data gerada automaticamente ao salvar';
-                const nextMonth = new Date();
-                nextMonth.setMonth(nextMonth.getMonth() + 1);
-                dateField.value = nextMonth.toISOString().split('T')[0];
-                document.getElementById('editClientTitle').textContent = 'Novo Cliente';
+        window.submitClientRequest = () => {
+            const text = document.getElementById('newRequestText').value.trim();
+            if(!text) {
+                showToast('Escreva a solicitação antes de enviar.', 'error');
+                return;
             }
-            document.getElementById('editClientModal').style.display = 'flex';
-        }
 
-        function saveAdminClient() {
-            const id = document.getElementById('ecId').value;
-            const dueDateInput = document.getElementById('ecDueDate').value;
-            // Corrige o shift de fuso horário inserindo 'T00:00:00' forçado
-            const safeIsoDate = dueDateInput ? new Date(dueDateInput + 'T00:00:00').toISOString() : new Date().toISOString();
+            const client = session.data;
+            const newReq = {
+                id: 'req_' + Date.now(),
+                clientEmail: client.email || client.loginEmail,
+                clientName: client.name,
+                message: text,
+                status: 'pending',
+                createdAt: Date.now()
+            };
 
-            if (id) {
-                // Update
-                const c = clients.find(x => x.id === id);
-                c.name = document.getElementById('ecName').value;
-                c.email = document.getElementById('ecEmail').value;
-                c.password = document.getElementById('ecPass').value;
-                c.phone = document.getElementById('ecPhone').value;
-                c.dueDate = safeIsoDate;
-                showToast('Cliente atualizado. Status recalculados!', 'success');
-            } else {
-                // Create
-                clients.push({
-                    id: 'cli_' + Date.now(),
-                    name: document.getElementById('ecName').value,
-                    email: document.getElementById('ecEmail').value,
-                    password: document.getElementById('ecPass').value,
-                    phone: document.getElementById('ecPhone').value,
-                    activationDate: new Date().toISOString(),
-                    dueDate: safeIsoDate
-                });
-                showToast('Cliente cadastrado com sucesso!', 'success');
-            }
+            allRequests.unshift(newReq);
             saveDB();
-            closeModal('editClientModal');
-            renderAdminClients();
-            renderAdminDashboard();
-        }
+            document.getElementById('newRequestText').value = '';
+            renderClientRequests();
+            showToast('Solicitação enviada com sucesso! Prazo de 5 a 7 dias úteis.', 'success');
+        };
 
-        function deleteClient(id) {
-            if(confirm('Atenção! Tem certeza que deseja excluir este cliente permanentemente?')) {
+        // Modais de Cliente (Admin)
+        window.openAddClientModal = () => {
+            document.getElementById('modalTitle').textContent = 'Novo Cliente';
+            document.getElementById('clientForm').reset();
+            document.getElementById('clientId').value = '';
+            document.getElementById('activationDate').value = 'Sera gerada ao salvar';
+            document.getElementById('clientModal').style.display = 'flex';
+        };
+
+        window.closeClientModal = () => {
+            document.getElementById('clientModal').style.display = 'none';
+        };
+
+        window.saveClient = () => {
+            const id = document.getElementById('clientId').value;
+            const name = document.getElementById('clientName').value.trim();
+            const email = document.getElementById('clientEmail').value.trim();
+            const loginEmail = document.getElementById('clientLoginEmail').value.trim() || email;
+            const password = document.getElementById('clientPassword').value.trim() || '123456';
+            const siteName = document.getElementById('siteName').value.trim();
+            const monthlyValue = document.getElementById('monthlyValue').value;
+            const planType = document.getElementById('planType').value;
+            const dueDate = document.getElementById('dueDate').value;
+
+            if(!name || !monthlyValue || !dueDate) {
+                showToast('Preencha os campos obrigatórios!', 'error');
+                return;
+            }
+
+            if(id) {
+                const idx = clients.findIndex(c => c.id === id);
+                if(idx !== -1) {
+                    clients[idx] = { ...clients[idx], name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate };
+                }
+            } else {
+                clients.push({ id: 'c_' + Date.now(), name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate, createdAt: new Date().toISOString() });
+            }
+
+            saveDB();
+            renderClientsTable();
+            renderAdminDashboard();
+            closeClientModal();
+            showToast('Cliente salvo com sucesso!', 'success');
+        };
+
+        window.openChangePasswordModal = () => {
+            document.getElementById('newClientPassword').value = '';
+            document.getElementById('changePasswordModal').style.display = 'flex';
+        };
+
+        window.saveNewClientPassword = () => {
+            const newPass = document.getElementById('newClientPassword').value.trim();
+            if(!newPass || newPass.length < 4) {
+                showToast('A senha precisa ter pelo menos 4 caracteres.', 'error');
+                return;
+            }
+
+            const clientEmail = session.data.email || session.data.loginEmail;
+            const clientObj = clients.find(c => (c.email === clientEmail || c.loginEmail === clientEmail));
+            
+            if(clientObj) {
+                clientObj.password = newPass;
+                session.data.password = newPass;
+                saveDB();
+                localStorage.setItem('cf_session', JSON.stringify(session));
+                document.getElementById('sidebarUserPassDisplay').textContent = newPass;
+                document.getElementById('changePasswordModal').style.display = 'none';
+                showToast('Senha alterada com sucesso!', 'success');
+            } else {
+                showToast('Erro ao atualizar senha.', 'error');
+            }
+        };
+
+        window.openUpdateStatusModal = (reqId, currentStatus) => {
+            const req = allRequests.find(r => r.id === reqId);
+            if(!req) return;
+
+            document.getElementById('editReqId').value = req.id;
+            document.getElementById('newReqStatus').value = req.status;
+            
+            document.getElementById('viewReqClientName').textContent = req.clientName || 'Cliente';
+            document.getElementById('viewReqDate').textContent = new Date(req.createdAt).toLocaleDateString('pt-BR');
+            document.getElementById('viewReqMessage').textContent = req.message;
+
+            document.getElementById('updateRequestModal').style.display = 'flex';
+        };
+
+        window.saveRequestStatus = () => {
+            const reqId = document.getElementById('editReqId').value;
+            const newStatus = document.getElementById('newReqStatus').value;
+            const req = allRequests.find(r => r.id === reqId);
+            if(req) {
+                req.status = newStatus;
+                saveDB();
+                renderAdminRequests();
+                // Se o cliente estiver online ou a view atualizada, atualizamos também
+                if (session.type === 'client') renderClientRequests();
+                
+                document.getElementById('updateRequestModal').style.display = 'none';
+                showToast('Status da solicitação atualizado com sucesso!', 'success');
+            }
+        };
+
+        window.deleteClient = (id) => {
+            if(confirm('Tem certeza que deseja excluir este cliente?')) {
                 clients = clients.filter(c => c.id !== id);
                 saveDB();
-                renderAdminClients();
+                renderClientsTable();
                 renderAdminDashboard();
-                showToast('Cliente excluído.', 'info');
+                showToast('Cliente excluído com sucesso!', 'success');
             }
-        }
+        };
 
-        function openRequestStatusModal(reqId) {
-            const r = requests.find(x => x.id === reqId);
-            if(!r) return;
-
-            document.getElementById('srId').value = r.id;
-            document.getElementById('srClientName').textContent = r.clientName;
-            document.getElementById('srMessage').textContent = r.message;
-            document.getElementById('srStatusSelect').value = r.status;
+        window.openEditClientModal = (id) => {
+            const client = clients.find(c => c.id === id);
+            if(!client) return;
+            document.getElementById('modalTitle').textContent = 'Editar Cliente';
+            document.getElementById('clientId').value = client.id;
+            document.getElementById('clientName').value = client.name || '';
+            document.getElementById('clientEmail').value = client.email || '';
+            document.getElementById('clientLoginEmail').value = client.loginEmail || client.email || '';
+            document.getElementById('clientPassword').value = client.password || '123456';
+            document.getElementById('siteName').value = client.siteName || '';
+            document.getElementById('monthlyValue').value = client.monthlyValue || '';
+            document.getElementById('planType').value = client.planType || 'monthly';
+            document.getElementById('dueDate').value = client.dueDate || '';
             
-            document.getElementById('statusRequestModal').style.display = 'flex';
-        }
-
-        function saveRequestStatus() {
-            const reqId = document.getElementById('srId').value;
-            const novoStatus = document.getElementById('srStatusSelect').value;
-            
-            const req = requests.find(x => x.id === reqId);
-            if(req) {
-                req.status = novoStatus;
-                saveDB();
-                closeModal('statusRequestModal');
-                renderAdminRequests();
-                showToast('Status da solicitação atualizado.', 'success');
+            let actDateStr = 'Não registrada (Antigo)';
+            if(client.createdAt) {
+                const d = new Date(client.createdAt);
+                actDateStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
             }
-        }
+            document.getElementById('activationDate').value = actDateStr;
+            
+            document.getElementById('clientModal').style.display = 'flex';
+        };
 
-        // Toasts
-        function showToast(message, type = 'info') {
+        window.setFilter = (filter, el) => {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            if(el) el.classList.add('active');
+            renderClientsTable();
+        };
+
+        window.handleSearch = () => {
+            searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+            renderClientsTable();
+        };
+
+        function showToast(msg, type = 'info') {
             const container = document.getElementById('toastContainer');
-            const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
-            const colors = { success: '#10b981', error: '#ef4444', info: '#3b82f6', warning: '#f59e0b' };
-            
             const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.style.borderLeft = `4px solid ${colors[type]}`;
-            toast.innerHTML = `<i class="fas ${icons[type]}" style="color: ${colors[type]}; font-size: 18px;"></i><span>${message}</span>`;
-            
+            toast.className = `toast ${type}`;
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            toast.innerHTML = `<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
             container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100%)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => toast.remove(), 4000);
         }
 
-        // Inicia aplicação
-        initApp();
+        // Inicialização automática ao carregar
+        window.onload = () => {
+            initSession();
+        };
     </script>
 </body>
 </html>
