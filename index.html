@@ -449,20 +449,13 @@
             return new Date(t).toLocaleDateString('pt-BR');
         }
 
-        // NOTIFICAÇÃO COM NOME DO CLIENTE GARANTIDO
         async function createNotification(type, title, clientName = '') {
             try { 
-                const name = clientName || 'Cliente';
                 await db.ref('notifications').push().set({ 
-                    type, 
-                    title, 
-                    clientName: name,
-                    read: false, 
-                    createdAt: firebase.database.ServerValue.TIMESTAMP 
+                    type, title, clientName: clientName || 'Cliente',
+                    read: false, createdAt: firebase.database.ServerValue.TIMESTAMP 
                 }); 
-            } catch(e) {
-                console.warn('Erro ao criar notificação:', e);
-            }
+            } catch(e) { console.warn('Notif:', e); }
         }
 
         function renderNotifications() {
@@ -479,9 +472,7 @@
             const icons = { login: ['fa-sign-in-alt','login'], request: ['fa-tools','request'], due: ['fa-clock','due'], new_client: ['fa-user-plus','new-client'], password_change: ['fa-key','password-change'] };
             container.innerHTML = f.map(n => {
                 const [ico, cls] = icons[n.type] || ['fa-bell','login'];
-                // Garante que o nome do cliente aparece
-                const displayTitle = n.title || `${n.clientName || 'Cliente'} - ${n.type}`;
-                return `<div class="notification-item ${n.read?'':'unread'}" onclick="markNotificationRead('${n.id}')"><div class="notification-icon ${cls}"><i class="fas ${ico}"></i></div><div class="notification-content"><div class="notification-text">${displayTitle}</div><div class="notification-time">${getTimeAgo(n.createdAt)}</div></div></div>`;
+                return `<div class="notification-item ${n.read?'':'unread'}" onclick="markNotificationRead('${n.id}')"><div class="notification-icon ${cls}"><i class="fas ${ico}"></i></div><div class="notification-content"><div class="notification-text">${n.title}</div><div class="notification-time">${getTimeAgo(n.createdAt)}</div></div></div>`;
             }).join('');
         }
 
@@ -548,12 +539,23 @@
             if (viewId === 'clientAssessoria') renderClientRequests();
         };
 
-        // CRIAÇÃO DE CLIENTE PELO ADMIN (NÃO FAZ LOGIN AUTOMÁTICO)
+        // ============================================
+        // CRIAÇÃO DE CLIENTE PELO ADMIN (CORRIGIDO)
+        // ============================================
         async function createClientByAdmin(email, password, extraData = {}) {
+            // Guarda as credenciais do admin ANTES de criar o novo usuário
             const adminEmail = currentUser.email;
+            const adminPassword = adminCredentials?.password;
+            
+            if (!adminPassword) {
+                throw new Error('Credenciais do admin não encontradas. Faça logout e login novamente.');
+            }
+            
+            // Cria o novo usuário
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
             const newUid = userCredential.user.uid;
             
+            // Salva dados no Realtime Database
             await db.ref('users/' + newUid).set({
                 email, role: 'client',
                 name: extraData.name || email.split('@')[0],
@@ -568,15 +570,17 @@
                 createdAt: firebase.database.ServerValue.TIMESTAMP
             });
             
-            // Notificação com nome do cliente
+            // Notificação
             const clientName = extraData.name || email.split('@')[0];
             try { await createNotification('new_client', `Novo cliente: ${clientName}`, clientName); } catch(e) {}
             
-            // Volta a logar como admin
+            // FAZ LOGOUT DO NOVO USUÁRIO E VOLTA A LOGAR COMO ADMIN
             await auth.signOut();
-            const adminLogin = await auth.signInWithEmailAndPassword(adminEmail, adminCredentials.password);
+            const adminLogin = await auth.signInWithEmailAndPassword(adminEmail, adminPassword);
             currentUser = adminLogin.user;
             userRole = 'admin';
+            
+            // Reconfigura listeners
             setupRealtimeListeners();
             
             return { uid: newUid };
@@ -592,7 +596,10 @@
                 await db.ref('users/' + uid).set(userData);
             }
             if (userData.role !== 'admin') { await auth.signOut(); throw new Error('Acesso negado!'); }
+            
+            // SALVA CREDENCIAIS DO ADMIN
             adminCredentials = { email, password };
+            
             return { uid, userData, user: userCredential.user };
         }
 
@@ -604,7 +611,6 @@
             if (!userData) { await auth.signOut(); throw new Error('Usuário não encontrado.'); }
             if (userData.role === 'admin') { await auth.signOut(); throw new Error('Este email é do administrador.'); }
             
-            // Notificação de login com nome do cliente
             const clientName = userData.name || email.split('@')[0];
             try { await createNotification('login', `${clientName} fez login no sistema`, clientName); } catch(e) {}
             
@@ -778,11 +784,20 @@
                     await db.ref('clients/' + id).update({ name, email, loginEmail, password, siteName, monthlyValue, planType, dueDate });
                     showToast('Cliente atualizado!', 'success');
                 } else {
+                    // Verifica se adminCredentials existe
+                    if (!adminCredentials || !adminCredentials.password) {
+                        showToast('Erro: credenciais do admin não encontradas. Faça logout e login novamente.', 'error');
+                        btn.disabled = false;
+                        btn.classList.remove('btn-loading');
+                        hideLoading();
+                        return;
+                    }
                     await createClientByAdmin(loginEmail || email, password, { name, email, siteName, monthlyValue, planType, dueDate });
                     showToast('Cliente criado! Você continua como admin.', 'success');
                 }
                 closeClientModal();
             } catch (error) {
+                console.error('Erro ao salvar:', error);
                 if (error.code === 'auth/email-already-in-use') showToast('Email já cadastrado.', 'error');
                 else showToast('Erro: ' + (error.message || 'Desconhecido'), 'error');
             } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
@@ -812,15 +827,15 @@
             finally { hideLoading(); }
         };
 
-        // SOLICITAÇÃO COM NOME DO CLIENTE NA NOTIFICAÇÃO
+        // SOLICITAÇÃO DO CLIENTE (CORRIGIDA)
         window.submitClientRequest = async () => {
             const text = document.getElementById('newRequestText').value.trim();
             if (!text) { showToast('Descreva a solicitação.', 'error'); return; }
             showLoading();
             try {
-                // Garante que temos o nome do cliente
                 const clientName = clientData?.name || currentUser?.email?.split('@')[0] || 'Cliente';
                 
+                // Salva a solicitação
                 await db.ref('requests').push().set({
                     clientUid: currentUser.uid, 
                     clientEmail: currentUser.email,
@@ -829,14 +844,16 @@
                     status: 'pending', 
                     createdAt: firebase.database.ServerValue.TIMESTAMP
                 });
+                
                 document.getElementById('newRequestText').value = '';
                 
-                // Notificação com nome correto do cliente
+                // Cria notificação
                 await createNotification('request', `${clientName} solicitou uma alteração`, clientName);
                 
                 showToast('Solicitação enviada! Prazo: 5 a 7 dias úteis.', 'success');
             } catch (e) { 
-                showToast('Erro: ' + e.message, 'error'); 
+                console.error('Erro na solicitação:', e);
+                showToast('Erro: ' + (e.message || 'Verifique as regras do Firebase.'), 'error'); 
             } finally { 
                 hideLoading(); 
             }
@@ -863,7 +880,6 @@
                     await db.ref('clients/' + clientData.id).update({ password: newPass });
                     clientData.password = newPass;
                 }
-                // Notificação de alteração de senha
                 const clientName = clientData?.name || currentUser?.email?.split('@')[0] || 'Cliente';
                 await createNotification('password_change', `${clientName} alterou a senha`, clientName);
                 document.getElementById('changePasswordModal').style.display = 'none';
