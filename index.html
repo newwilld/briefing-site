@@ -278,10 +278,9 @@
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 8px;" id="btnSubmitBriefing">
                     <i class="fas fa-paper-plane"></i> Enviar Informações e Acessar Painel
                 </button>
-                
-                <!-- Botão Área do Cliente adicionado abaixo -->
-                <button type="button" class="btn btn-primary" onclick="showClientLoginDirect()" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 8px; background: #1e40af;">
-                    <i class="fas fa-user"></i> Área do Cliente
+
+                <button type="button" class="btn" onclick="showAuthClientDirectly()" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 10px; background: #1d4ed8; color: white;">
+                    <i class="fas fa-user-circle"></i> Área do Cliente
                 </button>
             </form>
         </div>
@@ -307,43 +306,19 @@
         </div>
     </div>
 
-    <!-- Tela de Autenticação (Admin / Login Manual Client) - ACESSADA APENAS PELO LINK "algo incrível" -->
+    <!-- Tela de Autenticação (Admin / Login Manual Client) -->
     <div id="authScreen" class="auth-screen" style="display: none;">
         <div class="auth-card">
             <button onclick="showBriefingScreen()" style="background:none; border:none; color: #64748b; font-size: 12px; cursor: pointer; margin-bottom: 16px;"><i class="fas fa-arrow-left"></i> Voltar ao site</button>
-            <div class="auth-tabs">
-                <div class="auth-tab active" id="tabAdmin" onclick="switchAuthType('admin')">Área do Admin</div>
-                <div class="auth-tab" id="tabClient" onclick="switchAuthType('client')">Área do Cliente</div>
-            </div>
             
             <div class="auth-logo">
-                <div class="auth-logo-icon"><i class="fas fa-layer-group"></i></div>
-                <h1 class="auth-title">ClientFlow</h1>
-                <p class="auth-subtitle" id="authSubtitle">Faça login como Administrador</p>
+                <div class="auth-logo-icon"><i class="fas fa-user-circle"></i></div>
+                <h1 class="auth-title">Área do Cliente</h1>
+                <p class="auth-subtitle">Acesse o portal da sua assessoria</p>
             </div>
 
-            <!-- Formulário Admin -->
-            <form id="formAdminAuth" class="auth-form view-section active">
-                <div id="nameFieldAdmin" style="display: none;">
-                    <label class="form-label">Nome</label>
-                    <input type="text" id="authNameAdmin" class="form-input" placeholder="Seu nome">
-                </div>
-                <div>
-                    <label class="form-label">Email</label>
-                    <input type="email" id="authEmailAdmin" required class="form-input" placeholder="admin@clientflow.com">
-                </div>
-                <div>
-                    <label class="form-label">Senha</label>
-                    <input type="password" id="authPasswordAdmin" required class="form-input" placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-sign-in-alt"></i> <span id="authSubmitTextAdmin">Entrar</span></button>
-                <p class="auth-link" style="text-align:center; font-size: 13px; color: #64748b; margin-top: 10px;" id="authToggleTextAdmin">
-                    Não tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Criar conta</button>
-                </p>
-            </form>
-
             <!-- Formulário Cliente -->
-            <form id="formClientAuth" class="auth-form view-section">
+            <form id="formClientAuth" class="auth-form view-section active">
                 <div>
                     <label class="form-label">Email de Acesso</label>
                     <input type="email" id="authLoginClient" required class="form-input" placeholder="seuemail@exemplo.com">
@@ -352,33 +327,24 @@
                     <label class="form-label">Senha</label>
                     <input type="password" id="authPasswordClient" required class="form-input" placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-user"></i> Entrar no Painel</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fas fa-user"></i> Entrar no Painel</button>
             </form>
-        </div>
-    </div>
 
-    <!-- Tela de Login do Cliente (APENAS CLIENTE) - ACESSADA PELO BOTÃO "Área do Cliente" -->
-    <div id="clientOnlyLoginScreen" class="auth-screen" style="display: none;">
-        <div class="auth-card">
-            <button onclick="showBriefingScreen()" style="background:none; border:none; color: #64748b; font-size: 12px; cursor: pointer; margin-bottom: 16px;"><i class="fas fa-arrow-left"></i> Voltar ao site</button>
-            
-            <div class="auth-logo">
-                <div class="auth-logo-icon"><i class="fas fa-user-circle"></i></div>
-                <h1 class="auth-title">Área do Cliente</h1>
-                <p class="auth-subtitle" style="color: #64748b;">Acesse o portal da sua assessoria</p>
-            </div>
-
-            <!-- Formulário Cliente -->
-            <form id="formClientOnlyAuth" class="auth-form view-section active">
+            <!-- Formulário Admin (Apenas acessível via link secreto "algo incrível.") -->
+            <form id="formAdminAuth" class="auth-form view-section" style="display: none;">
+                <div id="nameFieldAdmin" style="display: none;">
+                    <label class="form-label">Nome</label>
+                    <input type="text" id="authNameAdmin" class="form-input" placeholder="Seu nome">
+                </div>
                 <div>
-                    <label class="form-label">Email de Acesso</label>
-                    <input type="email" id="clientOnlyEmail" required class="form-input" placeholder="seuemail@exemplo.com">
+                    <label class="form-label">Email do Administrador</label>
+                    <input type="email" id="authEmailAdmin" class="form-input" placeholder="admin@clientflow.com">
                 </div>
                 <div>
                     <label class="form-label">Senha</label>
-                    <input type="password" id="clientOnlyPassword" required class="form-input" placeholder="••••••••">
+                    <input type="password" id="authPasswordAdmin" class="form-input" placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-sign-in-alt"></i> Entrar no Painel</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-sign-in-alt"></i> <span id="authSubmitTextAdmin">Entrar como Admin</span></button>
             </form>
         </div>
     </div>
@@ -680,27 +646,6 @@
     <div class="modal-overlay" id="updateRequestModal" style="display: none;">
         <div class="modal" style="max-width: 400px;">
             <div class="modal-header">
-                <h2 class="modal-title">Atualizar Status</h2>
-                <button class="btn-ghost btn-icon" onclick="document.getElementById('updateRequestModal').style.display='none'"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Status</label>
-                    <select class="form-select" id="newReqStatus">
-                        <option value="pending">Pendente (5-7 dias)</option>
-                        <option value="in_progress">Em Andamento</option>
-                        <option value="completed">Realizado</option>
-                    </select>
-                </div>
-                <input type="hidden" id="editReqId">
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="document.getElementById('updateRequestModal').style.display='none'">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveRequestStatus()">Salvar</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal Alterar Senha (Cliente) -->
     <div class="modal-overlay" id="changePasswordModal" style="display: none;">
         <div class="modal" style="max-width: 380px;">
@@ -744,36 +689,48 @@
 
         window.switchAuthType = (type) => {
             authMode = type;
-            document.getElementById('tabAdmin').classList.toggle('active', type === 'admin');
-            document.getElementById('tabClient').classList.toggle('active', type === 'client');
-            document.getElementById('formAdminAuth').classList.toggle('active', type === 'admin');
-            document.getElementById('formClientAuth').classList.toggle('active', type === 'client');
-            document.getElementById('authSubtitle').textContent = type === 'admin' ? 'Faça login como Administrador' : 'Acesse o portal da sua assessoria';
+            const isClient = type === 'client';
+            document.getElementById('formAdminAuth').style.display = isClient ? 'none' : 'block';
+            document.getElementById('formClientAuth').style.display = isClient ? 'block' : 'none';
         };
 
         window.showAuthScreen = () => {
             document.getElementById('briefingScreen').style.display = 'none';
             document.getElementById('successBriefingScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'none';
-            document.getElementById('clientOnlyLoginScreen').style.display = 'none';
             document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('admin'); // Mantém isolado para admin apenas pelo link secreto
+        };
+
+        window.showAuthClientDirectly = () => {
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('client'); // Exibe exclusivamente a Área do Cliente
+        };
+
+        window.showAuthScreen = () => {
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('admin');
+        };
+
+        window.showAuthClientDirectly = () => {
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('client');
         };
 
         window.showBriefingScreen = () => {
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('successBriefingScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'none';
-            document.getElementById('clientOnlyLoginScreen').style.display = 'none';
             document.getElementById('briefingScreen').style.display = 'flex';
-        };
-
-        // Função para abrir a tela de login EXCLUSIVA do cliente (sem tabs de admin)
-        window.showClientLoginDirect = () => {
-            document.getElementById('briefingScreen').style.display = 'none';
-            document.getElementById('successBriefingScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'none';
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('clientOnlyLoginScreen').style.display = 'flex';
         };
 
         window.toggleAdminRegister = () => {
@@ -789,7 +746,7 @@
             }
         };
 
-        // Form Admin Auth (Tela com tabs Admin/Cliente)
+        // Form Admin Auth
         document.getElementById('formAdminAuth').addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmailAdmin').value;
@@ -808,24 +765,12 @@
             }
         });
 
-        // Form Client Auth (Tela com tabs Admin/Cliente)
+        // Form Client Auth
         document.getElementById('formClientAuth').addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('authLoginClient').value.trim().toLowerCase();
             const password = document.getElementById('authPasswordClient').value.trim();
-            loginClient(email, password);
-        });
 
-        // Form Client Only Auth (Tela EXCLUSIVA do cliente, acessada pelo botão "Área do Cliente")
-        document.getElementById('formClientOnlyAuth').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('clientOnlyEmail').value.trim().toLowerCase();
-            const password = document.getElementById('clientOnlyPassword').value.trim();
-            loginClient(email, password);
-        });
-
-        // Função compartilhada de login do cliente
-        function loginClient(email, password) {
             const foundClient = clients.find(c => (c.email && c.email.toLowerCase() === email || c.loginEmail && c.loginEmail.toLowerCase() === email) && (c.password === password || password === '123456'));
             
             if(foundClient) {
@@ -836,7 +781,7 @@
             } else {
                 showToast('Email ou senha inválidos!', 'error');
             }
-        }
+        });
 
         // Briefing Form Submission
         document.getElementById('formBriefing').addEventListener('submit', (e) => {
@@ -910,7 +855,6 @@
             document.getElementById('briefingScreen').style.display = 'none';
             document.getElementById('successBriefingScreen').style.display = 'none';
             document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('clientOnlyLoginScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'flex';
 
             if(session.type === 'admin') {
