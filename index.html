@@ -278,6 +278,10 @@
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 8px;" id="btnSubmitBriefing">
                     <i class="fas fa-paper-plane"></i> Enviar Informações e Acessar Painel
                 </button>
+
+                <button type="button" class="btn btn-primary" onclick="showAuthClientDirectly()" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 10px; background: #3b82f6;">
+                    <i class="fas fa-user-circle"></i> Área do Cliente (Login)
+                </button>
             </form>
         </div>
     </div>
@@ -306,39 +310,15 @@
     <div id="authScreen" class="auth-screen" style="display: none;">
         <div class="auth-card">
             <button onclick="showBriefingScreen()" style="background:none; border:none; color: #64748b; font-size: 12px; cursor: pointer; margin-bottom: 16px;"><i class="fas fa-arrow-left"></i> Voltar ao site</button>
-            <div class="auth-tabs">
-                <div class="auth-tab active" id="tabAdmin" onclick="switchAuthType('admin')">Área do Admin</div>
-                <div class="auth-tab" id="tabClient" onclick="switchAuthType('client')">Área do Cliente</div>
-            </div>
             
             <div class="auth-logo">
-                <div class="auth-logo-icon"><i class="fas fa-layer-group"></i></div>
-                <h1 class="auth-title">ClientFlow</h1>
-                <p class="auth-subtitle" id="authSubtitle">Faça login como Administrador</p>
+                <div class="auth-logo-icon"><i class="fas fa-user-circle"></i></div>
+                <h1 class="auth-title">Área do Cliente</h1>
+                <p class="auth-subtitle">Acesse o portal da sua assessoria</p>
             </div>
 
-            <!-- Formulário Admin -->
-            <form id="formAdminAuth" class="auth-form view-section active">
-                <div id="nameFieldAdmin" style="display: none;">
-                    <label class="form-label">Nome</label>
-                    <input type="text" id="authNameAdmin" class="form-input" placeholder="Seu nome">
-                </div>
-                <div>
-                    <label class="form-label">Email</label>
-                    <input type="email" id="authEmailAdmin" required class="form-input" placeholder="admin@clientflow.com">
-                </div>
-                <div>
-                    <label class="form-label">Senha</label>
-                    <input type="password" id="authPasswordAdmin" required class="form-input" placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-sign-in-alt"></i> <span id="authSubmitTextAdmin">Entrar</span></button>
-                <p class="auth-link" style="text-align:center; font-size: 13px; color: #64748b; margin-top: 10px;" id="authToggleTextAdmin">
-                    Não tem conta? <button type="button" onclick="toggleAdminRegister()" style="color: #3b82f6; font-weight:600; background:none; border:none; cursor:pointer;">Criar conta</button>
-                </p>
-            </form>
-
             <!-- Formulário Cliente -->
-            <form id="formClientAuth" class="auth-form view-section">
+            <form id="formClientAuth" class="auth-form view-section active">
                 <div>
                     <label class="form-label">Email de Acesso</label>
                     <input type="email" id="authLoginClient" required class="form-input" placeholder="seuemail@exemplo.com">
@@ -347,7 +327,24 @@
                     <label class="form-label">Senha</label>
                     <input type="password" id="authPasswordClient" required class="form-input" placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-user"></i> Entrar no Painel</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fas fa-user"></i> Entrar no Painel</button>
+            </form>
+
+            <!-- Formulário Admin (Apenas acessível via link secreto "algo incrível.") -->
+            <form id="formAdminAuth" class="auth-form view-section" style="display: none;">
+                <div id="nameFieldAdmin" style="display: none;">
+                    <label class="form-label">Nome</label>
+                    <input type="text" id="authNameAdmin" class="form-input" placeholder="Seu nome">
+                </div>
+                <div>
+                    <label class="form-label">Email do Administrador</label>
+                    <input type="email" id="authEmailAdmin" class="form-input" placeholder="admin@clientflow.com">
+                </div>
+                <div>
+                    <label class="form-label">Senha</label>
+                    <input type="password" id="authPasswordAdmin" class="form-input" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-sign-in-alt"></i> <span id="authSubmitTextAdmin">Entrar como Admin</span></button>
             </form>
         </div>
     </div>
@@ -692,11 +689,9 @@
 
         window.switchAuthType = (type) => {
             authMode = type;
-            document.getElementById('tabAdmin').classList.toggle('active', type === 'admin');
-            document.getElementById('tabClient').classList.toggle('active', type === 'client');
-            document.getElementById('formAdminAuth').classList.toggle('active', type === 'admin');
-            document.getElementById('formClientAuth').classList.toggle('active', type === 'client');
-            document.getElementById('authSubtitle').textContent = type === 'admin' ? 'Faça login como Administrador' : 'Acesse o portal da sua assessoria';
+            const isClient = type === 'client';
+            document.getElementById('formAdminAuth').style.display = isClient ? 'none' : 'block';
+            document.getElementById('formClientAuth').style.display = isClient ? 'block' : 'none';
         };
 
         window.showAuthScreen = () => {
@@ -704,6 +699,31 @@
             document.getElementById('successBriefingScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'none';
             document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('admin'); // Mantém isolado para admin apenas pelo link secreto
+        };
+
+        window.showAuthClientDirectly = () => {
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('client'); // Exibe exclusivamente a Área do Cliente
+        };
+
+        window.showAuthScreen = () => {
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('admin');
+        };
+
+        window.showAuthClientDirectly = () => {
+            document.getElementById('briefingScreen').style.display = 'none';
+            document.getElementById('successBriefingScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            switchAuthType('client');
         };
 
         window.showBriefingScreen = () => {
