@@ -206,14 +206,12 @@
             <div class="auth-logo"><div class="auth-logo-icon"><i class="fas fa-rocket"></i></div><h1 class="auth-title">Briefing de Marca</h1><p class="auth-subtitle" style="font-weight:500;color:#3b82f6;margin-top:6px;">Conte sua visão para criarmos <span onclick="showAdminAuthScreen()" title="Admin" style="cursor:pointer;text-decoration:underline;">algo incrível.</span></p></div>
             <form id="formBriefing" class="auth-form">
                 
-                <!-- AQUI ESTÁ A MUDANÇA SOLICITADA NA PRIMEIRA LINHA -->
                 <div class="form-row form-row-3">
                     <div class="form-group"><label class="form-label">Seu Nome *</label><input type="text" id="bfName" required class="form-input"></div>
                     <div class="form-group"><label class="form-label">Nome da Marca *</label><input type="text" id="bfBrand" required class="form-input"></div>
                     <div class="form-group"><label class="form-label">Email *</label><input type="email" id="bfEmail" required class="form-input"></div>
                 </div>
                 
-                <!-- AQUI ESTÁ A MUDANÇA SOLICITADA NA SEGUNDA LINHA (CORES) -->
                 <div class="form-row">
                     <div class="form-group"><label class="form-label">Segmento *</label><input type="text" id="bfSegment" required class="form-input"></div>
                     <div class="form-group"><label class="form-label">Cores de Preferência</label><input type="text" id="bfColors" class="form-input" placeholder="Ex: azul e branco, vermelho e branco"></div>
@@ -390,6 +388,42 @@
         </div>
     </div>
 
+    <!-- Modal de confirmação de exclusão -->
+    <div class="modal-overlay" id="confirmDeleteModal" style="display:none;">
+        <div class="modal" style="max-width:400px;">
+            <div class="modal-header">
+                <h2 class="modal-title" style="color:#ef4444;">
+                    <i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão
+                </h2>
+                <button class="btn-ghost btn-icon" onclick="closeConfirmDeleteModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert-banner danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>
+                        <strong>Atenção!</strong> Esta ação é irreversível.
+                        <br>Tem certeza que deseja excluir permanentemente o cliente <strong id="deleteClientName"></strong>?
+                        <br><br>
+                        <small>Isso removerá:
+                            <br>• Dados do cliente no sistema
+                            <br>• Todas as solicitações do cliente
+                            <br>• Histórico de notificações relacionadas
+                            <br>• O usuário será marcado como inativo
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfirmDeleteModal()">Cancelar</button>
+                <button class="btn" style="background:#ef4444;color:white;" onclick="confirmDeleteClient()" id="btnConfirmDelete">
+                    <i class="fas fa-trash"></i> Excluir Permanentemente
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============================================
         // CONFIGURAÇÃO DO FIREBASE
@@ -414,6 +448,7 @@
         let currentFilter = 'all', currentNotifFilter = 'all', searchTerm = '';
         let listeners = [];
         let adminCredentials = null;
+        let clientToDelete = null; // Armazena o cliente a ser excluído
 
         function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
         function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
@@ -594,7 +629,8 @@
             await db.ref('users/' + newUid).set({
                 email, role: 'client',
                 name: extraData.name || email.split('@')[0],
-                createdAt: firebase.database.ServerValue.TIMESTAMP
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                active: true
             });
             
             await db.ref('clients').push().set({
@@ -602,7 +638,8 @@
                 siteName: extraData.siteName || '', monthlyValue: extraData.monthlyValue || '150.00',
                 planType: extraData.planType || 'monthly',
                 dueDate: extraData.dueDate || new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
-                createdAt: firebase.database.ServerValue.TIMESTAMP
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                active: true
             });
             
             const clientName = extraData.name || email.split('@')[0];
@@ -623,7 +660,7 @@
             let snapshot = await db.ref('users/' + uid).once('value');
             let userData = snapshot.val();
             if (!userData) {
-                userData = { email, role: 'admin', name: 'Admin', createdAt: Date.now() };
+                userData = { email, role: 'admin', name: 'Admin', createdAt: Date.now(), active: true };
                 await db.ref('users/' + uid).set(userData);
             }
             if (userData.role !== 'admin') { await auth.signOut(); throw new Error('Acesso negado!'); }
@@ -639,6 +676,7 @@
             const userData = snapshot.val();
             if (!userData) { await auth.signOut(); throw new Error('Usuário não encontrado.'); }
             if (userData.role === 'admin') { await auth.signOut(); throw new Error('Este email é do administrador.'); }
+            if (userData.active === false) { await auth.signOut(); throw new Error('Conta desativada. Entre em contato com o administrador.'); }
             
             const clientName = userData.name || email.split('@')[0];
             try { await createNotification('login', `${clientName} fez login no sistema`, clientName); } catch(e) {}
@@ -664,7 +702,7 @@
             const clientsRef = db.ref('clients');
             clientsRef.on('value', (snapshot) => {
                 const data = snapshot.val();
-                clients = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+                clients = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })).filter(c => c.active !== false) : [];
                 if (userRole === 'admin') { renderAdminDashboard(); renderClientsTable(); }
                 if (userRole === 'client' && currentUser) {
                     const mc = clients.find(c => c.uid === currentUser.uid);
@@ -743,7 +781,7 @@
                     <td>R$${parseFloat(c.monthlyValue||0).toFixed(2)}</td>
                     <td>${c.dueDate?new Date(c.dueDate+'T00:00:00').toLocaleDateString('pt-BR'):'---'}</td>
                     <td>${getStatusBadge(c.dueDate)}</td>
-                    <td><div class="actions-cell"><button class="action-btn" onclick="openEditClientModal('${c.id}')"><i class="fas fa-edit"></i></button><button class="action-btn" onclick="deleteClient('${c.id}')"><i class="fas fa-trash"></i></button></div></td>
+                    <td><div class="actions-cell"><button class="action-btn" onclick="openEditClientModal('${c.id}')"><i class="fas fa-edit"></i></button><button class="action-btn" onclick="openDeleteConfirmation('${c.id}')"><i class="fas fa-trash"></i></button></div></td>
                 </tr>`;
             }).join('');
         }
@@ -850,24 +888,99 @@
             document.getElementById('clientModal').style.display = 'flex';
         };
 
-        window.deleteClient = async (id) => {
-            if (!confirm('Excluir este cliente?')) return;
+        // ABRE MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
+        window.openDeleteConfirmation = (id) => {
+            const client = clients.find(c => c.id === id);
+            if (!client) return;
+            
+            clientToDelete = client;
+            document.getElementById('deleteClientName').textContent = client.name || client.email || 'Desconhecido';
+            document.getElementById('confirmDeleteModal').style.display = 'flex';
+        };
+
+        // FECHA MODAL DE CONFIRMAÇÃO
+        window.closeConfirmDeleteModal = () => {
+            document.getElementById('confirmDeleteModal').style.display = 'none';
+            clientToDelete = null;
+        };
+
+        // EXECUTA A EXCLUSÃO COMPLETA (OPÇÃO 1 - SEM CLOUD FUNCTIONS)
+        window.confirmDeleteClient = async () => {
+            if (!clientToDelete) return;
+            
+            const btn = document.getElementById('btnConfirmDelete');
+            btn.disabled = true;
+            btn.classList.add('btn-loading');
             showLoading();
-            try { 
-                const client = clients.find(c => c.id === id);
-                if (client && client.uid) {
-                    // Remove from database
-                    await db.ref('clients/' + id).remove();
-                    
-                    // We can also trigger a notification for tracking
-                    await createNotification('new_client', `Cliente excluído: ${client.name || 'Removido'}`, client.name || '');
-                } else {
-                    await db.ref('clients/' + id).remove();
+            
+            try {
+                const client = clientToDelete;
+                
+                // 1. Remove solicitações do cliente
+                if (allRequests && allRequests.length > 0) {
+                    const clientRequests = allRequests.filter(r => r.clientUid === client.uid);
+                    for (const request of clientRequests) {
+                        await db.ref('requests/' + request.id).remove();
+                    }
                 }
-                showToast('Cliente excluído.', 'success'); 
+                
+                // 2. Remove notificações relacionadas ao cliente
+                if (notifications && notifications.length > 0) {
+                    const clientNotifications = notifications.filter(n => 
+                        n.clientName === (client.name || '') || 
+                        n.title.includes(client.name || '')
+                    );
+                    for (const notification of clientNotifications) {
+                        await db.ref('notifications/' + notification.id).remove();
+                    }
+                }
+                
+                // 3. Marca o cliente como inativo (soft delete)
+                await db.ref('clients/' + client.id).update({
+                    active: false,
+                    deletedAt: firebase.database.ServerValue.TIMESTAMP,
+                    deletedBy: currentUser?.email || 'admin'
+                });
+                
+                // 4. Marca o usuário como inativo
+                await db.ref('users/' + client.uid).update({
+                    active: false,
+                    deletedAt: firebase.database.ServerValue.TIMESTAMP,
+                    deletedBy: currentUser?.email || 'admin'
+                });
+                
+                // 5. Registra no histórico de exclusões para referência
+                await db.ref('deletedUsers/' + client.uid).set({
+                    email: client.email || '',
+                    name: client.name || '',
+                    loginEmail: client.loginEmail || '',
+                    siteName: client.siteName || '',
+                    monthlyValue: client.monthlyValue || '0',
+                    planType: client.planType || 'monthly',
+                    deletedAt: firebase.database.ServerValue.TIMESTAMP,
+                    deletedBy: currentUser?.email || 'admin',
+                    originalClientId: client.id
+                });
+                
+                // 6. Cria notificação de exclusão
+                await createNotification(
+                    'new_client', 
+                    `Cliente excluído: ${client.name || 'Removido'} (Email: ${client.email || 'N/A'})`, 
+                    client.name || ''
+                );
+                
+                showToast('✅ Cliente excluído do sistema com sucesso!', 'success');
+                closeConfirmDeleteModal();
+                
+            } catch (e) {
+                console.error('Erro ao excluir cliente:', e);
+                showToast('Erro: ' + (e.message || 'Falha na exclusão'), 'error');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('btn-loading');
+                hideLoading();
+                clientToDelete = null;
             }
-            catch (e) { showToast('Erro: ' + e.message, 'error'); }
-            finally { hideLoading(); }
         };
 
         window.submitClientRequest = async () => {
@@ -974,14 +1087,21 @@
                 currentUser = r.user; userRole = 'client';
                 const cs = await db.ref('clients').orderByChild('uid').equalTo(currentUser.uid).once('value');
                 const cd = cs.val();
-                if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
+                if (cd) { 
+                    // Pega apenas clientes ativos
+                    const activeClients = Object.keys(cd).filter(key => cd[key].active !== false);
+                    if (activeClients.length > 0) {
+                        const key = activeClients[0];
+                        clientData = { id: key, ...cd[key] };
+                    }
+                }
                 showAppScreen(); showToast('Login efetuado!', 'success');
             } catch (err) {
                 showToast(err.code === 'auth/wrong-password' ? 'Senha inválida.' : (err.message || 'Erro'), 'error');
             } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
-        // FORMULÁRIO DE BRIEFING ATUALIZADO
+        // FORMULÁRIO DE BRIEFING
         document.getElementById('formBriefing').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('bfName').value.trim();
@@ -1001,9 +1121,12 @@
                 const userCredential = await auth.createUserWithEmailAndPassword(email, '123456');
                 const uid = userCredential.user.uid;
                 
-                await db.ref('users/' + uid).set({ email, role: 'client', name, createdAt: firebase.database.ServerValue.TIMESTAMP });
+                await db.ref('users/' + uid).set({ 
+                    email, role: 'client', name, 
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    active: true
+                });
                 
-                // Salvando o novo cliente utilizando "brand" como siteName e o valor inicial definido para 180.00
                 await db.ref('clients').push().set({ 
                     uid, name, email, brand, colors,
                     loginEmail: email, 
@@ -1012,13 +1135,20 @@
                     monthlyValue: '180.00', 
                     planType: 'monthly', 
                     dueDate: futureDate, 
-                    createdAt: firebase.database.ServerValue.TIMESTAMP 
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    active: true
                 });
                 
                 currentUser = userCredential.user; userRole = 'client';
                 const cs = await db.ref('clients').orderByChild('uid').equalTo(uid).once('value');
                 const cd = cs.val();
-                if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
+                if (cd) { 
+                    const activeClients = Object.keys(cd).filter(key => cd[key].active !== false);
+                    if (activeClients.length > 0) {
+                        const key = activeClients[0];
+                        clientData = { id: key, ...cd[key] };
+                    }
+                }
                 
                 document.getElementById('successMessageText').innerHTML = `<p><strong>${name}</strong>, seu site da marca <strong>${brand}</strong> está sendo criado! 🚀 </p><p>Sua senha provisória é: <strong>123456</strong></p>`;
                 
@@ -1029,6 +1159,11 @@
             } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
+        // Fechar modal de confirmação ao clicar fora
+        document.getElementById('confirmDeleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeConfirmDeleteModal();
+        });
+
         // INIT
         auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -1037,14 +1172,29 @@
                 const ud = us.val();
                 if (ud) {
                     userRole = ud.role;
+                    if (ud.active === false) {
+                        await auth.signOut();
+                        showBriefingScreen();
+                        showToast('Sua conta foi desativada. Entre em contato com o administrador.', 'error');
+                        return;
+                    }
                     if (userRole === 'client') {
                         const cs = await db.ref('clients').orderByChild('uid').equalTo(user.uid).once('value');
                         const cd = cs.val();
-                        if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
+                        if (cd) { 
+                            const activeClients = Object.keys(cd).filter(key => cd[key].active !== false);
+                            if (activeClients.length > 0) {
+                                const key = activeClients[0];
+                                clientData = { id: key, ...cd[key] };
+                            }
+                        }
                     }
                     showAppScreen();
                 } else if (user.email === MASTER_ADMIN_EMAIL) {
-                    await db.ref('users/' + user.uid).set({ email: user.email, role: 'admin', name: 'Admin', createdAt: Date.now() });
+                    await db.ref('users/' + user.uid).set({ 
+                        email: user.email, role: 'admin', name: 'Admin', 
+                        createdAt: Date.now(), active: true 
+                    });
                     userRole = 'admin';
                     showAppScreen();
                 } else {
