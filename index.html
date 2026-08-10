@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- STREAMING_CHUNK:Configuring meta tags and loading libraries... -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#3b82f6">
@@ -14,7 +13,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- STREAMING_CHUNK:Styling the application layout and components... -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         :root { --safe-bottom: env(safe-area-inset-bottom, 0px); }
@@ -25,7 +23,7 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .app-container { display: flex; min-height: 100vh; }
         
-        /* Sidebar Styles */
+        /* Estilos de Sidebar */
         .sidebar { width: 280px; max-width: 85vw; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transform: translateX(-100%); transition: transform 0.3s ease; box-shadow: 4px 0 20px rgba(0,0,0,0.1); padding-bottom: var(--safe-bottom); }
         .sidebar.open { transform: translateX(0); }
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
@@ -60,7 +58,6 @@
         .btn-loading::after { content: ''; position: absolute; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* STREAMING_CHUNK:Styling data sections, cards, and specific alerts... */
         .content-area { padding: 16px; flex: 1; padding-bottom: calc(16px + var(--safe-bottom)); }
         .page-title { font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
         .view-section { display: none; animation: fadeIn 0.25s ease; }
@@ -108,7 +105,6 @@
         .filter-pill { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid #e2e8f0; background: #fff; color: #475569; white-space: nowrap; min-height: 32px; }
         .filter-pill.active { background: #3b82f6; color: white; border-color: #3b82f6; }
         
-        /* STREAMING_CHUNK:Styling tables, notifications, modal and authentication screen... */
         .table-container { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 650px; }
@@ -157,6 +153,7 @@
         .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #fff; }
         .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #3b82f6; }
         .form-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .form-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 14px; }
         
         .auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f1f5f9; padding: 16px; }
@@ -186,6 +183,7 @@
             .stats-grid { grid-template-columns: repeat(4,1fr); gap: 14px; }
             .monthly-stats-grid { grid-template-columns: repeat(4,1fr); }
             .form-row { grid-template-columns: 1fr 1fr; }
+            .form-row-3 { grid-template-columns: 1fr 1fr 1fr; }
             .modal { border-radius: 20px; max-width: 600px; margin: auto; }
             .modal-overlay { align-items: center; padding: 20px; }
             @keyframes modalUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -199,28 +197,38 @@
 </head>
 <body>
 
-    <!-- STREAMING_CHUNK:Loading overlay and Toasts... -->
     <div class="toast-container" id="toastContainer"></div>
     <div class="loading-overlay" id="loadingOverlay" style="display:none;"><div class="loading-spinner"></div></div>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-    <!-- STREAMING_CHUNK:Briefing screen HTML structure... -->
     <div id="briefingScreen" class="auth-screen">
         <div class="briefing-card">
             <div class="auth-logo"><div class="auth-logo-icon"><i class="fas fa-rocket"></i></div><h1 class="auth-title">Briefing de Marca</h1><p class="auth-subtitle" style="font-weight:500;color:#3b82f6;margin-top:6px;">Conte sua visão para criarmos <span onclick="showAdminAuthScreen()" title="Admin" style="cursor:pointer;text-decoration:underline;">algo incrível.</span></p></div>
             <form id="formBriefing" class="auth-form">
-                <div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" id="bfName" required class="form-input"></div><div class="form-group"><label class="form-label">Email *</label><input type="email" id="bfEmail" required class="form-input"></div></div>
-                <div class="form-row"><div class="form-group"><label class="form-label">Segmento *</label><input type="text" id="bfSegment" required class="form-input"></div><div class="form-group"><label class="form-label">Cores</label><input type="text" id="bfColors" class="form-input"></div></div>
+                
+                <!-- AQUI ESTÁ A MUDANÇA SOLICITADA NA PRIMEIRA LINHA -->
+                <div class="form-row form-row-3">
+                    <div class="form-group"><label class="form-label">Seu Nome *</label><input type="text" id="bfName" required class="form-input"></div>
+                    <div class="form-group"><label class="form-label">Nome da Marca *</label><input type="text" id="bfBrand" required class="form-input"></div>
+                    <div class="form-group"><label class="form-label">Email *</label><input type="email" id="bfEmail" required class="form-input"></div>
+                </div>
+                
+                <!-- AQUI ESTÁ A MUDANÇA SOLICITADA NA SEGUNDA LINHA (CORES) -->
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">Segmento *</label><input type="text" id="bfSegment" required class="form-input"></div>
+                    <div class="form-group"><label class="form-label">Cores de Preferência</label><input type="text" id="bfColors" class="form-input" placeholder="Ex: azul e branco, vermelho e branco"></div>
+                </div>
+                
                 <div class="form-section"><label class="form-label">Preferências</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Formulário"> Formulário</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="WhatsApp"> WhatsApp</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Instagram"> Instagram</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="YouTube"> YouTube</label></div></div>
                 <div class="form-section"><label class="form-label">Propósito</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Vender mais" required> Vender mais</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Credibilidade"> Credibilidade</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Profissionalismo"> Profissionalismo</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Divulgar"> Divulgar</label></div></div>
                 <div class="form-group"><label class="form-label">Info Adicional</label><textarea id="bfExtraInfo" class="form-textarea"></textarea></div>
+                
                 <button type="submit" class="btn btn-primary" style="width:100%;" id="btnSubmitBriefing"><i class="fas fa-paper-plane"></i> Enviar e Acessar</button>
                 <button type="button" class="btn" onclick="showClientAuthScreen()" style="width:100%;background:#1d4ed8;color:white;"><i class="fas fa-user-circle"></i> Área do Cliente</button>
             </form>
         </div>
     </div>
 
-    <!-- STREAMING_CHUNK:Success briefing screen HTML structure... -->
     <div id="successBriefingScreen" class="auth-screen" style="display:none;">
         <div style="text-align:center;max-width:500px;padding:32px 20px;background:white;border-radius:24px;">
             <h2 style="font-size:22px;font-weight:800;margin-bottom:20px;">Entendido! 🚀🎯</h2>
@@ -232,7 +240,6 @@
         </div>
     </div>
 
-    <!-- STREAMING_CHUNK:Admin and Client authentication screens HTML structure... -->
     <!-- ADMIN AUTH -->
     <div id="adminAuthScreen" class="auth-screen" style="display:none;">
         <div class="auth-card">
@@ -259,7 +266,6 @@
         </div>
     </div>
 
-    <!-- STREAMING_CHUNK:App layout sidebar and header structure... -->
     <!-- APP -->
     <div id="appScreen" class="app-container" style="display:none;">
         <aside class="sidebar" id="sidebar">
@@ -272,7 +278,6 @@
             </nav>
             <nav class="sidebar-nav" id="menuClient" style="display:none;">
                 <button class="sidebar-nav-item active" data-view="clientDashboard" onclick="switchView('clientDashboard');closeSidebar();"><i class="fas fa-home"></i> Meu Plano</button>
-                <!-- Ajuste: Aba Assessoria removida aqui para ser exibida apenas abaixo do plano na tela inicial do cliente -->
             </nav>
             <div class="sidebar-footer">
                 <div id="sidebarUserInfo" style="font-size:12px;"></div>
@@ -294,7 +299,6 @@
             </header>
 
             <div class="content-area">
-                <!-- STREAMING_CHUNK:Admin views... -->
                 <div id="adminDashboard" class="view-section active">
                     <h1 class="page-title">Dashboard</h1>
                     <div class="stats-grid">
@@ -340,7 +344,6 @@
                     <div class="table-container"><div class="table-wrapper"><table><thead><tr><th>Data</th><th>Cliente</th><th>Solicitação</th><th>Status</th><th>Ações</th></tr></thead><tbody id="adminRequestsTableBody"></tbody></table></div></div>
                 </div>
 
-                <!-- STREAMING_CHUNK:Client unified Dashboard & Assessoria View... -->
                 <div id="clientDashboard" class="view-section">
                     <h1 class="page-title">Meu Plano</h1>
                     <div class="stats-grid">
@@ -351,7 +354,6 @@
                     </div>
                     <div id="clientPlanAlert"></div>
                     
-                    <!-- Ajuste: Área de Assessoria integrada e exibida logo abaixo do plano na tela inicial do cliente -->
                     <div class="section-title" style="margin-top: 32px;"><i class="fas fa-headset" style="color:#3b82f6;"></i> Assessoria</div>
                     <div class="alert-banner info"><i class="fas fa-info-circle"></i> Prazo: 5 a 7 dias úteis</div>
                     <textarea id="newRequestText" class="form-textarea" placeholder="Descreva a atualização..."></textarea>
@@ -364,7 +366,6 @@
         </main>
     </div>
 
-    <!-- STREAMING_CHUNK:Modals HTML structure... -->
     <!-- MODALS -->
     <div class="modal-overlay" id="clientModal" style="display:none;">
         <div class="modal">
@@ -389,10 +390,9 @@
         </div>
     </div>
 
-    <!-- STREAMING_CHUNK:Initializing JS and Firebase Configuration... -->
     <script>
         // ============================================
-        // FIREBASE CONFIG
+        // CONFIGURAÇÃO DO FIREBASE
         // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyDDX8AbbPe_NyEaSdk7U8rUkOf6cPnXWzU",
@@ -428,12 +428,11 @@
             setTimeout(() => toast.remove(), 3500);
         }
 
-        /* STREAMING_CHUNK:Defining Utility Helper Functions... */
         function getClientStatus(dueDateStr) {
             if (!dueDateStr) return { status: 'unknown', label: 'Sem data', color: 'gray' };
-            const today = new Date(); today.setHours(0,0,0,0);
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
             const dueDate = new Date(dueDateStr + 'T00:00:00');
-            const diffDays = Math.ceil((dueDate - today) / 86400000);
+            const diffDays = Math.ceil((dueDate - hoje) / 86400000);
             if (diffDays < 0) return { status: 'expired', label: 'Vencido', color: 'red' };
             if (diffDays === 0) return { status: 'dueToday', label: 'Vence Hoje', color: 'red' };
             if (diffDays <= 5) return { status: 'dueSoon', label: 'Vence em Breve', color: 'yellow' };
@@ -483,7 +482,6 @@
             return new Date(t).toLocaleDateString('pt-BR');
         }
 
-        /* STREAMING_CHUNK:Defining Notification Logic... */
         async function createNotification(type, title, clientName = '') {
             try { 
                 await db.ref('notifications').push().set({ 
@@ -525,7 +523,6 @@
             renderNotifications();
         };
 
-        /* STREAMING_CHUNK:Handling UI navigation and visibility toggling... */
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('active'); }
         document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
@@ -539,7 +536,6 @@
         window.showClientAuthScreen = () => { hideAllScreens(); document.getElementById('clientAuthScreen').style.display = 'flex'; };
         window.goToClientPanel = () => { document.getElementById('successBriefingScreen').style.display = 'none'; showAppScreen(); };
 
-        // Ajuste: Helper function que atualiza os dados do cliente e administrador na sidebar
         function updateSidebarUserInfo() {
             const info = document.getElementById('sidebarUserInfo');
             if (userRole === 'admin') {
@@ -578,14 +574,12 @@
             if (viewId === 'adminClients') renderClientsTable();
             if (viewId === 'adminAssessoria') renderAdminRequests();
             
-            // Ajuste: Apenas um viewId "clientDashboard" chama a renderização de tudo para o Cliente!
             if (viewId === 'clientDashboard') {
                 renderClientDashboard();
                 renderClientRequests();
             }
         };
 
-        /* STREAMING_CHUNK:Implementing creation and authentication logic... */
         async function createClientByAdmin(email, password, extraData = {}) {
             const adminEmail = currentUser.email;
             const adminPassword = adminCredentials?.password;
@@ -663,7 +657,6 @@
             showBriefingScreen();
         };
 
-        /* STREAMING_CHUNK:Setting up Realtime Listeners for synchronization... */
         function setupRealtimeListeners() {
             listeners.forEach(ref => ref.off());
             listeners = [];
@@ -678,7 +671,7 @@
                     if (mc) { 
                         clientData = mc; 
                         renderClientDashboard(); 
-                        updateSidebarUserInfo(); // Ajuste: Atualiza a info local em realtime se a senha/etc mudar pelo banco
+                        updateSidebarUserInfo(); 
                     }
                 }
             });
@@ -702,7 +695,6 @@
             listeners.push(notifRef);
         }
 
-        /* STREAMING_CHUNK:Rendering Dashboard logic and tables... */
         function renderAdminDashboard() {
             document.getElementById('statTotalClients').textContent = clients.length;
             let active = 0, dueToday = 0;
@@ -794,7 +786,6 @@
             }).join('');
         }
 
-        /* STREAMING_CHUNK:Defining action handler functions... */
         window.openAddClientModal = () => {
             document.getElementById('modalTitle').textContent = 'Novo Cliente';
             document.getElementById('clientForm').reset();
@@ -906,7 +897,6 @@
             document.getElementById('changePasswordModal').style.display = 'flex';
         };
 
-        // Ajuste: A função agora atualiza tanto o banco quanto a exibição em tempo real na tela do usuário logado
         window.saveNewClientPassword = async () => {
             const newPass = document.getElementById('newClientPassword').value.trim();
             if (!newPass || newPass.length < 6) { showToast('Mínimo 6 caracteres.', 'error'); return; }
@@ -914,13 +904,11 @@
             try {
                 await auth.currentUser.updatePassword(newPass);
                 
-                // Atualiza a senha no registro realtime
                 if (clientData?.id) {
                     await db.ref('clients/' + clientData.id).update({ password: newPass });
                     clientData.password = newPass;
                 }
                 
-                // Atualiza visualmente o sidebar mostrando a nova senha imediatamente!
                 updateSidebarUserInfo();
                 
                 const clientName = clientData?.name || currentUser?.email?.split('@')[0] || 'Cliente';
@@ -945,7 +933,6 @@
             renderClientsTable();
         };
 
-        /* STREAMING_CHUNK:Adding Form Submit event listeners... */
         document.getElementById('formAdminAuth').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmailAdmin').value.trim();
@@ -982,26 +969,46 @@
             } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
+        // FORMULÁRIO DE BRIEFING ATUALIZADO
         document.getElementById('formBriefing').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('bfName').value.trim();
+            const brand = document.getElementById('bfBrand').value.trim();
             const email = document.getElementById('bfEmail').value.trim();
             const segment = document.getElementById('bfSegment').value.trim();
-            if (!name || !email || !segment) { showToast('Preencha os campos obrigatórios.', 'error'); return; }
+            
+            if (!name || !brand || !email || !segment) { showToast('Preencha os campos obrigatórios.', 'error'); return; }
             if (email.toLowerCase() === MASTER_ADMIN_EMAIL) { showToast('Email reservado.', 'error'); return; }
+            
             const btn = document.getElementById('btnSubmitBriefing');
             btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
+            
             try {
                 const futureDate = new Date(Date.now() + 30*86400000).toISOString().split('T')[0];
                 const userCredential = await auth.createUserWithEmailAndPassword(email, '123456');
                 const uid = userCredential.user.uid;
+                
                 await db.ref('users/' + uid).set({ email, role: 'client', name, createdAt: firebase.database.ServerValue.TIMESTAMP });
-                await db.ref('clients').push().set({ uid, name, email, loginEmail: email, password: '123456', siteName: segment, monthlyValue: '150.00', planType: 'monthly', dueDate: futureDate, createdAt: firebase.database.ServerValue.TIMESTAMP });
+                
+                // Salvando o novo cliente utilizando "brand" (Nome da Marca) como siteName principal
+                await db.ref('clients').push().set({ 
+                    uid, name, email, brand, 
+                    loginEmail: email, 
+                    password: '123456', 
+                    siteName: brand, 
+                    monthlyValue: '150.00', 
+                    planType: 'monthly', 
+                    dueDate: futureDate, 
+                    createdAt: firebase.database.ServerValue.TIMESTAMP 
+                });
+                
                 currentUser = userCredential.user; userRole = 'client';
                 const cs = await db.ref('clients').orderByChild('uid').equalTo(uid).once('value');
                 const cd = cs.val();
                 if (cd) { const key = Object.keys(cd)[0]; clientData = { id: key, ...cd[key] }; }
-                document.getElementById('successMessageText').innerHTML = `<p><strong>${name}</strong>, seu site está sendo criado! 🚀</p><p>Sua senha: <strong>123456</strong></p>`;
+                
+                document.getElementById('successMessageText').innerHTML = `<p><strong>${name}</strong>, seu site da marca <strong>${brand}</strong> está sendo criado! 🚀 </p><p>Sua senha provisória é: <strong>123456</strong></p>`;
+                
                 document.getElementById('briefingScreen').style.display = 'none';
                 document.getElementById('successBriefingScreen').style.display = 'flex';
             } catch (err) {
@@ -1009,7 +1016,6 @@
             } finally { btn.disabled = false; btn.classList.remove('btn-loading'); hideLoading(); }
         });
 
-        /* STREAMING_CHUNK:Firebase Auth state persistence loop... */
         // INIT
         auth.onAuthStateChanged(async (user) => {
             if (user) {
