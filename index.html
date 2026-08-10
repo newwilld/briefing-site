@@ -23,7 +23,6 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .app-container { display: flex; min-height: 100vh; }
         
-        /* Estilos de Sidebar */
         .sidebar { width: 280px; max-width: 85vw; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transform: translateX(-100%); transition: transform 0.3s ease; box-shadow: 4px 0 20px rgba(0,0,0,0.1); padding-bottom: var(--safe-bottom); }
         .sidebar.open { transform: translateX(0); }
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
@@ -38,14 +37,12 @@
         .sidebar-footer { padding: 12px 16px; border-top: 1px solid #e2e8f0; }
         .notification-badge { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #ef4444; color: white; font-size: 10px; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
         
-        /* Main Layout Styles */
         .main-content { flex: 1; margin-left: 0; min-height: 100vh; display: flex; flex-direction: column; width: 100%; }
         .header { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
         .header-search { display: flex; align-items: center; gap: 8px; background: #f1f5f9; border-radius: 10px; padding: 8px 12px; width: 100%; max-width: 300px; border: 1px solid transparent; }
         .header-search:focus-within { background: #fff; border-color: #3b82f6; }
         .header-search input { border: none; background: none; outline: none; font-size: 14px; width: 100%; }
         
-        /* Buttons */
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; border: none; min-height: 42px; }
         .btn-primary { background: #3b82f6; color: white; }
         .btn-secondary { background: #f1f5f9; color: #475569; }
@@ -74,7 +71,6 @@
         .stat-card-value { font-size: 22px; font-weight: 700; }
         .stat-card-label { font-size: 11px; color: #64748b; }
         
-        /* Badges de Planos */
         .plan-badge-pro {
             background: linear-gradient(135deg, #3b82f6, #6366f1);
             color: white;
@@ -519,7 +515,18 @@
             const val = parseFloat(value);
             if (val === 90) return 'START';
             if (val === 180) return 'PRO';
-            return null; // Retorna null para valores personalizados
+            return null;
+        }
+
+        // FUNÇÃO PARA VERIFICAR DIAS RESTANTES ATÉ O VENCIMENTO
+        function getDaysUntilDue(dueDateStr) {
+            if (!dueDateStr) return null;
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            const dueDate = new Date(dueDateStr + 'T00:00:00');
+            const diffTime = dueDate - hoje;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
         }
 
         // FUNÇÃO PARA OBTER O BADGE DO PLANO (VERSÃO ADMIN - TABELA)
@@ -535,11 +542,20 @@
         }
 
         // FUNÇÃO PARA OBTER O BADGE DO PLANO (VERSÃO CLIENTE - PAINEL)
-        function getClientPlanBadge(value) {
+        function getClientPlanBadge(value, dueDate) {
             const planName = getPlanName(value);
+            const daysUntilDue = getDaysUntilDue(dueDate);
+            const showValue = daysUntilDue !== null && daysUntilDue <= 10;
+            
             if (planName === 'PRO') {
+                if (showValue) {
+                    return '<span class="plan-badge-pro-client"><i class="fas fa-crown"></i> PLANO PRO <small style="font-size:14px;opacity:0.9;">R$ 180</small></span>';
+                }
                 return '<span class="plan-badge-pro-client"><i class="fas fa-crown"></i> PLANO PRO</span>';
             } else if (planName === 'START') {
+                if (showValue) {
+                    return '<span class="plan-badge-start-client"><i class="fas fa-rocket"></i> PLANO START <small style="font-size:14px;opacity:0.9;">R$ 90</small></span>';
+                }
                 return '<span class="plan-badge-start-client"><i class="fas fa-rocket"></i> PLANO START</span>';
             } else {
                 return 'R$' + parseFloat(value || 0).toFixed(2);
@@ -861,7 +877,6 @@
                 if (s.status === 'expired' || s.status === 'dueToday') ac = '#ef4444';
                 else if (s.status === 'dueSoon') ac = '#f59e0b';
                 
-                // Usa a função getPlanBadge para mostrar o plano correto
                 const displayValue = getPlanBadge(c.monthlyValue);
                 
                 return `<tr>
@@ -892,17 +907,25 @@
             document.getElementById('clientViewSiteName').textContent = clientData.siteName || '---';
             document.getElementById('clientViewPlanType').textContent = getPlanLabel(clientData.planType);
             
-            // Usa a função getClientPlanBadge para mostrar o plano correto
-            document.getElementById('clientViewPlan').innerHTML = getClientPlanBadge(clientData.monthlyValue);
+            // Usa a função getClientPlanBadge com a data de vencimento
+            document.getElementById('clientViewPlan').innerHTML = getClientPlanBadge(clientData.monthlyValue, clientData.dueDate);
             
             document.getElementById('clientViewDueDate').textContent = clientData.dueDate ? new Date(clientData.dueDate+'T00:00:00').toLocaleDateString('pt-BR') : '---';
             const s = getClientStatus(clientData.dueDate);
             const df = clientData.dueDate ? new Date(clientData.dueDate+'T00:00:00').toLocaleDateString('pt-BR') : '---';
             const ac = document.getElementById('clientPlanAlert');
-            if (s.status === 'expired') ac.innerHTML = `<div class="alert-banner danger"><strong>VENCIDO</strong> desde ${df}</div>`;
-            else if (s.status === 'dueToday') ac.innerHTML = `<div class="alert-banner warning"><strong>Vence HOJE!</strong></div>`;
-            else if (s.status === 'dueSoon') ac.innerHTML = `<div class="alert-banner info">Vence em breve (${df})</div>`;
-            else ac.innerHTML = `<div class="alert-banner success"><strong>ATIVO</strong> - Vence: ${df}</div>`;
+            
+            const daysUntilDue = getDaysUntilDue(clientData.dueDate);
+            
+            if (s.status === 'expired') {
+                ac.innerHTML = `<div class="alert-banner danger"><strong>VENCIDO</strong> desde ${df}</div>`;
+            } else if (s.status === 'dueToday') {
+                ac.innerHTML = `<div class="alert-banner warning"><strong>Vence HOJE!</strong> Entre em contato para renovar.</div>`;
+            } else if (s.status === 'dueSoon' || (daysUntilDue !== null && daysUntilDue <= 10)) {
+                ac.innerHTML = `<div class="alert-banner info"><i class="fas fa-clock"></i> <strong>Atenção!</strong> Faltam apenas <strong>${daysUntilDue} dias</strong> para o vencimento (${df}). Renove seu plano para manter os benefícios!</div>`;
+            } else {
+                ac.innerHTML = `<div class="alert-banner success"><strong>ATIVO</strong> - Vence: ${df}</div>`;
+            }
         }
 
         function renderClientRequests() {
@@ -921,7 +944,7 @@
             document.getElementById('modalTitle').textContent = 'Novo Cliente';
             document.getElementById('clientForm').reset();
             document.getElementById('clientId').value = '';
-            document.getElementById('monthlyValue').value = '180.00'; // Valor padrão = PLANO PRO
+            document.getElementById('monthlyValue').value = '180.00';
             document.getElementById('clientModal').style.display = 'flex';
         };
         window.closeClientModal = () => { document.getElementById('clientModal').style.display = 'none'; };
@@ -1211,7 +1234,6 @@
                     active: true
                 });
                 
-                // Valor padrão 180 = PLANO PRO
                 await db.ref('clients').push().set({ 
                     uid, name, email, brand, colors,
                     loginEmail: email, 
