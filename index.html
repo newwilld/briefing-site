@@ -74,7 +74,7 @@
         .stat-card-value { font-size: 22px; font-weight: 700; }
         .stat-card-label { font-size: 11px; color: #64748b; }
         
-        /* Badge para plano PRO */
+        /* Badges de Planos */
         .plan-badge-pro {
             background: linear-gradient(135deg, #3b82f6, #6366f1);
             color: white;
@@ -86,6 +86,43 @@
             align-items: center;
             gap: 4px;
             box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+        }
+        
+        .plan-badge-start {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+        }
+
+        .plan-badge-pro-client {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+        }
+
+        .plan-badge-start-client {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.4);
         }
         
         .monthly-stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 16px; }
@@ -477,6 +514,38 @@
             setTimeout(() => toast.remove(), 3500);
         }
 
+        // FUNÇÃO PARA OBTER O NOME DO PLANO BASEADO NO VALOR
+        function getPlanName(value) {
+            const val = parseFloat(value);
+            if (val === 90) return 'START';
+            if (val === 180) return 'PRO';
+            return null; // Retorna null para valores personalizados
+        }
+
+        // FUNÇÃO PARA OBTER O BADGE DO PLANO (VERSÃO ADMIN - TABELA)
+        function getPlanBadge(value) {
+            const planName = getPlanName(value);
+            if (planName === 'PRO') {
+                return '<span class="plan-badge-pro"><i class="fas fa-crown"></i> PLANO PRO</span>';
+            } else if (planName === 'START') {
+                return '<span class="plan-badge-start"><i class="fas fa-rocket"></i> PLANO START</span>';
+            } else {
+                return 'R$' + parseFloat(value || 0).toFixed(2);
+            }
+        }
+
+        // FUNÇÃO PARA OBTER O BADGE DO PLANO (VERSÃO CLIENTE - PAINEL)
+        function getClientPlanBadge(value) {
+            const planName = getPlanName(value);
+            if (planName === 'PRO') {
+                return '<span class="plan-badge-pro-client"><i class="fas fa-crown"></i> PLANO PRO</span>';
+            } else if (planName === 'START') {
+                return '<span class="plan-badge-start-client"><i class="fas fa-rocket"></i> PLANO START</span>';
+            } else {
+                return 'R$' + parseFloat(value || 0).toFixed(2);
+            }
+        }
+
         function getClientStatus(dueDateStr) {
             if (!dueDateStr) return { status: 'unknown', label: 'Sem data', color: 'gray' };
             const hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -647,7 +716,6 @@
                 active: true
             });
             
-            // Se não tiver valor definido, usa "PLANO PRO" como padrão
             const monthlyValue = extraData.monthlyValue || '180.00';
             
             await db.ref('clients').push().set({
@@ -793,10 +861,8 @@
                 if (s.status === 'expired' || s.status === 'dueToday') ac = '#ef4444';
                 else if (s.status === 'dueSoon') ac = '#f59e0b';
                 
-                // Mostra o valor ou "PLANO PRO" se for 180
-                const displayValue = (parseFloat(c.monthlyValue) === 180 || !c.monthlyValue) ? 
-                    '<span class="plan-badge-pro"><i class="fas fa-crown"></i> PLANO PRO</span>' : 
-                    'R$' + parseFloat(c.monthlyValue||0).toFixed(2);
+                // Usa a função getPlanBadge para mostrar o plano correto
+                const displayValue = getPlanBadge(c.monthlyValue);
                 
                 return `<tr>
                     <td><div class="client-info"><div class="client-avatar" style="background:${ac}">${(c.name||'??').substring(0,2).toUpperCase()}</div><div><div class="client-name">${getReminderIcon(c.dueDate)} ${c.name||'---'}</div><div class="client-detail">${c.email||''}</div></div></div></td>
@@ -826,8 +892,8 @@
             document.getElementById('clientViewSiteName').textContent = clientData.siteName || '---';
             document.getElementById('clientViewPlanType').textContent = getPlanLabel(clientData.planType);
             
-            // Mostra sempre "PLANO PRO" no painel do cliente
-            document.getElementById('clientViewPlan').innerHTML = '<span style="background:linear-gradient(135deg,#3b82f6,#6366f1);color:white;padding:4px 16px;border-radius:20px;font-size:18px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(59,130,246,0.4);"><i class="fas fa-crown"></i> PLANO PRO</span>';
+            // Usa a função getClientPlanBadge para mostrar o plano correto
+            document.getElementById('clientViewPlan').innerHTML = getClientPlanBadge(clientData.monthlyValue);
             
             document.getElementById('clientViewDueDate').textContent = clientData.dueDate ? new Date(clientData.dueDate+'T00:00:00').toLocaleDateString('pt-BR') : '---';
             const s = getClientStatus(clientData.dueDate);
@@ -855,7 +921,7 @@
             document.getElementById('modalTitle').textContent = 'Novo Cliente';
             document.getElementById('clientForm').reset();
             document.getElementById('clientId').value = '';
-            document.getElementById('monthlyValue').value = '180.00'; // Valor padrão
+            document.getElementById('monthlyValue').value = '180.00'; // Valor padrão = PLANO PRO
             document.getElementById('clientModal').style.display = 'flex';
         };
         window.closeClientModal = () => { document.getElementById('clientModal').style.display = 'none'; };
