@@ -74,6 +74,20 @@
         .stat-card-value { font-size: 22px; font-weight: 700; }
         .stat-card-label { font-size: 11px; color: #64748b; }
         
+        /* Badge para plano PRO */
+        .plan-badge-pro {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+        }
+        
         .monthly-stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 16px; }
         .monthly-stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; text-align: center; }
         .monthly-stat-card.current { border-color: #3b82f6; background: #eef2ff; }
@@ -347,7 +361,7 @@
                     <div class="stats-grid">
                         <div class="stat-card"><div class="stat-card-icon blue"><i class="fas fa-globe"></i></div><div class="stat-card-value" id="clientViewSiteName">---</div><div class="stat-card-label">Site</div></div>
                         <div class="stat-card"><div class="stat-card-icon green"><i class="fas fa-calendar-check"></i></div><div class="stat-card-value" id="clientViewPlanType">---</div><div class="stat-card-label">Ciclo</div></div>
-                        <div class="stat-card"><div class="stat-card-icon purple"><i class="fas fa-dollar-sign"></i></div><div class="stat-card-value" id="clientViewValue">R$0</div><div class="stat-card-label">Valor</div></div>
+                        <div class="stat-card"><div class="stat-card-icon purple"><i class="fas fa-crown"></i></div><div class="stat-card-value" id="clientViewPlan">PLANO PRO</div><div class="stat-card-label">Plano</div></div>
                         <div class="stat-card"><div class="stat-card-icon" style="background:#fffbeb;color:#f59e0b;"><i class="fas fa-clock"></i></div><div class="stat-card-value" id="clientViewDueDate">---</div><div class="stat-card-label">Vencimento</div></div>
                     </div>
                     <div id="clientPlanAlert"></div>
@@ -448,7 +462,7 @@
         let currentFilter = 'all', currentNotifFilter = 'all', searchTerm = '';
         let listeners = [];
         let adminCredentials = null;
-        let clientToDelete = null; // Armazena o cliente a ser excluído
+        let clientToDelete = null;
 
         function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
         function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
@@ -633,9 +647,13 @@
                 active: true
             });
             
+            // Se não tiver valor definido, usa "PLANO PRO" como padrão
+            const monthlyValue = extraData.monthlyValue || '180.00';
+            
             await db.ref('clients').push().set({
                 uid: newUid, name: extraData.name || '', email, loginEmail: email, password,
-                siteName: extraData.siteName || '', monthlyValue: extraData.monthlyValue || '150.00',
+                siteName: extraData.siteName || '', 
+                monthlyValue: monthlyValue,
                 planType: extraData.planType || 'monthly',
                 dueDate: extraData.dueDate || new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
                 createdAt: firebase.database.ServerValue.TIMESTAMP,
@@ -774,11 +792,17 @@
                 let ac = '#3b82f6';
                 if (s.status === 'expired' || s.status === 'dueToday') ac = '#ef4444';
                 else if (s.status === 'dueSoon') ac = '#f59e0b';
+                
+                // Mostra o valor ou "PLANO PRO" se for 180
+                const displayValue = (parseFloat(c.monthlyValue) === 180 || !c.monthlyValue) ? 
+                    '<span class="plan-badge-pro"><i class="fas fa-crown"></i> PLANO PRO</span>' : 
+                    'R$' + parseFloat(c.monthlyValue||0).toFixed(2);
+                
                 return `<tr>
                     <td><div class="client-info"><div class="client-avatar" style="background:${ac}">${(c.name||'??').substring(0,2).toUpperCase()}</div><div><div class="client-name">${getReminderIcon(c.dueDate)} ${c.name||'---'}</div><div class="client-detail">${c.email||''}</div></div></div></td>
                     <td>${c.siteName||'---'}</td>
                     <td><span class="badge badge-info">${getPlanLabel(c.planType)}</span></td>
-                    <td>R$${parseFloat(c.monthlyValue||0).toFixed(2)}</td>
+                    <td>${displayValue}</td>
                     <td>${c.dueDate?new Date(c.dueDate+'T00:00:00').toLocaleDateString('pt-BR'):'---'}</td>
                     <td>${getStatusBadge(c.dueDate)}</td>
                     <td><div class="actions-cell"><button class="action-btn" onclick="openEditClientModal('${c.id}')"><i class="fas fa-edit"></i></button><button class="action-btn" onclick="openDeleteConfirmation('${c.id}')"><i class="fas fa-trash"></i></button></div></td>
@@ -801,7 +825,10 @@
             if (!clientData) return;
             document.getElementById('clientViewSiteName').textContent = clientData.siteName || '---';
             document.getElementById('clientViewPlanType').textContent = getPlanLabel(clientData.planType);
-            document.getElementById('clientViewValue').textContent = 'R$' + parseFloat(clientData.monthlyValue||150).toFixed(2);
+            
+            // Mostra sempre "PLANO PRO" no painel do cliente
+            document.getElementById('clientViewPlan').innerHTML = '<span style="background:linear-gradient(135deg,#3b82f6,#6366f1);color:white;padding:4px 16px;border-radius:20px;font-size:18px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(59,130,246,0.4);"><i class="fas fa-crown"></i> PLANO PRO</span>';
+            
             document.getElementById('clientViewDueDate').textContent = clientData.dueDate ? new Date(clientData.dueDate+'T00:00:00').toLocaleDateString('pt-BR') : '---';
             const s = getClientStatus(clientData.dueDate);
             const df = clientData.dueDate ? new Date(clientData.dueDate+'T00:00:00').toLocaleDateString('pt-BR') : '---';
@@ -828,6 +855,7 @@
             document.getElementById('modalTitle').textContent = 'Novo Cliente';
             document.getElementById('clientForm').reset();
             document.getElementById('clientId').value = '';
+            document.getElementById('monthlyValue').value = '180.00'; // Valor padrão
             document.getElementById('clientModal').style.display = 'flex';
         };
         window.closeClientModal = () => { document.getElementById('clientModal').style.display = 'none'; };
@@ -882,13 +910,12 @@
             document.getElementById('clientLoginEmail').value = client.loginEmail || '';
             document.getElementById('clientPassword').value = client.password || '';
             document.getElementById('siteName').value = client.siteName || '';
-            document.getElementById('monthlyValue').value = client.monthlyValue || '';
+            document.getElementById('monthlyValue').value = client.monthlyValue || '180.00';
             document.getElementById('planType').value = client.planType || 'monthly';
             document.getElementById('dueDate').value = client.dueDate || '';
             document.getElementById('clientModal').style.display = 'flex';
         };
 
-        // ABRE MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
         window.openDeleteConfirmation = (id) => {
             const client = clients.find(c => c.id === id);
             if (!client) return;
@@ -898,13 +925,11 @@
             document.getElementById('confirmDeleteModal').style.display = 'flex';
         };
 
-        // FECHA MODAL DE CONFIRMAÇÃO
         window.closeConfirmDeleteModal = () => {
             document.getElementById('confirmDeleteModal').style.display = 'none';
             clientToDelete = null;
         };
 
-        // EXECUTA A EXCLUSÃO COMPLETA (OPÇÃO 1 - SEM CLOUD FUNCTIONS)
         window.confirmDeleteClient = async () => {
             if (!clientToDelete) return;
             
@@ -916,7 +941,6 @@
             try {
                 const client = clientToDelete;
                 
-                // 1. Remove solicitações do cliente
                 if (allRequests && allRequests.length > 0) {
                     const clientRequests = allRequests.filter(r => r.clientUid === client.uid);
                     for (const request of clientRequests) {
@@ -924,7 +948,6 @@
                     }
                 }
                 
-                // 2. Remove notificações relacionadas ao cliente
                 if (notifications && notifications.length > 0) {
                     const clientNotifications = notifications.filter(n => 
                         n.clientName === (client.name || '') || 
@@ -935,21 +958,18 @@
                     }
                 }
                 
-                // 3. Marca o cliente como inativo (soft delete)
                 await db.ref('clients/' + client.id).update({
                     active: false,
                     deletedAt: firebase.database.ServerValue.TIMESTAMP,
                     deletedBy: currentUser?.email || 'admin'
                 });
                 
-                // 4. Marca o usuário como inativo
                 await db.ref('users/' + client.uid).update({
                     active: false,
                     deletedAt: firebase.database.ServerValue.TIMESTAMP,
                     deletedBy: currentUser?.email || 'admin'
                 });
                 
-                // 5. Registra no histórico de exclusões para referência
                 await db.ref('deletedUsers/' + client.uid).set({
                     email: client.email || '',
                     name: client.name || '',
@@ -962,7 +982,6 @@
                     originalClientId: client.id
                 });
                 
-                // 6. Cria notificação de exclusão
                 await createNotification(
                     'new_client', 
                     `Cliente excluído: ${client.name || 'Removido'} (Email: ${client.email || 'N/A'})`, 
@@ -1088,7 +1107,6 @@
                 const cs = await db.ref('clients').orderByChild('uid').equalTo(currentUser.uid).once('value');
                 const cd = cs.val();
                 if (cd) { 
-                    // Pega apenas clientes ativos
                     const activeClients = Object.keys(cd).filter(key => cd[key].active !== false);
                     if (activeClients.length > 0) {
                         const key = activeClients[0];
@@ -1127,6 +1145,7 @@
                     active: true
                 });
                 
+                // Valor padrão 180 = PLANO PRO
                 await db.ref('clients').push().set({ 
                     uid, name, email, brand, colors,
                     loginEmail: email, 
@@ -1150,7 +1169,7 @@
                     }
                 }
                 
-                document.getElementById('successMessageText').innerHTML = `<p><strong>${name}</strong>, seu site da marca <strong>${brand}</strong> está sendo criado! 🚀 </p><p>Sua senha provisória é: <strong>123456</strong></p>`;
+                document.getElementById('successMessageText').innerHTML = `<p><strong>${name}</strong>, seu site da marca <strong>${brand}</strong> está sendo criado! 🚀 </p><p>Seu plano: <strong style="color:#3b82f6;">PLANO PRO</strong></p><p>Sua senha provisória é: <strong>123456</strong></p>`;
                 
                 document.getElementById('briefingScreen').style.display = 'none';
                 document.getElementById('successBriefingScreen').style.display = 'flex';
