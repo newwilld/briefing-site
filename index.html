@@ -853,7 +853,19 @@
         window.deleteClient = async (id) => {
             if (!confirm('Excluir este cliente?')) return;
             showLoading();
-            try { await db.ref('clients/' + id).remove(); showToast('Cliente excluído.', 'success'); }
+            try { 
+                const client = clients.find(c => c.id === id);
+                if (client && client.uid) {
+                    // Remove from database
+                    await db.ref('clients/' + id).remove();
+                    
+                    // We can also trigger a notification for tracking
+                    await createNotification('new_client', `Cliente excluído: ${client.name || 'Removido'}`, client.name || '');
+                } else {
+                    await db.ref('clients/' + id).remove();
+                }
+                showToast('Cliente excluído.', 'success'); 
+            }
             catch (e) { showToast('Erro: ' + e.message, 'error'); }
             finally { hideLoading(); }
         };
