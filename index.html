@@ -976,6 +976,7 @@
             const brand = document.getElementById('bfBrand').value.trim();
             const email = document.getElementById('bfEmail').value.trim();
             const segment = document.getElementById('bfSegment').value.trim();
+            const colors = document.getElementById('bfColors').value.trim();
             
             if (!name || !brand || !email || !segment) { showToast('Preencha os campos obrigatórios.', 'error'); return; }
             if (email.toLowerCase() === MASTER_ADMIN_EMAIL) { showToast('Email reservado.', 'error'); return; }
@@ -990,13 +991,13 @@
                 
                 await db.ref('users/' + uid).set({ email, role: 'client', name, createdAt: firebase.database.ServerValue.TIMESTAMP });
                 
-                // Salvando o novo cliente utilizando "brand" (Nome da Marca) como siteName principal
+                // Salvando o novo cliente utilizando "brand" como siteName e o valor inicial definido para 180.00
                 await db.ref('clients').push().set({ 
-                    uid, name, email, brand, 
+                    uid, name, email, brand, colors,
                     loginEmail: email, 
                     password: '123456', 
                     siteName: brand, 
-                    monthlyValue: '150.00', 
+                    monthlyValue: '180.00', 
                     planType: 'monthly', 
                     dueDate: futureDate, 
                     createdAt: firebase.database.ServerValue.TIMESTAMP 
