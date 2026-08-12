@@ -256,11 +256,15 @@
                 <div class="form-row form-row-3">
                     <div class="form-group"><label class="form-label">Seu Nome *</label><input type="text" id="bfName" required class="form-input"></div>
                     <div class="form-group"><label class="form-label">Nome da Marca *</label><input type="text" id="bfBrand" required class="form-input"></div>
-                    <div class="form-group"><label class="form-label">Email *</label><input type="email" id="bfEmail" required class="form-input"></div>
+                    <div class="form-group"><label class="form-label">Whatsapp:</label><input type="tel" id="bfWhatsapp" class="form-input" placeholder="(79) 99999-9999"></div>
                 </div>
                 
                 <div class="form-row">
+                    <div class="form-group"><label class="form-label">Email *</label><input type="email" id="bfEmail" required class="form-input"></div>
                     <div class="form-group"><label class="form-label">Segmento *</label><input type="text" id="bfSegment" required class="form-input"></div>
+                </div>
+                
+                <div class="form-row">
                     <div class="form-group"><label class="form-label">Cores de Preferência</label><input type="text" id="bfColors" class="form-input" placeholder="Ex: azul e branco, vermelho e branco"></div>
                 </div>
                 
@@ -1213,6 +1217,7 @@
             e.preventDefault();
             const name = document.getElementById('bfName').value.trim();
             const brand = document.getElementById('bfBrand').value.trim();
+            const whatsapp = document.getElementById('bfWhatsapp').value.trim();
             const email = document.getElementById('bfEmail').value.trim();
             const segment = document.getElementById('bfSegment').value.trim();
             const colors = document.getElementById('bfColors').value.trim();
@@ -1229,13 +1234,13 @@
                 const uid = userCredential.user.uid;
                 
                 await db.ref('users/' + uid).set({ 
-                    email, role: 'client', name, 
+                    email, role: 'client', name, whatsapp,
                     createdAt: firebase.database.ServerValue.TIMESTAMP,
                     active: true
                 });
                 
                 await db.ref('clients').push().set({ 
-                    uid, name, email, brand, colors,
+                    uid, name, email, brand, colors, whatsapp,
                     loginEmail: email, 
                     password: '123456', 
                     siteName: brand, 
