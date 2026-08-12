@@ -160,7 +160,7 @@
         td { padding: 12px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
         .client-avatar { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: white; }
         .client-info { display: flex; align-items: center; gap: 8px; }
-        .client-name { font-weight: 600; font-size: 13px; }
+        .client-name { font-weight: 600; font-size: 13px; cursor: pointer; text-decoration: underline; color: #3b82f6; }
         .client-detail { font-size: 11px; color: #94a3b8; }
         .actions-cell { display: flex; gap: 4px; }
         .action-btn { width: 30px; height: 30px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; background: #f1f5f9; color: #64748b; }
@@ -256,7 +256,7 @@
                 <div class="form-row form-row-3">
                     <div class="form-group"><label class="form-label">Seu Nome *</label><input type="text" id="bfName" required class="form-input"></div>
                     <div class="form-group"><label class="form-label">Nome da Marca *</label><input type="text" id="bfBrand" required class="form-input"></div>
-                    <div class="form-group"><label class="form-label">Whatsapp:</label><input type="tel" id="bfWhatsapp" class="form-input" placeholder="(79) 99999-9999"></div>
+                    <div class="form-group"><label class="form-label">Whatsapp: *</label><input type="tel" id="bfWhatsapp" required class="form-input" placeholder="(79) 99999-9999"></div>
                 </div>
                 
                 <div class="form-row">
@@ -428,6 +428,76 @@
                 </form>
             </div>
             <div class="modal-footer"><button class="btn btn-secondary" onclick="closeClientModal()">Cancelar</button><button class="btn btn-primary" onclick="saveClient()" id="btnSaveClient">Salvar</button></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE BRIEFING DO CLIENTE -->
+    <div class="modal-overlay" id="briefingViewModal" style="display:none;">
+        <div class="modal">
+            <div class="modal-header"><h2 class="modal-title"><i class="fas fa-file-alt"></i> Briefing do Cliente</h2><button class="btn-ghost btn-icon" onclick="closeBriefingViewModal()"><i class="fas fa-times"></i></button></div>
+            <div class="modal-body">
+                <form id="briefingViewForm" onsubmit="return false;">
+                    <input type="hidden" id="briefingClientId">
+                    
+                    <div class="form-section">
+                        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#3b82f6;">Dados Pessoais</h3>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Nome *</label><input type="text" class="form-input" id="viewBfName" required></div>
+                            <div class="form-group"><label class="form-label">Whatsapp *</label><input type="tel" class="form-input" id="viewBfWhatsapp" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Email *</label><input type="email" class="form-input" id="viewBfEmail" required></div>
+                            <div class="form-group"><label class="form-label">Segmento *</label><input type="text" class="form-input" id="viewBfSegment" required></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#3b82f6;">Dados da Marca</h3>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Nome da Marca *</label><input type="text" class="form-input" id="viewBfBrand" required></div>
+                            <div class="form-group"><label class="form-label">Cores de Preferência</label><input type="text" class="form-input" id="viewBfColors"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#3b82f6;">Preferências do Site</h3>
+                        <div class="checkbox-grid" id="viewBfFeatures">
+                            <label class="custom-checkbox"><input type="checkbox" value="Formulário de contato via email"> Formulário de contato via email</label>
+                            <label class="custom-checkbox"><input type="checkbox" value="Botão WhatsApp"> Botão WhatsApp</label>
+                            <label class="custom-checkbox"><input type="checkbox" value="Botão Instagram"> Botão Instagram</label>
+                            <label class="custom-checkbox"><input type="checkbox" value="Produtos e ofertas"> Produtos e ofertas</label>
+                            <label class="custom-checkbox"><input type="checkbox" value="Apresentação da empresa"> Apresentação da empresa</label>
+                            <label class="custom-checkbox"><input type="checkbox" value="Endereço da empresa"> Endereço da empresa</label>
+                            <label class="custom-checkbox"><input type="checkbox" value="Serviços"> Serviços</label>
+                            <label class="custom-checkbox"><input type="checkbox" value="Botão YouTube"> Botão YouTube</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#3b82f6;">Propósito do Site</h3>
+                        <div class="form-group">
+                            <select class="form-select" id="viewBfPurpose">
+                                <option value="">Selecione...</option>
+                                <option value="Vender mais">Vender mais</option>
+                                <option value="Credibilidade">Credibilidade</option>
+                                <option value="Profissionalismo">Profissionalismo</option>
+                                <option value="Divulgar">Divulgar</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#3b82f6;">Informações Adicionais</h3>
+                        <div class="form-group">
+                            <textarea class="form-textarea" id="viewBfExtraInfo" rows="4"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeBriefingViewModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveBriefingView()" id="btnSaveBriefingView"><i class="fas fa-save"></i> Salvar Alterações</button>
+            </div>
         </div>
     </div>
 
@@ -732,6 +802,7 @@
             await db.ref('users/' + newUid).set({
                 email, role: 'client',
                 name: extraData.name || email.split('@')[0],
+                whatsapp: extraData.whatsapp || '',
                 createdAt: firebase.database.ServerValue.TIMESTAMP,
                 active: true
             });
@@ -740,6 +811,7 @@
             
             await db.ref('clients').push().set({
                 uid: newUid, name: extraData.name || '', email, loginEmail: email, password,
+                whatsapp: extraData.whatsapp || '',
                 siteName: extraData.siteName || '', 
                 monthlyValue: monthlyValue,
                 planType: extraData.planType || 'monthly',
@@ -884,7 +956,7 @@
                 const displayValue = getPlanBadge(c.monthlyValue);
                 
                 return `<tr>
-                    <td><div class="client-info"><div class="client-avatar" style="background:${ac}">${(c.name||'??').substring(0,2).toUpperCase()}</div><div><div class="client-name">${getReminderIcon(c.dueDate)} ${c.name||'---'}</div><div class="client-detail">${c.email||''}</div></div></div></td>
+                    <td><div class="client-info"><div class="client-avatar" style="background:${ac}">${(c.name||'??').substring(0,2).toUpperCase()}</div><div><div class="client-name" onclick="openBriefingViewModal('${c.id}')">${getReminderIcon(c.dueDate)} ${c.name||'---'}</div><div class="client-detail">${c.email||''}</div></div></div></td>
                     <td>${c.siteName||'---'}</td>
                     <td><span class="badge badge-info">${getPlanLabel(c.planType)}</span></td>
                     <td>${displayValue}</td>
@@ -1009,6 +1081,84 @@
             document.getElementById('clientModal').style.display = 'flex';
         };
 
+        // FUNÇÃO PARA ABRIR O MODAL DE BRIEFING
+        window.openBriefingViewModal = (id) => {
+            const client = clients.find(c => c.id === id);
+            if (!client) return;
+            
+            document.getElementById('briefingClientId').value = client.id;
+            document.getElementById('viewBfName').value = client.name || '';
+            document.getElementById('viewBfWhatsapp').value = client.whatsapp || '';
+            document.getElementById('viewBfEmail').value = client.email || '';
+            document.getElementById('viewBfSegment').value = client.segment || '';
+            document.getElementById('viewBfBrand').value = client.brand || client.siteName || '';
+            document.getElementById('viewBfColors').value = client.colors || '';
+            document.getElementById('viewBfPurpose').value = client.purpose || '';
+            document.getElementById('viewBfExtraInfo').value = client.extraInfo || '';
+            
+            // Marcar checkboxes
+            const features = client.features || [];
+            document.querySelectorAll('#viewBfFeatures input[type="checkbox"]').forEach(cb => {
+                cb.checked = features.includes(cb.value);
+            });
+            
+            document.getElementById('briefingViewModal').style.display = 'flex';
+        };
+
+        window.closeBriefingViewModal = () => {
+            document.getElementById('briefingViewModal').style.display = 'none';
+        };
+
+        window.saveBriefingView = async () => {
+            const id = document.getElementById('briefingClientId').value;
+            const name = document.getElementById('viewBfName').value.trim();
+            const whatsapp = document.getElementById('viewBfWhatsapp').value.trim();
+            const email = document.getElementById('viewBfEmail').value.trim();
+            const segment = document.getElementById('viewBfSegment').value.trim();
+            const brand = document.getElementById('viewBfBrand').value.trim();
+            const colors = document.getElementById('viewBfColors').value.trim();
+            const purpose = document.getElementById('viewBfPurpose').value;
+            const extraInfo = document.getElementById('viewBfExtraInfo').value.trim();
+            
+            if (!name || !whatsapp || !email || !segment) { 
+                showToast('Preencha os campos obrigatórios!', 'error'); 
+                return; 
+            }
+            
+            // Coletar features selecionadas
+            const features = [];
+            document.querySelectorAll('#viewBfFeatures input[type="checkbox"]:checked').forEach(cb => {
+                features.push(cb.value);
+            });
+            
+            const btn = document.getElementById('btnSaveBriefingView');
+            btn.disabled = true; btn.classList.add('btn-loading'); showLoading();
+            
+            try {
+                await db.ref('clients/' + id).update({
+                    name, whatsapp, email, segment, brand, colors, purpose, extraInfo, features
+                });
+                
+                // Atualizar também no users
+                const client = clients.find(c => c.id === id);
+                if (client?.uid) {
+                    await db.ref('users/' + client.uid).update({
+                        name, whatsapp
+                    });
+                }
+                
+                showToast('Briefing atualizado com sucesso!', 'success');
+                closeBriefingViewModal();
+            } catch (e) {
+                console.error('Erro ao salvar briefing:', e);
+                showToast('Erro: ' + (e.message || 'Falha ao salvar'), 'error');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('btn-loading');
+                hideLoading();
+            }
+        };
+
         window.openDeleteConfirmation = (id) => {
             const client = clients.find(c => c.id === id);
             if (!client) return;
@@ -1066,6 +1216,7 @@
                 await db.ref('deletedUsers/' + client.uid).set({
                     email: client.email || '',
                     name: client.name || '',
+                    whatsapp: client.whatsapp || '',
                     loginEmail: client.loginEmail || '',
                     siteName: client.siteName || '',
                     monthlyValue: client.monthlyValue || '0',
@@ -1222,7 +1373,22 @@
             const segment = document.getElementById('bfSegment').value.trim();
             const colors = document.getElementById('bfColors').value.trim();
             
-            if (!name || !brand || !email || !segment) { showToast('Preencha os campos obrigatórios.', 'error'); return; }
+            // Coletar features selecionadas
+            const features = [];
+            document.querySelectorAll('input[name="bfFeatures"]:checked').forEach(cb => {
+                features.push(cb.value);
+            });
+            
+            // Coletar propósito
+            const purposeElement = document.querySelector('input[name="bfPurpose"]:checked');
+            const purpose = purposeElement ? purposeElement.value : '';
+            
+            const extraInfo = document.getElementById('bfExtraInfo').value.trim();
+            
+            if (!name || !brand || !whatsapp || !email || !segment) { 
+                showToast('Preencha todos os campos obrigatórios!', 'error'); 
+                return; 
+            }
             if (email.toLowerCase() === MASTER_ADMIN_EMAIL) { showToast('Email reservado.', 'error'); return; }
             
             const btn = document.getElementById('btnSubmitBriefing');
@@ -1240,7 +1406,7 @@
                 });
                 
                 await db.ref('clients').push().set({ 
-                    uid, name, email, brand, colors, whatsapp,
+                    uid, name, email, brand, colors, whatsapp, segment, purpose, extraInfo, features,
                     loginEmail: email, 
                     password: '123456', 
                     siteName: brand, 
@@ -1274,6 +1440,11 @@
         // Fechar modal de confirmação ao clicar fora
         document.getElementById('confirmDeleteModal').addEventListener('click', function(e) {
             if (e.target === this) closeConfirmDeleteModal();
+        });
+
+        // Fechar modal de briefing ao clicar fora
+        document.getElementById('briefingViewModal').addEventListener('click', function(e) {
+            if (e.target === this) closeBriefingViewModal();
         });
 
         // INIT
