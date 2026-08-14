@@ -226,6 +226,10 @@
         .reminder-icon.red { color: #ef4444; }
         .reminder-icon.yellow { color: #f59e0b; }
         
+        .package-option { border: 2px solid #e2e8f0; border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s; }
+        .package-option.selected { border-color: #3b82f6; background: #eef2ff; }
+        .package-option.disabled { opacity: 0.5; pointer-events: none; }
+        
         @media (min-width: 768px) {
             .stats-grid { grid-template-columns: repeat(4,1fr); gap: 14px; }
             .monthly-stats-grid { grid-template-columns: repeat(4,1fr); }
@@ -253,6 +257,27 @@
             <div class="auth-logo"><div class="auth-logo-icon"><i class="fas fa-rocket"></i></div><h1 class="auth-title">Briefing de Marca</h1><p class="auth-subtitle" style="font-weight:500;color:#3b82f6;margin-top:6px;">Conte sua visão para criarmos <span onclick="showAdminAuthScreen()" title="Admin" style="cursor:pointer;text-decoration:underline;">algo incrível.</span></p></div>
             <form id="formBriefing" class="auth-form">
                 
+                <!-- NOVA SEÇÃO: SELEÇÃO DE PACOTES -->
+                <div class="form-section">
+                    <label class="form-label" style="font-size:14px;font-weight:700;margin-bottom:10px;">Selecione o(s) Pacote(s):</label>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div class="package-option" id="packageSite" onclick="togglePackage('site')">
+                            <div style="text-align:center;">
+                                <i class="fas fa-globe" style="font-size:28px;color:#3b82f6;margin-bottom:8px;"></i>
+                                <div style="font-weight:700;font-size:14px;">Criação de Site Profissional</div>
+                                <div style="font-size:11px;color:#64748b;margin-top:4px;">R$ 180,00</div>
+                            </div>
+                        </div>
+                        <div class="package-option" id="packageRenovacao" onclick="togglePackage('renovacao')">
+                            <div style="text-align:center;">
+                                <i class="fab fa-instagram" style="font-size:28px;color:#10b981;margin-bottom:8px;"></i>
+                                <div style="font-weight:700;font-size:14px;">Renovação Redes Sociais</div>
+                                <div style="font-size:11px;color:#64748b;margin-top:4px;">R$ 90,00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="form-row form-row-3">
                     <div class="form-group"><label class="form-label">Seu Nome *</label><input type="text" id="bfName" required class="form-input"></div>
                     <div class="form-group"><label class="form-label">Nome da Marca *</label><input type="text" id="bfBrand" required class="form-input"></div>
@@ -268,7 +293,20 @@
                     <div class="form-group"><label class="form-label">Cores de Preferência</label><input type="text" id="bfColors" class="form-input" placeholder="Ex: azul e branco, vermelho e branco"></div>
                 </div>
                 
-                <div class="form-section"><label class="form-label">Preferências para adicionar no seu site:</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Formulário de contato via email"> Formulário de contato via email</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão WhatsApp"> Botão WhatsApp</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão Instagram"> Botão Instagram</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Produtos e ofertas"> Produtos e ofertas</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Apresentação da empresa"> Apresentação da empresa</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Endereço da empresa"> Endereço da empresa</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Serviços"> Serviços</label><label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão YouTube"> Botão YouTube</label></div></div>
+                <div class="form-section" id="featuresSection">
+                    <label class="form-label">Preferências para adicionar no seu site:</label>
+                    <div class="checkbox-grid">
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Formulário de contato via email"> Formulário de contato via email</label>
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão WhatsApp"> Botão WhatsApp</label>
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão Instagram"> Botão Instagram</label>
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Produtos e ofertas"> Produtos e ofertas</label>
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Apresentação da empresa"> Apresentação da empresa</label>
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Endereço da empresa"> Endereço da empresa</label>
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Serviços"> Serviços</label>
+                        <label class="custom-checkbox"><input type="checkbox" name="bfFeatures" value="Botão YouTube"> Botão YouTube</label>
+                    </div>
+                </div>
+                
                 <div class="form-section"><label class="form-label">Propósito</label><div class="checkbox-grid"><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Vender mais" required> Vender mais</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Credibilidade"> Credibilidade</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Profissionalismo"> Profissionalismo</label><label class="custom-checkbox"><input type="radio" name="bfPurpose" value="Divulgar"> Divulgar</label></div></div>
                 <div class="form-group"><label class="form-label">Info Adicional</label><textarea id="bfExtraInfo" class="form-textarea"></textarea></div>
                 
@@ -570,6 +608,7 @@
         let listeners = [];
         let adminCredentials = null;
         let clientToDelete = null;
+        let selectedPackages = [];
 
         function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
         function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
@@ -1321,6 +1360,36 @@
             renderClientsTable();
         };
 
+        // FUNÇÃO PARA TOGGLE DE PACOTES
+        window.togglePackage = (pkg) => {
+            const idx = selectedPackages.indexOf(pkg);
+            if (idx > -1) {
+                selectedPackages.splice(idx, 1);
+            } else {
+                selectedPackages.push(pkg);
+            }
+            
+            // Atualizar UI
+            if (pkg === 'site') {
+                document.getElementById('packageSite').classList.toggle('selected', selectedPackages.includes('site'));
+            } else if (pkg === 'renovacao') {
+                document.getElementById('packageRenovacao').classList.toggle('selected', selectedPackages.includes('renovacao'));
+            }
+            
+            // Habilitar/desabilitar features section
+            const featuresSection = document.getElementById('featuresSection');
+            if (selectedPackages.includes('site') && !selectedPackages.includes('renovacao')) {
+                featuresSection.style.opacity = '1';
+                featuresSection.style.pointerEvents = 'auto';
+            } else if (selectedPackages.includes('renovacao') && !selectedPackages.includes('site')) {
+                featuresSection.style.opacity = '0.5';
+                featuresSection.style.pointerEvents = 'none';
+            } else {
+                featuresSection.style.opacity = '1';
+                featuresSection.style.pointerEvents = 'auto';
+            }
+        };
+
         document.getElementById('formAdminAuth').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmailAdmin').value.trim();
@@ -1389,6 +1458,10 @@
                 showToast('Preencha todos os campos obrigatórios!', 'error'); 
                 return; 
             }
+            if (selectedPackages.length === 0) {
+                showToast('Selecione pelo menos um pacote!', 'error');
+                return;
+            }
             if (email.toLowerCase() === MASTER_ADMIN_EMAIL) { showToast('Email reservado.', 'error'); return; }
             
             const btn = document.getElementById('btnSubmitBriefing');
@@ -1399,6 +1472,14 @@
                 const userCredential = await auth.createUserWithEmailAndPassword(email, '123456');
                 const uid = userCredential.user.uid;
                 
+                // Determinar valor baseado nos pacotes selecionados
+                let monthlyValue = '0';
+                if (selectedPackages.length === 1) {
+                    monthlyValue = selectedPackages[0] === 'site' ? '180.00' : '90.00';
+                } else if (selectedPackages.length === 2) {
+                    monthlyValue = '270.00'; // 180 + 90
+                }
+                
                 await db.ref('users/' + uid).set({ 
                     email, role: 'client', name, whatsapp,
                     createdAt: firebase.database.ServerValue.TIMESTAMP,
@@ -1407,10 +1488,11 @@
                 
                 await db.ref('clients').push().set({ 
                     uid, name, email, brand, colors, whatsapp, segment, purpose, extraInfo, features,
+                    packages: selectedPackages,
                     loginEmail: email, 
                     password: '123456', 
                     siteName: brand, 
-                    monthlyValue: '180.00', 
+                    monthlyValue: monthlyValue, 
                     planType: 'monthly', 
                     dueDate: futureDate, 
                     createdAt: firebase.database.ServerValue.TIMESTAMP,
@@ -1428,7 +1510,14 @@
                     }
                 }
                 
-                document.getElementById('successMessageText').innerHTML = `<p><strong>${name}</strong>, seu site da marca <strong>${brand}</strong> está sendo criado! 🚀 </p><p>Seu plano: <strong style="color:#3b82f6;">PLANO PRO</strong></p><p>Sua senha provisória é: <strong>123456</strong></p>`;
+                let planText = '';
+                if (selectedPackages.length === 1) {
+                    planText = selectedPackages[0] === 'site' ? 'PLANO PRO' : 'PLANO START';
+                } else {
+                    planText = 'PLANO PRO + START';
+                }
+                
+                document.getElementById('successMessageText').innerHTML = `<p><strong>${name}</strong>, seu site da marca <strong>${brand}</strong> está sendo criado! 🚀 </p><p>Seu plano: <strong style="color:#3b82f6;">${planText}</strong></p><p>Sua senha provisória é: <strong>123456</strong></p>`;
                 
                 document.getElementById('briefingScreen').style.display = 'none';
                 document.getElementById('successBriefingScreen').style.display = 'flex';
