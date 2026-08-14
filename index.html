@@ -1505,18 +1505,22 @@
                 // Determinar valor e plano baseado nos pacotes selecionados
                 let monthlyValue = '0';
                 let planName = '';
+                let successMessage = '';
                 
                 if (selectedPackages.length === 1) {
                     if (selectedPackages[0] === 'site') {
                         monthlyValue = '90.00';
                         planName = 'START';
+                        successMessage = `<p><strong>${name}</strong>, seu site da marca <strong>${brand}</strong> está sendo criado! 🚀</p>`;
                     } else if (selectedPackages[0] === 'renovacao') {
                         monthlyValue = '180.00';
                         planName = 'PRO';
+                        successMessage = `<p>Parabéns <strong>${name}</strong>, suas Redes Sociais vão ser Renovadas! 🎉</p>`;
                     }
                 } else if (selectedPackages.length === 2) {
                     monthlyValue = '270.00';
                     planName = 'PREMIUM';
+                    successMessage = `<p><strong>${name}</strong>, vamos iniciar a realização do Seu Site Profissional + Renovação Redes Sociais! 🚀🎉</p>`;
                 }
                 
                 await db.ref('users/' + uid).set({ 
@@ -1555,7 +1559,7 @@
                 else if (planName === 'PRO') planText = 'PLANO PRO';
                 else if (planName === 'PREMIUM') planText = 'PLANO PREMIUM';
                 
-                document.getElementById('successMessageText').innerHTML = `<p><strong>${name}</strong>, seu site da marca <strong>${brand}</strong> está sendo criado! 🚀 </p><p>Seu plano: <strong style="color:#3b82f6;">${planText}</strong></p><p>Sua senha provisória é: <strong>123456</strong></p>`;
+                document.getElementById('successMessageText').innerHTML = successMessage + `<p>Seu plano: <strong style="color:#3b82f6;">${planText}</strong></p><p>Sua senha provisória é: <strong>123456</strong></p>`;
                 
                 document.getElementById('briefingScreen').style.display = 'none';
                 document.getElementById('successBriefingScreen').style.display = 'flex';
